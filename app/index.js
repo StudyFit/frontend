@@ -1,9 +1,6 @@
-import { Text, View } from "react-native";
+import { Redirect } from "expo-router";
+import { RouterName } from "@/components/RouterName";
 
 export default function Home() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>빈 프로젝트입니다.</Text>
-    </View>
-  );
+  return <Redirect href={RouterName.TodaysLessonTab} />;
 }
