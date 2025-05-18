@@ -10,6 +10,7 @@ const TodaysHwBox = () => {
       { id: 1, text: "쎈 12~15p", isChecked: true },
       { id: 2, text: "쎈 C단계 오답노트", isChecked: false },
     ],
+    color: "#D3ED70",
   };
 
   return (
@@ -17,6 +18,7 @@ const TodaysHwBox = () => {
       <TodaysStudentContainer
         name={hwInfo.studentName}
         subject={hwInfo.studentSubject}
+        color="white"
       />
 
       <View style={{ gap: 12 }}>

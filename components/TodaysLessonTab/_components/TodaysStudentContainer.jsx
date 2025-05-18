@@ -1,12 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const TodaysStudentContainer = ({ name, subject }) => {
+const TodaysStudentContainer = ({ name, subject, color = "white" }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.studentNameText}>{name}</Text>
+      <Pressable onPress={() => console.log("학생 클릭")}>
+        <Text style={styles.studentNameText}>{name}</Text>
+      </Pressable>
       <Text style={styles.studentText}>학생</Text>
-      <View>
-        <Text>{subject}</Text>
+      <View style={[styles.subjectContainer, { backgroundColor: color }]}>
+        <Text style={styles.subjectText}>{subject}</Text>
       </View>
     </View>
   );
@@ -27,5 +29,15 @@ const styles = StyleSheet.create({
   },
   studentText: {
     fontSize: 14,
+  },
+  subjectContainer: {
+    borderRadius: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  subjectText: {
+    fontSize: 10,
   },
 });

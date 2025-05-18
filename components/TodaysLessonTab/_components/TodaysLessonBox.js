@@ -9,6 +9,7 @@ const TodaysLessonBox = () => {
       subject: "수학",
       classTime: "12:00 ~ 14:00",
       memo: "집 주소 : 서울특별시 동대문구 이문동 123-45 678호",
+      color: "#FDED91",
     },
     {
       id: 2,
@@ -16,6 +17,7 @@ const TodaysLessonBox = () => {
       subject: "영어",
       classTime: "12:00 ~ 14:00",
       memo: "진도 빨리 나가야 함.",
+      color: "#D3ED70",
     },
   ];
 
@@ -33,6 +35,7 @@ const TodaysLessonBox = () => {
               <TodaysStudentContainer
                 name={student.name}
                 subject={student.subject}
+                color={student.color}
               />
               <Text>{student.classTime}</Text>
             </View>
