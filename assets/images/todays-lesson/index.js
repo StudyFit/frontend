@@ -9,4 +9,6 @@ export const todaysLessonImages = {
   hwAfterUpload: require("./hw_after_upload.png"),
   hwCheckFalse: require("./hw_check_false.png"),
   hwCheckTrue: require("./hw_check_true.png"),
+
+  feedbackBtn: require("./feedback_button.png"),
 };
