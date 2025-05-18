@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Tab4() {
+export default function Calendar() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>이곳은 네 번째 탭입니다!</Text>
+      <Text style={styles.text}>이곳은 세 번째 탭입니다!</Text>
     </View>
   );
 }

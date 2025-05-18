@@ -1,7 +1,7 @@
 export const RouterName = {
   TodaysLessonTab: "(tabs)/TodaysLesson",
-  StudentListTab: "(tabs)/Tab2",
-  CalendarTab: "(tabs)/Tab3",
-  ChatTab: "(tabs)/Tab4",
-  Mypage: "(tabs)/Tab5",
+  StudentListTab: "(tabs)/List",
+  CalendarTab: "(tabs)/Calendar",
+  ChatTab: "(tabs)/Chat",
+  MypageTab: "(tabs)/MyPage",
 };
