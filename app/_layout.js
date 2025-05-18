@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { RouterName } from "@/components/RouterName";
+import { Image, StyleSheet } from "react-native";
+import { bottomTabIcon } from "@/assets/images/bottom-tab";
 
 export default function TabsLayout() {
   const demoVersion = false; // 자진프 모드면 true
@@ -10,6 +11,8 @@ export default function TabsLayout() {
       initialRouteName={RouterName.TodaysLessonTab}
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: "black",
+        tabBarInactiveTintColor: "#767676",
       }}
     >
       <Tabs.Screen name="index" options={{ href: null }} />
@@ -17,8 +20,15 @@ export default function TabsLayout() {
         name={RouterName.TodaysLessonTab}
         options={{
           title: "오늘의 수업",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={24} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ? bottomTabIcon.todaysLessonTabOn
+                  : bottomTabIcon.todaysLessonTabOff
+              }
+              style={styles.bottomTabIcon}
+            />
           ),
         }}
       />
@@ -26,8 +36,13 @@ export default function TabsLayout() {
         name={RouterName.StudentListTab}
         options={{
           title: "학생 목록",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={24} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused ? bottomTabIcon.listTabOn : bottomTabIcon.listTabOff
+              }
+              style={styles.bottomTabIcon}
+            />
           ),
         }}
       />
@@ -35,8 +50,15 @@ export default function TabsLayout() {
         name={RouterName.CalendarTab}
         options={{
           title: "캘린더",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={24} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused
+                  ? bottomTabIcon.calendarTabOn
+                  : bottomTabIcon.calendarTabOff
+              }
+              style={styles.bottomTabIcon}
+            />
           ),
         }}
       />
@@ -45,21 +67,35 @@ export default function TabsLayout() {
         options={{
           title: "채팅",
           href: demoVersion ? null : undefined,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={24} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused ? bottomTabIcon.chatTabOn : bottomTabIcon.chatTabOff
+              }
+              style={styles.bottomTabIcon}
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name={RouterName.Mypage}
+        name={RouterName.MypageTab}
         options={{
           title: "마이페이지",
           href: demoVersion ? null : undefined,
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={24} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={
+                focused ? bottomTabIcon.mypageTabOn : bottomTabIcon.mypageTabOff
+              }
+              style={styles.bottomTabIcon}
+            />
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  bottomTabIcon: { width: 24, height: 24 },
+});

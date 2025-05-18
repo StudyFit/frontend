@@ -7,8 +7,9 @@ import {
   Image,
 } from "react-native";
 import { todaysLessonImages } from "../../assets";
-import TodaysLessonBox from "@/components/TodaysLessonTab/_components/TodaysLessonBox";
-import TodaysHwBox from "@/components/TodaysLessonTab/_components/TodaysHwBox";
+import TodaysLessonBox from "@/components/TodaysLessonTab/TodaysLessonBox";
+import TodaysHwBox from "@/components/TodaysLessonTab/TodaysHwBox";
+import MainTitle from "@/components/MainTitle";
 
 export default function TodaysLessonPage() {
   return (
@@ -16,13 +17,11 @@ export default function TodaysLessonPage() {
       <ScrollView contentContainerStyle={styles.container}>
         <DateContainer />
         <View>
-          <Text style={[styles.titleText, { marginBottom: 17 }]}>
-            오늘의 수업
-          </Text>
+          <MainTitle text="오늘의 수업" style={{ marginBottom: 17 }} />
           <TodaysLessonBox />
         </View>
         <View style={{ marginTop: 32, gap: 15 }}>
-          <Text style={styles.titleText}>오늘의 숙제</Text>
+          <MainTitle text="오늘의 숙제" />
           <TodaysHwBox />
         </View>
       </ScrollView>
@@ -57,11 +56,6 @@ const styles = StyleSheet.create({
   dateText: {
     marginHorizontal: 13,
     fontSize: 30,
-    fontWeight: "bold",
-  },
-
-  titleText: {
-    fontSize: 25,
     fontWeight: "bold",
   },
 });

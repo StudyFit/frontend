@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Tab2() {
+export default function Chat() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>이곳은 두 번째 탭입니다!</Text>
+      <Text style={styles.text}>이곳은 네 번째 탭입니다!</Text>
     </View>
   );
 }
