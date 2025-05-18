@@ -6,9 +6,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { todaysLessonImages } from "../../../assets";
+import { todaysLessonImages } from "../../assets";
 import TodaysStudentContainer from "./TodaysStudentContainer";
-import FeedbackContainer from "../FeedbackContainer";
+import FeedbackContainer from "./FeedbackContainer";
 
 const TodaysHwBox = () => {
   const hwInfo = [
