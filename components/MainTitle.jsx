@@ -9,6 +9,6 @@ export default MainTitle;
 const styles = StyleSheet.create({
   titleText: {
     fontSize: 25,
-    fontWeight: "bold",
+    fontFamily: "Pretendard-Bold",
   },
 });
