@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { todaysLessonImages } from "../../assets";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import FeedbackContainer from "./FeedbackContainer";
+import NoContainer from "./NoContainer";
 
 const TodaysHwBox = () => {
   const hwInfo = [
@@ -98,7 +99,7 @@ const TodaysHwBox = () => {
           </View>
         ))
       ) : (
-        <></>
+        <NoContainer text="숙제" />
       )}
     </>
   );
