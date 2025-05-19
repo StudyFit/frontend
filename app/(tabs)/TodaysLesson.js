@@ -51,11 +51,12 @@ const styles = StyleSheet.create({
   dateContainer: {
     marginBottom: 35,
     flexDirection: "row",
+    alignItems: "center",
   },
   dateBtn: { width: 30, height: 30 },
   dateText: {
     marginHorizontal: 13,
     fontSize: 30,
-    fontWeight: "bold",
+    fontFamily: "Pretendard-Bold",
   },
 });

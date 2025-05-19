@@ -6,6 +6,7 @@ const TodaysLessonBox = () => {
     {
       id: 1,
       name: "정채영",
+      grade: "중3",
       subject: "수학",
       classTime: "12:00 ~ 14:00",
       memo: "집 주소 : 서울특별시 동대문구 이문동 123-45 678호",
@@ -14,6 +15,7 @@ const TodaysLessonBox = () => {
     {
       id: 2,
       name: "김정은",
+      grade: "고2",
       subject: "영어",
       classTime: "12:00 ~ 14:00",
       memo: "진도 빨리 나가야 함.",
@@ -34,6 +36,7 @@ const TodaysLessonBox = () => {
             >
               <TodaysStudentContainer
                 name={student.name}
+                grade={student.grade}
                 subject={student.subject}
                 color={student.color}
               />
