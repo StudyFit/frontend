@@ -1,11 +1,4 @@
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { todaysLessonImages } from "../../assets";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import FeedbackContainer from "./FeedbackContainer";
@@ -15,6 +8,7 @@ const TodaysHwBox = () => {
     {
       id: 1,
       studentName: "정채영",
+      studentGrade: "중3",
       studentSubject: "수학",
       hwlist: [
         {
@@ -34,6 +28,7 @@ const TodaysHwBox = () => {
     {
       id: 2,
       studentName: "김정은",
+      studentGrade: "고2",
       studentSubject: "수학",
       hwlist: [
         {
@@ -62,6 +57,7 @@ const TodaysHwBox = () => {
           >
             <TodaysStudentContainer
               name={hw.studentName}
+              grade={hw.studentGrade}
               subject={hw.studentSubject}
               color="white"
             />
