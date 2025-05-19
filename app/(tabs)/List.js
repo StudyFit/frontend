@@ -49,15 +49,7 @@ export default function List() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={styles.container}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 10,
-            marginBottom: 29,
-            marginLeft: 7,
-          }}
-        >
+        <View style={styles.mainTitleContainer}>
           <MainTitle text="학생 목록" />
           <Image
             source={listImage.listIcon}
@@ -66,14 +58,16 @@ export default function List() {
         </View>
 
         <View style={styles.listContainer}>
-          {list ? list.map((elt) => <ListElt elt={elt} />) : <NoList />}
+          {list ? (
+            list.map((elt) => <ListElt elt={elt} key={elt.id} />)
+          ) : (
+            <NoList />
+          )}
         </View>
 
         {waitingList && (
           <>
-            <Text style={{ marginTop: 22, marginBottom: 7, fontSize: 20 }}>
-              수락 대기 중
-            </Text>
+            <Text style={styles.waitingText}>수락 대기 중</Text>
             <View style={styles.listContainer}>
               {waitingList.map((elt) => (
                 <ListElt elt={elt} key={elt.id} />
@@ -127,6 +121,13 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     backgroundColor: "white",
   },
+  mainTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 29,
+    marginLeft: 7,
+  },
   listContainer: {
     gap: 7,
   },
@@ -138,4 +139,5 @@ const styles = StyleSheet.create({
     paddingLeft: 22,
     paddingRight: 16,
   },
+  waitingText: { marginTop: 22, marginBottom: 7, fontSize: 20 },
 });
