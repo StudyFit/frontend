@@ -8,10 +8,19 @@ import {
   Pressable,
 } from "react-native";
 import MainTitle from "@/components/MainTitle";
-import { listImage } from "../../assets/images/list";
+import { listImage } from "@/assets/images/list";
 import NoList from "@/components/ListTab/NoList";
+import { useUser } from "@/contexts/UserContext";
+import {
+  ListEltForStudent,
+  ListEltForStudentAccept,
+  ListEltForTeacher,
+} from "@/components/ListTab/ListElt";
 
 export default function List() {
+  const { userRole } = useUser();
+  const showRole = userRole == "학생" ? "선생님" : "학생";
+
   const list = [
     {
       id: 1,
@@ -50,48 +59,59 @@ export default function List() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={styles.container}>
         <View style={styles.mainTitleContainer}>
-          <MainTitle text="학생 목록" />
+          <MainTitle text={showRole + " 목록"} />
           <Image
             source={listImage.listIcon}
             style={{ width: 24, height: 24 }}
           />
         </View>
 
-        <View style={styles.listContainer}>
-          {list ? (
-            list.map((elt) => <ListElt elt={elt} key={elt.id} />)
-          ) : (
-            <NoList />
-          )}
-        </View>
-
-        {waitingList && (
-          <>
-            <Text style={styles.waitingText}>수락 대기 중</Text>
-            <View style={styles.listContainer}>
-              {waitingList.map((elt) => (
-                <ListElt elt={elt} key={elt.id} />
+        {list.length > 0 &&
+          (userRole == "학생" ? (
+            <View style={[styles.listContainer, { marginTop: 29 }]}>
+              {list.map((elt) => (
+                <ListEltForStudent elt={elt} key={elt.id} />
               ))}
             </View>
+          ) : (
+            <View style={[styles.listContainer, { marginTop: 29 }]}>
+              {list.map((elt) => (
+                <ListEltForTeacher elt={elt} key={elt.id} />
+              ))}
+            </View>
+          ))}
+
+        {waitingList.length > 0 && (
+          <>
+            {userRole == "학생" ? (
+              <>
+                <Text style={styles.waitingText}>수락 요청</Text>
+                <View style={styles.listContainer}>
+                  {waitingList.map((elt) => (
+                    <ListEltForStudentAccept elt={elt} key={elt.id} />
+                  ))}
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.waitingText}>수락 대기 중</Text>
+                <View style={styles.listContainer}>
+                  {waitingList.map((elt) => (
+                    <ListEltForTeacher elt={elt} key={elt.id} />
+                  ))}
+                </View>
+              </>
+            )}
           </>
         )}
+
+        {list.length === 0 && waitingList.length === 0 && <NoList />}
       </ScrollView>
 
-      <AddStudentBtn />
+      {userRole == "선생님" && <AddStudentBtn />}
     </SafeAreaView>
   );
 }
-
-const ListElt = ({ elt }) => {
-  return (
-    <View style={[styles.listElt, { backgroundColor: elt.color }]}>
-      <Text style={{ fontSize: 20, marginRight: 4 }}>{elt.name}</Text>
-      <Text style={{ marginRight: "auto", alignSelf: "flex-end" }}>학생</Text>
-      <Text style={{ fontSize: 16, marginRight: 15 }}>{elt.grade}</Text>
-      <Text>{elt.subject}</Text>
-    </View>
-  );
-};
 
 const AddStudentBtn = () => {
   const addStudent = () => {};
@@ -125,19 +145,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginBottom: 29,
     marginLeft: 7,
   },
   listContainer: {
     gap: 7,
   },
-  listElt: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 10,
-    paddingVertical: 13,
-    paddingLeft: 22,
-    paddingRight: 16,
+
+  waitingText: {
+    marginTop: 22,
+    marginBottom: 7,
+    fontSize: 20,
+    fontFamily: "Pretendard-Bold",
   },
-  waitingText: { marginTop: 22, marginBottom: 7, fontSize: 20 },
 });

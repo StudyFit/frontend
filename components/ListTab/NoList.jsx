@@ -10,6 +10,7 @@ const NoList = () => {
         borderRadius: 15,
         alignItems: "center",
         justifyContent: "center",
+        marginTop: 29,
       }}
     >
       <Text style={{ fontSize: 20 }}>학생이 없습니다.</Text>
