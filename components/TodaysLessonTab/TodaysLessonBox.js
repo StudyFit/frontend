@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import TodaysStudentContainer from "./TodaysStudentContainer";
+import NoContainer from "./NoContainer";
 
 const TodaysLessonBox = () => {
   const classList = [
@@ -25,7 +26,7 @@ const TodaysLessonBox = () => {
 
   return (
     <View style={styles.container}>
-      {classList &&
+      {classList ? (
         classList.map((student) => (
           <View key={student.id}>
             <View
@@ -46,7 +47,10 @@ const TodaysLessonBox = () => {
               <Text style={styles.studentMemo}>{student.memo}</Text>
             </View>
           </View>
-        ))}
+        ))
+      ) : (
+        <NoContainer text="수업" />
+      )}
     </View>
   );
 };
