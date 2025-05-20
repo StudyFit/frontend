@@ -1,6 +1,8 @@
 export const loginImage = {
   logoImage: require("./logo_image.png"),
 
+  verticalLine: require("./vertical_line.png"),
+
   studentImage: require("./student_image.png"),
   teacherImage: require("./teacher_image.png"),
 
