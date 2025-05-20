@@ -2,9 +2,9 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export const ListEltForStudent = ({ elt }) => {
   return (
-    <View style={{ flexDirection: "row", gap: 4 }}>
-      <View style={[styles.listElt, { backgroundColor: elt.color, flex: 1 }]}>
-        <Text style={{ fontSize: 20, marginRight: 4 }}>{elt.name}</Text>
+    <View style={styles.listEltContainer}>
+      <View style={[styles.listElt, { backgroundColor: elt.color }]}>
+        <Text style={styles.nameText}>{elt.name}</Text>
         <Text style={styles.roleText}>선생님</Text>
         <Text>{elt.subject}</Text>
       </View>
@@ -14,17 +14,19 @@ export const ListEltForStudent = ({ elt }) => {
 
 export const ListEltForStudentAccept = ({ elt }) => {
   return (
-    <View style={{ flexDirection: "row", gap: 4 }}>
-      <View style={[styles.listElt, { backgroundColor: elt.color, flex: 1 }]}>
-        <Text style={{ fontSize: 20, marginRight: 4 }}>{elt.name}</Text>
+    <View style={styles.listEltContainer}>
+      <View style={[styles.listElt, { backgroundColor: elt.color }]}>
+        <Text style={styles.nameText}>{elt.name}</Text>
         <Text style={styles.roleText}>선생님</Text>
       </View>
 
       <Pressable style={styles.acceptBtn}>
-        <Text>수락</Text>
+        <Text style={{ fontFamily: "Pretendard-Bold" }}>수락</Text>
       </Pressable>
       <Pressable style={[styles.acceptBtn, { borderColor: "red" }]}>
-        <Text style={{ color: "red" }}>거절</Text>
+        <Text style={{ fontFamily: "Pretendard-Bold", color: "red" }}>
+          거절
+        </Text>
       </Pressable>
     </View>
   );
@@ -32,9 +34,9 @@ export const ListEltForStudentAccept = ({ elt }) => {
 
 export const ListEltForTeacher = ({ elt }) => {
   return (
-    <View style={{ flexDirection: "row", gap: 4 }}>
-      <View style={[styles.listElt, { backgroundColor: elt.color, flex: 1 }]}>
-        <Text style={{ fontSize: 20, marginRight: 4 }}>{elt.name}</Text>
+    <View style={styles.listEltContainer}>
+      <View style={[styles.listElt, { backgroundColor: elt.color }]}>
+        <Text style={styles.nameText}>{elt.name}</Text>
         <Text style={styles.roleText}>학생</Text>
         <Text style={{ fontSize: 16, marginRight: 15 }}>{elt.grade}</Text>
         <Text>{elt.subject}</Text>
@@ -44,6 +46,7 @@ export const ListEltForTeacher = ({ elt }) => {
 };
 
 const styles = StyleSheet.create({
+  listEltContainer: { flexDirection: "row", gap: 4 },
   listElt: {
     flexDirection: "row",
     alignItems: "center",
@@ -52,6 +55,12 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     paddingLeft: 22,
     paddingRight: 16,
+    flex: 1,
+  },
+  nameText: {
+    fontSize: 20,
+    marginRight: 4,
+    fontFamily: "Pretendard-Bold",
   },
   roleText: {
     marginRight: "auto",

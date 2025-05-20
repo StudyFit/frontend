@@ -65,25 +65,23 @@ export default function List() {
             style={{ width: 24, height: 24 }}
           />
         </View>
-        {userRole == "학생" ? (
-          <View style={styles.listContainer}>
-            {list ? (
-              list.map((elt) => <ListEltForStudent elt={elt} key={elt.id} />)
-            ) : (
-              <NoList />
-            )}
-          </View>
-        ) : (
-          <View style={styles.listContainer}>
-            {list ? (
-              list.map((elt) => <ListEltForTeacher elt={elt} key={elt.id} />)
-            ) : (
-              <NoList />
-            )}
-          </View>
-        )}
 
-        {waitingList && (
+        {list.length > 0 &&
+          (userRole == "학생" ? (
+            <View style={[styles.listContainer, { marginTop: 29 }]}>
+              {list.map((elt) => (
+                <ListEltForStudent elt={elt} key={elt.id} />
+              ))}
+            </View>
+          ) : (
+            <View style={[styles.listContainer, { marginTop: 29 }]}>
+              {list.map((elt) => (
+                <ListEltForTeacher elt={elt} key={elt.id} />
+              ))}
+            </View>
+          ))}
+
+        {waitingList.length > 0 && (
           <>
             {userRole == "학생" ? (
               <>
@@ -106,6 +104,8 @@ export default function List() {
             )}
           </>
         )}
+
+        {list.length === 0 && waitingList.length === 0 && <NoList />}
       </ScrollView>
 
       {userRole == "선생님" && <AddStudentBtn />}
@@ -145,12 +145,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginBottom: 29,
     marginLeft: 7,
   },
   listContainer: {
     gap: 7,
   },
 
-  waitingText: { marginTop: 22, marginBottom: 7, fontSize: 20 },
+  waitingText: {
+    marginTop: 22,
+    marginBottom: 7,
+    fontSize: 20,
+    fontFamily: "Pretendard-Bold",
+  },
 });
