@@ -1,0 +1,77 @@
+import { View, Text, SafeAreaView, Image, Pressable } from "react-native";
+import { useState } from "react";
+import { useUser } from "@/contexts/UserContext";
+import { useRouter } from "expo-router";
+import { BottomBtn, CustomTextInput } from "@/components";
+import { loginImage } from "@/assets";
+
+export default function LoginPage() {
+  const [id, setId] = useState("");
+  const [pw, setPw] = useState("");
+  const { login } = useUser();
+  const router = useRouter();
+
+  const handleLogin = () => {
+    login("학생");
+    console.log("학생");
+    setPw("");
+  };
+
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        alignItems: "center",
+        paddingHorizontal: 33,
+      }}
+    >
+      <Image
+        source={loginImage.logoImage}
+        style={{ width: 152, height: 184, marginTop: 128, marginBottom: 25 }}
+      />
+
+      <View style={{ gap: 5.7 }}>
+        <CustomTextInput
+          icon={loginImage.humanIcon}
+          placeholder="아이디"
+          value={id}
+          onChangeText={setId}
+        />
+
+        <CustomTextInput
+          icon={loginImage.passwordIcon}
+          placeholder="비밀번호"
+          value={pw}
+          onChangeText={setPw}
+        />
+      </View>
+
+      <BottomBtn
+        text="로그인"
+        onPress={handleLogin}
+        notBottom
+        style={{ marginVertical: "18" }}
+      />
+
+      <View style={{ flexDirection: "row", gap: 6 }}>
+        <Pressable onPress={() => router.push("/(auth)/signUp")}>
+          <Text>회원가입</Text>
+        </Pressable>
+        <Image
+          source={loginImage.verticalLine}
+          style={{ width: 1, height: 18 }}
+        />
+        <Pressable>
+          <Text>아이디 찾기</Text>
+        </Pressable>
+        <Image
+          source={loginImage.verticalLine}
+          style={{ width: 1, height: 18 }}
+        />
+        <Pressable>
+          <Text>비밀번호 찾기</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+}
