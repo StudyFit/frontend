@@ -49,7 +49,8 @@ export default function Step2() {
   };
 
   const goToStep3 = () => {
-    if (timeLeft <= 0) return;
+    // if (timeLeft <= 0) return; // 졸프 버전
+    if (!phoneNum) return; // 자진프 버전
     router.push(RouterName.signUpStep3);
   };
 
@@ -68,10 +69,12 @@ export default function Step2() {
             value={phoneNum}
             onChangeText={setPhoneNum}
           />
-          <BottomBtn text="인증번호 발송" onPress={goToNextStep} />
+          <BottomBtn text="다음" onPress={goToStep3} />
+          {/* 졸프 버전 <BottomBtn text="인증번호 발송" onPress={goToNextStep} /> */}
         </>
       ) : (
         <>
+          {/* 졸프 버전
           <CustomTextInput
             icon={loginImage.verifyCodeIcon}
             placeholder="인증번호"
@@ -90,7 +93,7 @@ export default function Step2() {
           <Pressable style={{ marginTop: 13 }}>
             <Text style={styles.resendText}>인증번호 재발송</Text>
           </Pressable>
-          <BottomBtn text="인증번호 확인" onPress={goToStep3} />
+          <BottomBtn text="인증번호 확인" onPress={goToStep3} /> */}
         </>
       )}
     </SafeAreaView>
