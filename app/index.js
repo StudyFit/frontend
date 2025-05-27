@@ -7,7 +7,7 @@ export default function Home() {
   const { isLoggedIn } = useUser(); // 로그인 상태 가져오기
 
   if (!isLoggedIn) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href={RouterName.loginPage} />;
   }
 
   return <Redirect href={RouterName.TodaysLessonTab} />;

@@ -1,16 +1,9 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TextInput,
-  Button,
-  Image,
-  Pressable,
-} from "react-native";
+import { View, Text, SafeAreaView, Image, Pressable } from "react-native";
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
-import { loginImage } from "@/assets/images/login";
 import { useRouter } from "expo-router";
+import { BottomBtn, CustomTextInput } from "@/components";
+import { loginImage } from "@/assets";
 
 export default function LoginPage() {
   const [id, setId] = useState("");
@@ -18,13 +11,18 @@ export default function LoginPage() {
   const { login } = useUser();
   const router = useRouter();
 
+  const handleLogin = () => {
+    login("학생");
+    console.log("학생");
+    setPw("");
+  };
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
         alignItems: "center",
         paddingHorizontal: 33,
-        backgroundColor: "white",
       }}
     >
       <Image
@@ -33,51 +31,27 @@ export default function LoginPage() {
       />
 
       <View style={{ gap: 5.7 }}>
-        <Pressable style={{ backgroundColor: "#F2F2F2", borderRadius: 4 }}>
-          <TextInput
-            placeholder="아이디"
-            value={id}
-            onChangeText={setId}
-            style={{
-              width: 310,
-              height: 39,
-            }}
-          />
-        </Pressable>
+        <CustomTextInput
+          icon={loginImage.humanIcon}
+          placeholder="아이디"
+          value={id}
+          onChangeText={setId}
+        />
 
-        <Pressable style={{ backgroundColor: "#F2F2F2", borderRadius: 4 }}>
-          <TextInput
-            placeholder="비밀번호"
-            value={pw}
-            onChangeText={setPw}
-            secureTextEntry
-            style={{
-              width: 310,
-              height: 39,
-              borderRadius: 4,
-            }}
-          />
-        </Pressable>
+        <CustomTextInput
+          icon={loginImage.passwordIcon}
+          placeholder="비밀번호"
+          value={pw}
+          onChangeText={setPw}
+        />
       </View>
 
-      <Pressable
-        style={{
-          width: 310,
-          height: 39,
-          borderRadius: 4,
-          backgroundColor: "black",
-          justifyContent: "center",
-          alignItems: "center",
-          marginVertical: 17.7,
-        }}
-        onPress={() => {
-          login("학생");
-          console.log("학생");
-          setPw("");
-        }}
-      >
-        <Text style={{ color: "white" }}>로그인</Text>
-      </Pressable>
+      <BottomBtn
+        text="로그인"
+        onPress={handleLogin}
+        notBottom
+        style={{ marginVertical: "18" }}
+      />
 
       <View style={{ flexDirection: "row", gap: 6 }}>
         <Pressable onPress={() => router.push("/(auth)/signUp")}>
