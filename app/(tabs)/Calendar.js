@@ -8,12 +8,18 @@ import {
   SafeAreaView,
   Modal,
   Image,
-  Pressable,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { calendarImage } from "@/assets/images/calendar";
+import {
+  CalendarBtn,
+  DayHomeworkElement,
+  DayOfWeekComponent,
+  DayScheduleElement,
+  HwIcon,
+  ShowScheduleToggle,
+} from "@/components";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -69,7 +75,6 @@ const homework = [
 
 export default function CalendarTab() {
   const today = new Date().toISOString().split("T")[0];
-  // 오늘 날짜 기준으로 currentDate 초기화
   const [currentDate, setCurrentDate] = useState(new Date(today));
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
@@ -90,6 +95,14 @@ export default function CalendarTab() {
   const handleHwShow = () => {
     setHwShow(!hwShow);
   };
+
+  const handleDayClick = (dateString) => {
+    setModalDate(dateString);
+    setModalVisible(true);
+  };
+
+  const getItemsByDate = (arr, dateString) =>
+    arr.filter((item) => item.date === dateString);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -130,13 +143,9 @@ export default function CalendarTab() {
                     key={item.homeworkId ?? idx}
                     style={{ flexDirection: "row", alignItems: "center" }}
                   >
-                    <Image
-                      source={
-                        item.isAssigned
-                          ? calendarImage.hwDoneIcon
-                          : calendarImage.hwNotDoneIcon
-                      }
-                      style={{ width: 8, height: 8 }}
+                    <HwIcon
+                      isAssigned={item.isAssigned}
+                      style={{ width: 12, height: 12 }}
                     />
                     <Text style={{ fontSize: 14, marginBottom: 4 }}>
                       {item.studentName.slice(1)} 숙제
@@ -154,17 +163,7 @@ export default function CalendarTab() {
       </Modal>
 
       {/* 헤더 */}
-      <View
-        style={{
-          width: "100%",
-          flexDirection: "row",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          paddingLeft: 17,
-          paddingRight: 23,
-          marginBottom: 12,
-        }}
-      >
+      <View style={styles.headerContainer}>
         {/* 달 선택 */}
         <View style={styles.headerRow}>
           <CalendarBtn direction="left" onPress={() => changeMonth(-1)} />
@@ -177,7 +176,7 @@ export default function CalendarTab() {
           <CalendarBtn direction="right" onPress={() => changeMonth(1)} />
         </View>
 
-        <ShowSchedule
+        <ShowScheduleToggle
           classShow={classShow}
           setClassShow={handleClassShow}
           hwShow={hwShow}
@@ -195,93 +194,39 @@ export default function CalendarTab() {
         current={format(currentDate, "yyyy-MM-dd")}
         markingType={"custom"}
         hideDayNames={true}
-        dayComponent={({ date, state }) => {
-          // 데이터 배열에서 해당 날짜의 일정만 추출
-          const daySchedules = schedules.filter(
-            (s) => s.date === date.dateString
-          );
-          const dayHomework = homework.filter(
-            (h) => h.date === date.dateString
-          );
+        dayComponent={({ date }) => {
+          const daySchedules = getItemsByDate(schedules, date.dateString);
+          const dayHomework = getItemsByDate(homework, date.dateString);
           const isToday = today === date.dateString;
           return (
             <TouchableOpacity
               style={styles.dayContainer}
-              onPress={() => {
-                setModalDate(date.dateString);
-                setModalVisible(true);
-              }}
+              onPress={() => handleDayClick(date.dateString)}
               activeOpacity={0.7}
             >
-              <View style={styles.dayNumberWrapper}>
-                <View
-                  style={[
-                    styles.todayCircle,
-                    isToday && { backgroundColor: "#FF3B30" },
-                  ]}
-                >
-                  <Text
-                    style={[styles.dayText, isToday && styles.todayDayText]}
-                  >
-                    {date.day}
-                  </Text>
-                </View>
-              </View>
+              <DaysComponent isToday={isToday} day={date.day} />
 
+              {/* 일정 */}
               <View style={{ gap: 2 }}>
-                {/* 스케줄 */}
+                {/* 수업 */}
                 {classShow &&
-                  daySchedules.map((item, idx) => (
-                    <View
-                      key={item.scheduleId ?? idx}
-                      style={{
-                        width: 48,
-                        height: 18,
-                        backgroundColor: item.themeColor,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 5,
-                        paddingHorizontal: 3,
-                      }}
-                    >
-                      <Text
-                        style={styles.scheduleText}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {item.studentName.slice(1)} {item.subject}
-                      </Text>
-                    </View>
+                  daySchedules.map((item) => (
+                    <DayScheduleElement
+                      key={item.scheduleId}
+                      themeColor={item.themeColor}
+                      studentName={item.studentName}
+                      subject={item.subject}
+                    />
                   ))}
 
                 {/* 숙제 */}
                 {hwShow &&
-                  dayHomework.map((item, idx) => (
-                    <View
-                      key={item.homeworkId ?? idx}
-                      style={{
-                        width: 48,
-                        height: 18,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 5,
-                        paddingHorizontal: 3,
-                        flexDirection: "row",
-                        gap: 3,
-                      }}
-                    >
-                      <Image
-                        source={
-                          item.isAssigned
-                            ? calendarImage.hwDoneIcon
-                            : calendarImage.hwNotDoneIcon
-                        }
-                        style={{ width: 8, height: 8 }}
-                      />
-                      <Text style={{ fontSize: 8 }}>
-                        {item.studentName.slice(1)} 숙제
-                      </Text>
-                    </View>
+                  dayHomework.map((item) => (
+                    <DayHomeworkElement
+                      key={item.homeworkId}
+                      isAssigned={item.isAssigned}
+                      studentName={item.studentName}
+                    />
                   ))}
               </View>
             </TouchableOpacity>
@@ -297,48 +242,16 @@ export default function CalendarTab() {
   );
 }
 
-const CalendarBtn = ({ direction, onPress }) => {
-  const source =
-    direction == "left"
-      ? calendarImage.calendarLeftBtn
-      : calendarImage.calendarRightBtn;
+const DaysComponent = ({ isToday, day }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Image source={source} style={{ width: 24, height: 24 }} />
-    </TouchableOpacity>
-  );
-};
-
-const ShowSchedule = ({ classShow, setClassShow, hwShow, setHwShow }) => {
-  const classSource = classShow
-    ? calendarImage.classShowOnToggle
-    : calendarImage.classShowOffToggle;
-  const hwSource = hwShow
-    ? calendarImage.hwShowOnToggle
-    : calendarImage.hwShowOffToggle;
-
-  return (
-    <View style={{ flexDirection: "row", gap: 5 }}>
-      <Pressable onPress={setClassShow}>
-        <Image source={classSource} style={{ width: 40, height: 16 }} />
-      </Pressable>
-      <Pressable onPress={setHwShow}>
-        <Image source={hwSource} style={{ width: 40, height: 16 }} />
-      </Pressable>
-    </View>
-  );
-};
-
-const DayOfWeekComponent = () => {
-  const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
-  return (
-    <View style={styles.weekdaysRow}>
-      {WEEKDAYS.map((d) => (
-        <Text key={d} style={styles.weekdayText}>
-          {d}
+    <View style={styles.dayNumberWrapper}>
+      <View
+        style={[styles.todayCircle, isToday && { backgroundColor: "#FF3B30" }]}
+      >
+        <Text style={[styles.dayText, isToday && styles.todayDayText]}>
+          {day}
         </Text>
-      ))}
+      </View>
     </View>
   );
 };
@@ -351,6 +264,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     alignItems: "center",
   },
+
+  headerContainer: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    paddingLeft: 17,
+    paddingRight: 23,
+    marginBottom: 12,
+  },
+
   calendar: {
     width: SCREEN_WIDTH - 28,
     alignSelf: "center",
@@ -365,6 +289,7 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingBottom: 2,
   },
+
   dayNumberWrapper: {
     marginBottom: 6,
     minHeight: 17,
@@ -389,9 +314,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  scheduleText: {
-    fontSize: 8,
-  },
+
   modalBackground: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
@@ -411,27 +334,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 8,
   },
-  weekdaysRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 17,
-  },
-  weekdayText: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 12,
-    color: "#666",
-  },
   headerRow: {
     width: 102,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
-  },
-  headerArrow: {
-    fontSize: 20,
-    color: "#4F8EF7",
   },
 });
