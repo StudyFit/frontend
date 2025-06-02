@@ -1,5 +1,7 @@
 import {
+  Image,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -8,12 +10,21 @@ import {
 import { HwIcon } from "./HwIcon";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
+import { useState } from "react";
+import { calendarImage } from "@/assets/images/calendar";
 
 function CalendarModal({ visible, onClose, modalDate, schedules, homework }) {
+  const [isScheduleButtonClicked, setIsScheduleButtonClicked] = useState(false);
+
   const getModalDateLabel = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return format(date, "M월 d일 (E)", { locale: ko });
+  };
+
+  const handleModalClose = () => {
+    onClose();
+    setIsScheduleButtonClicked(false);
   };
 
   return (
@@ -21,9 +32,9 @@ function CalendarModal({ visible, onClose, modalDate, schedules, homework }) {
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={handleModalClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={handleModalClose}>
         <View style={styles.modalBackground}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
@@ -39,6 +50,36 @@ function CalendarModal({ visible, onClose, modalDate, schedules, homework }) {
                   homework.map((item) => (
                     <HomeworkItem key={item.homeworkId} item={item} />
                   ))}
+              </View>
+
+              <View style={styles.buttonContainer}>
+                {!isScheduleButtonClicked ? (
+                  <ButtonComponent
+                    text="+ 일정 등록"
+                    onPress={() => setIsScheduleButtonClicked(true)}
+                    style={styles.button}
+                  />
+                ) : (
+                  <View style={{ gap: 13, alignItems: "center" }}>
+                    <View style={[styles.button, { height: 67, gap: 13 }]}>
+                      <ButtonComponent text="+ 수업 일정" onPress={() => {}} />
+                      <ButtonComponent text="+ 기타 일정" onPress={() => {}} />
+                    </View>
+                    <Pressable
+                      onPress={() => setIsScheduleButtonClicked(false)}
+                    >
+                      <Image
+                        source={calendarImage.scheduleRegisterCancelBtn}
+                        style={{ width: 40, height: 40 }}
+                      />
+                    </Pressable>
+                  </View>
+                )}
+                <ButtonComponent
+                  text="+ 숙제 등록"
+                  onPress={() => {}}
+                  style={styles.button}
+                />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -75,12 +116,20 @@ const HomeworkItem = ({ item }) => {
   );
 };
 
+const ButtonComponent = ({ text, onPress, style }) => {
+  return (
+    <Pressable style={style} onPress={onPress}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </Pressable>
+  );
+};
+
 export { CalendarModal };
 
 const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.22)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -90,6 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     paddingTop: 27,
+    paddingBottom: 23,
     paddingHorizontal: 22,
   },
 
@@ -98,7 +148,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 27,
   },
-
   scheduleContainer: {
     paddingHorizontal: 17,
     paddingVertical: 9,
@@ -115,9 +164,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 7,
   },
-
   mainText: {
     fontSize: 12,
     fontFamily: "Pretendard-Bold",
   },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: "auto",
+    alignItems: "flex-end",
+  },
+  button: {
+    width: 105,
+    height: 40,
+    backgroundColor: "#E9E9E9",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 15,
+  },
+  buttonText: { fontSize: 12 },
 });

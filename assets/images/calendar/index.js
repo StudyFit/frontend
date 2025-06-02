@@ -9,4 +9,6 @@ export const calendarImage = {
 
   hwDoneIcon: require("./homework_done_icon.png"),
   hwNotDoneIcon: require("./homework_not_done_icon.png"),
+
+  scheduleRegisterCancelBtn: require("./schedule_register_cancel_button.png"),
 };
