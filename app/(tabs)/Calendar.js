@@ -6,18 +6,16 @@ import {
   TouchableOpacity,
   Dimensions,
   SafeAreaView,
-  Modal,
-  Image,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import {
   CalendarBtn,
+  CalendarModal,
   DayHomeworkElement,
   DayOfWeekComponent,
   DayScheduleElement,
-  HwIcon,
   ShowScheduleToggle,
 } from "@/components";
 
@@ -26,7 +24,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const schedules = [
   {
     date: "2025-06-01",
-    studentName: "정채영",
+    studentName: "김정은",
     subject: "수학",
     classStartedAt: "16:00",
     classEndedAt: "18:30",
@@ -36,7 +34,7 @@ const schedules = [
   },
   {
     date: "2025-06-01",
-    studentName: "김철수",
+    studentName: "장유빈",
     subject: "영어",
     classStartedAt: "19:00",
     classEndedAt: "22:00",
@@ -46,7 +44,7 @@ const schedules = [
   },
   {
     date: "2025-06-03",
-    studentName: "김철수",
+    studentName: "장유빈",
     subject: "영어",
     classStartedAt: "19:00",
     classEndedAt: "22:00",
@@ -54,22 +52,46 @@ const schedules = [
     themeColor: "#D3ED70",
     scheduleId: 125,
   },
+  {
+    date: "2025-06-05",
+    studentName: "정채영",
+    subject: "과학",
+    classStartedAt: "16:00",
+    classEndedAt: "18:00",
+    content: "진도 빨리 나가야 함.",
+    themeColor: "#FDB786",
+    scheduleId: 126,
+  },
 ];
 
 const homework = [
   {
     date: "2025-06-01",
-    studentName: "김철수",
+    studentName: "장유빈",
     homeworkId: 1233,
     homeworkDateGrupId: 2002,
     isAssigned: false,
   },
   {
     date: "2025-06-10",
-    studentName: "김철수",
+    studentName: "장유빈",
     homeworkId: 1234,
     homeworkDateGrupId: 2003,
     isAssigned: true,
+  },
+  {
+    date: "2025-06-05",
+    studentName: "정채영",
+    homeworkId: 1235,
+    homeworkDateGrupId: 2004,
+    isAssigned: true,
+  },
+  {
+    date: "2025-06-12",
+    studentName: "정채영",
+    homeworkId: 1235,
+    homeworkDateGrupId: 2005,
+    isAssigned: false,
   },
 ];
 
@@ -104,63 +126,19 @@ export default function CalendarTab() {
   const getItemsByDate = (arr, dateString) =>
     arr.filter((item) => item.date === dateString);
 
+  const modalSchedules = getItemsByDate(schedules, modalDate);
+  const modalHomework = getItemsByDate(homework, modalDate);
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* 모달창 */}
-      <Modal
+      {/* 모달 */}
+      <CalendarModal
         visible={modalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContent}>
-            <Text
-              style={{ fontWeight: "bold", fontSize: 16, marginBottom: 10 }}
-            >
-              {modalDate}
-            </Text>
-            {schedules.filter((s) => s.date === modalDate).length > 0 ? (
-              schedules
-                .filter((s) => s.date === modalDate)
-                .map((item, idx) => (
-                  <Text
-                    key={item.scheduleId ?? idx}
-                    style={{ fontSize: 14, marginBottom: 4 }}
-                  >
-                    • {item.studentName} {item.subject} {item.classStartedAt}~
-                    {item.classEndedAt}
-                  </Text>
-                ))
-            ) : (
-              <Text style={{ color: "#888" }}>일정이 없습니다.</Text>
-            )}
-            {homework.filter((h) => h.date === modalDate).length > 0 &&
-              homework
-                .filter((h) => h.date === modalDate)
-                .map((item, idx) => (
-                  <View
-                    key={item.homeworkId ?? idx}
-                    style={{ flexDirection: "row", alignItems: "center" }}
-                  >
-                    <HwIcon
-                      isAssigned={item.isAssigned}
-                      style={{ width: 12, height: 12 }}
-                    />
-                    <Text style={{ fontSize: 14, marginBottom: 4 }}>
-                      {item.studentName.slice(1)} 숙제
-                    </Text>
-                  </View>
-                ))}
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={{ color: "#fff" }}>닫기</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(false)}
+        modalDate={modalDate}
+        schedules={modalSchedules}
+        homework={modalHomework}
+      />
 
       {/* 헤더 */}
       <View style={styles.headerContainer}>
@@ -315,25 +293,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 24,
-    minWidth: 220,
-  },
-  closeBtn: {
-    marginTop: 16,
-    backgroundColor: "#4F8EF7",
-    borderRadius: 8,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-  },
   headerRow: {
     width: 102,
     flexDirection: "row",
