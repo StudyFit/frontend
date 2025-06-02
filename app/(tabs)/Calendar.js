@@ -16,6 +16,7 @@ import {
   DayHomeworkElement,
   DayOfWeekComponent,
   DayScheduleElement,
+  RegisterModal,
   ShowScheduleToggle,
 } from "@/components";
 
@@ -102,6 +103,7 @@ export default function CalendarTab() {
   const [hwShow, setHwShow] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
+  const [registerModalType, setRegisterModalType] = useState("");
 
   // 월 변경 함수
   const changeMonth = (diff) => {
@@ -138,6 +140,14 @@ export default function CalendarTab() {
         modalDate={modalDate}
         schedules={modalSchedules}
         homework={modalHomework}
+        setRegisterModalType={setRegisterModalType}
+      />
+
+      {/* 수업 일정 등록 모달 */}
+      <RegisterModal
+        visible={!!registerModalType}
+        registerModalType={registerModalType}
+        closeRegisterModal={() => setRegisterModalType("")}
       />
 
       {/* 헤더 */}
