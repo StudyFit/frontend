@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useState } from "react";
 import { calendarImage } from "@/assets/images/calendar";
+import { useUser } from "@/contexts/UserContext";
 
 function CalendarModal({
   visible,
@@ -21,6 +22,7 @@ function CalendarModal({
   homework,
   setRegisterModalType,
 }) {
+  const { userRole } = useUser();
   const [isScheduleButtonClicked, setIsScheduleButtonClicked] = useState(false);
 
   const getModalDateLabel = (dateString) => {
@@ -64,41 +66,43 @@ function CalendarModal({
                   ))}
               </View>
 
-              <View style={styles.buttonContainer}>
-                {!isScheduleButtonClicked ? (
-                  <ButtonComponent
-                    text="일정"
-                    style={styles.button}
-                    onPress={() => setIsScheduleButtonClicked(true)}
-                  />
-                ) : (
-                  <View style={{ gap: 13, alignItems: "center" }}>
-                    <View style={[styles.button, { height: 67, gap: 13 }]}>
-                      <ButtonComponent
-                        text="수업"
-                        onPress={() => handleScheduleButtonClick("수업")}
-                      />
-                      <ButtonComponent
-                        text="기타"
-                        onPress={() => handleScheduleButtonClick("기타")}
-                      />
+              {userRole == "선생님" && (
+                <View style={styles.buttonContainer}>
+                  {!isScheduleButtonClicked ? (
+                    <ButtonComponent
+                      text="일정"
+                      style={styles.button}
+                      onPress={() => setIsScheduleButtonClicked(true)}
+                    />
+                  ) : (
+                    <View style={{ gap: 13, alignItems: "center" }}>
+                      <View style={[styles.button, { height: 67, gap: 13 }]}>
+                        <ButtonComponent
+                          text="수업"
+                          onPress={() => handleScheduleButtonClick("수업")}
+                        />
+                        <ButtonComponent
+                          text="기타"
+                          onPress={() => handleScheduleButtonClick("기타")}
+                        />
+                      </View>
+                      <Pressable
+                        onPress={() => setIsScheduleButtonClicked(false)}
+                      >
+                        <Image
+                          source={calendarImage.scheduleRegisterCancelBtn}
+                          style={{ width: 40, height: 40 }}
+                        />
+                      </Pressable>
                     </View>
-                    <Pressable
-                      onPress={() => setIsScheduleButtonClicked(false)}
-                    >
-                      <Image
-                        source={calendarImage.scheduleRegisterCancelBtn}
-                        style={{ width: 40, height: 40 }}
-                      />
-                    </Pressable>
-                  </View>
-                )}
-                <ButtonComponent
-                  text="숙제"
-                  style={styles.button}
-                  onPress={() => handleScheduleButtonClick("숙제")}
-                />
-              </View>
+                  )}
+                  <ButtonComponent
+                    text="숙제"
+                    style={styles.button}
+                    onPress={() => handleScheduleButtonClick("숙제")}
+                  />
+                </View>
+              )}
             </View>
           </TouchableWithoutFeedback>
         </View>
