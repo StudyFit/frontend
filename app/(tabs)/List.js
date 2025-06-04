@@ -97,7 +97,7 @@ export default function List() {
                 <Text style={styles.waitingText}>수락 대기 중</Text>
                 <View style={styles.listContainer}>
                   {waitingList.map((elt) => (
-                    <ListEltForTeacher elt={elt} key={elt.id} />
+                    <ListEltForTeacher elt={elt} key={elt.id} waiting />
                   ))}
                 </View>
               </>
