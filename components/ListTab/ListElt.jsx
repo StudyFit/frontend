@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+// 학생이 보는 선생님 목록
 export const ListEltForStudent = ({ elt }) => {
   return (
     <View style={styles.listEltContainer}>
@@ -12,10 +13,11 @@ export const ListEltForStudent = ({ elt }) => {
   );
 };
 
+// 학생이 보는 선생님 수락 대기 목록
 export const ListEltForStudentAccept = ({ elt }) => {
   return (
     <View style={styles.listEltContainer}>
-      <View style={[styles.listElt, { backgroundColor: elt.color }]}>
+      <View style={[styles.listElt, { backgroundColor: "#E1E1E1" }]}>
         <Text style={styles.nameText}>{elt.name}</Text>
         <Text style={styles.roleText}>선생님</Text>
       </View>
@@ -32,10 +34,16 @@ export const ListEltForStudentAccept = ({ elt }) => {
   );
 };
 
-export const ListEltForTeacher = ({ elt }) => {
+// 선생님이 보는 학생 목록
+export const ListEltForTeacher = ({ elt, waiting }) => {
   return (
     <View style={styles.listEltContainer}>
-      <View style={[styles.listElt, { backgroundColor: elt.color }]}>
+      <View
+        style={[
+          styles.listElt,
+          { backgroundColor: !waiting ? elt.color : "#E1E1E1" },
+        ]}
+      >
         <Text style={styles.nameText}>{elt.name}</Text>
         <Text style={styles.roleText}>학생</Text>
         <Text style={{ fontSize: 16, marginRight: 15 }}>{elt.grade}</Text>
