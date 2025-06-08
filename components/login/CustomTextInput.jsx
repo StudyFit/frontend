@@ -34,6 +34,8 @@ export const CustomTextInput = ({
         onChangeText={onChangeText}
         style={[{ flex: 1, fontSize: 16 }, style]}
         secureTextEntry={secureTextEntry}
+        autoCapitalize="none"
+        autoCorrect={false}
       />
       {rightElement && <>{rightElement}</>}
     </Pressable>
