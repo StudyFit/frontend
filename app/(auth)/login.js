@@ -8,6 +8,7 @@ import { loginImage } from "@/assets";
 export default function LoginPage() {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const { login } = useUser();
   const router = useRouter();
 
@@ -43,6 +44,15 @@ export default function LoginPage() {
           placeholder="비밀번호"
           value={pw}
           onChangeText={setPw}
+          secureTextEntry={!showPw}
+          rightElement={
+            <Pressable onPress={() => setShowPw((prev) => !prev)}>
+              <Image
+                source={showPw ? loginImage.eyeOnIcon : loginImage.eyeOffIcon}
+                style={{ width: 18, height: 14, marginRight: 11 }}
+              />
+            </Pressable>
+          }
         />
       </View>
 
