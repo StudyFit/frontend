@@ -92,6 +92,7 @@ const TodaysHwBox = () => {
               <FeedbackContainer
                 hwId={hw.homeworkDateId}
                 feedback={hw.feedback}
+                role={userRole}
               />
             )}
           </View>
