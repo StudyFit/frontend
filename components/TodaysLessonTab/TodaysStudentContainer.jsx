@@ -1,13 +1,18 @@
+import { useUser } from "@/contexts/UserContext";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const TodaysStudentContainer = ({ name, subject, grade, color = "white" }) => {
+  const { userRole } = useUser();
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => console.log("학생 클릭")}>
         <Text style={styles.studentNameText}>{name}</Text>
       </Pressable>
-      <Text style={styles.studentText}>학생</Text>
-      <Text style={styles.gradeText}>{grade}</Text>
+      <Text style={styles.studentText}>
+        {userRole === "학생" ? "선생님" : "학생"}
+      </Text>
+      {grade && <Text style={styles.gradeText}>{grade}</Text>}
       <View style={[styles.subjectContainer, { backgroundColor: color }]}>
         <Text style={styles.subjectText}>{subject}</Text>
       </View>

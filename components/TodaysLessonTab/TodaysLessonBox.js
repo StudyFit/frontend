@@ -1,26 +1,21 @@
 import { StyleSheet, Text, View } from "react-native";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import NoContainer from "./NoContainer";
+import { themeColors } from "@/assets";
 
 const TodaysLessonBox = () => {
   const classList = [
     {
-      id: 1,
+      memberId: 101,
+      scheduleId: 32,
       name: "정채영",
       grade: "중3",
       subject: "수학",
-      classTime: "12:00 ~ 14:00",
-      memo: "집 주소 : 서울특별시 동대문구 이문동 123-45 678호",
-      color: "#FDED91",
-    },
-    {
-      id: 2,
-      name: "김정은",
-      grade: "고2",
-      subject: "영어",
-      classTime: "12:00 ~ 14:00",
-      memo: "진도 빨리 나가야 함.",
-      color: "#D3ED70",
+      themeColor: "blue",
+      note: null,
+      address: null,
+      startTime: "13:00",
+      endTime: "16:00",
     },
   ];
 
@@ -28,24 +23,27 @@ const TodaysLessonBox = () => {
     <View style={styles.container}>
       {classList ? (
         classList.map((student) => (
-          <View key={student.id}>
+          <View key={student.memberId}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <TodaysStudentContainer
                 name={student.name}
                 grade={student.grade}
                 subject={student.subject}
-                color={student.color}
+                color={themeColors[student.themeColor]}
               />
-              <Text>{student.classTime}</Text>
+              <Text>{student.startTime + " ~ " + student.endTime}</Text>
             </View>
-            <View>
-              <Text style={styles.studentMemo}>{student.memo}</Text>
-            </View>
+            {student.note && (
+              <View>
+                <Text style={styles.studentMemo}>{student.note}</Text>
+              </View>
+            )}
           </View>
         ))
       ) : (
