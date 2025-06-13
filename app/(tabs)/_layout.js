@@ -2,9 +2,13 @@ import { Tabs } from "expo-router";
 import { RouterName } from "@/components/RouterName";
 import { Image, StyleSheet } from "react-native";
 import { bottomTabIcon } from "@/assets/images/bottom-tab";
+import { useUser } from "@/contexts/UserContext";
 
 export default function TabsLayout() {
   const demoVersion = false; // 자진프 모드면 true
+  const { userRole } = useUser();
+  const StudentListTabTitle = userRole === "학생" ? "선생님 목록" : "학생 목록";
+
   return (
     <Tabs
       initialRouteName={RouterName.TodaysLessonTab}
@@ -33,7 +37,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name={RouterName.StudentListTab}
         options={{
-          title: "학생 목록",
+          title: StudentListTabTitle,
           tabBarIcon: ({ focused }) => (
             <Image
               source={

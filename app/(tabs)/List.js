@@ -17,43 +17,33 @@ import {
   ListEltForTeacher,
 } from "@/components/ListTab/ListElt";
 
+const data = [
+  {
+    connectionId: 1,
+    teacherId: 1,
+    teacherName: "엔젤라",
+    subject: "영어",
+    themeColor: "blue",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connectionId: 2,
+    teacherId: 2,
+    teacherName: "장유빈",
+    subject: "수학",
+    themeColor: null, // REQUESTED(아직 수락 안함) 이면 null로 뜸.
+    connectionStatus: "REQUESTED",
+  },
+];
+
 export default function List() {
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
 
-  const list = [
-    {
-      id: 1,
-      name: "정채영",
-      grade: "고1",
-      subject: "수학",
-      color: "#FDEC91",
-    },
-    {
-      id: 2,
-      name: "김정은",
-      grade: "중3",
-      subject: "과학",
-      color: "#D3ED70",
-    },
-  ];
-
-  const waitingList = [
-    {
-      id: 1,
-      name: "유빙구",
-      grade: "초2",
-      subject: "영어",
-      color: "#BBD9FB",
-    },
-    {
-      id: 2,
-      name: "밥빙구",
-      grade: "중1",
-      subject: "수학",
-      color: "#D3BDFE",
-    },
-  ];
+  const list = data.filter((elt) => elt.connectionStatus === "ACCEPTED");
+  const waitingList = data.filter(
+    (elt) => elt.connectionStatus === "REQUESTED"
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -70,13 +60,13 @@ export default function List() {
           (userRole == "학생" ? (
             <View style={[styles.listContainer, { marginTop: 29 }]}>
               {list.map((elt) => (
-                <ListEltForStudent elt={elt} key={elt.id} />
+                <ListEltForStudent elt={elt} key={elt.teacherId} />
               ))}
             </View>
           ) : (
             <View style={[styles.listContainer, { marginTop: 29 }]}>
               {list.map((elt) => (
-                <ListEltForTeacher elt={elt} key={elt.id} />
+                <ListEltForTeacher elt={elt} key={elt.studentId} />
               ))}
             </View>
           ))}
@@ -88,7 +78,7 @@ export default function List() {
                 <Text style={styles.waitingText}>수락 요청</Text>
                 <View style={styles.listContainer}>
                   {waitingList.map((elt) => (
-                    <ListEltForStudentAccept elt={elt} key={elt.id} />
+                    <ListEltForStudentAccept elt={elt} key={elt.teacherId} />
                   ))}
                 </View>
               </>
@@ -97,7 +87,7 @@ export default function List() {
                 <Text style={styles.waitingText}>수락 대기 중</Text>
                 <View style={styles.listContainer}>
                   {waitingList.map((elt) => (
-                    <ListEltForTeacher elt={elt} key={elt.id} waiting />
+                    <ListEltForTeacher elt={elt} key={elt.studentId} waiting />
                   ))}
                 </View>
               </>
