@@ -12,7 +12,7 @@ import { ScheduleTimeInput } from "./ScheduleTimeInput";
 import { HwDeadlineInput } from "./HwDeadlineInput";
 import { ContentInput } from "./ContentInput";
 
-const data = ["김정은 - 국어", "장유빈 - 영어", "정채영 - 과학"]; // api로 받아올 학생 목록을 가정
+const data = ["김정은 - 국어", "장유빈 - 영어", "정채영 - 수학"]; // api로 받아올 학생 목록을 가정
 
 function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
   const [studentList, setStudentList] = useState(data);

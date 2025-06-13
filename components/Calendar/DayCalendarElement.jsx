@@ -5,7 +5,7 @@ const DayScheduleElement = ({ themeColor, studentName, subject }) => {
   return (
     <View style={[styles.scheduleContainer, { backgroundColor: themeColor }]}>
       <Text style={styles.scheduleText} numberOfLines={1} ellipsizeMode="tail">
-        {studentName.slice(1)} {subject}
+        {studentName} {subject}
       </Text>
     </View>
   );
@@ -15,7 +15,7 @@ const DayHomeworkElement = ({ isAssigned, studentName }) => {
   return (
     <View style={[styles.scheduleContainer, { flexDirection: "row", gap: 2 }]}>
       <HwIcon isAssigned={isAssigned} style={{ width: 9, height: 9 }} />
-      <Text style={styles.scheduleText}>{studentName.slice(1)} 숙제</Text>
+      <Text style={styles.scheduleText}>{studentName} 숙제</Text>
     </View>
   );
 };
