@@ -1,5 +1,5 @@
 import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
-import { todaysLessonImages } from "../../assets";
+import { todaysLessonImages } from "@/assets";
 import { useState } from "react";
 
 const FeedbackContainer = ({ hwId, feedback }) => {
