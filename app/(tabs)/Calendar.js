@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   Dimensions,
   SafeAreaView,
+  Image,
+  FlatList,
+  ScrollView,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format } from "date-fns";
@@ -18,87 +21,191 @@ import {
   DayScheduleElement,
   RegisterModal,
   ShowScheduleToggle,
+  StudentComponent,
+  TotalComponent,
 } from "@/components";
+import { themeColors } from "@/assets";
+import MainTitle from "@/components/MainTitle";
+import { calendarImage } from "@/assets/images/calendar";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
+const list = [
+  {
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    subject: "수학",
+    connectionStatus: "REQUESTED",
+  },
+  {
+    connecitonId: 3,
+    studentId: 2,
+    studentName: "학생2",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connecitonId: 4,
+    studentId: 3,
+    studentName: "학생3",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connecitonId: 5,
+    studentId: 4,
+    studentName: "학생4",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connecitonId: 6,
+    studentId: 5,
+    studentName: "학생5",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connecitonId: 6,
+    studentId: 6,
+    studentName: "학생6",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    connecitonId: 6,
+    studentId: 7,
+    studentName: "학생7",
+    subject: "물리1",
+    connectionStatus: "ACCEPTED",
+  },
+];
+
 const schedules = [
   {
-    date: "2025-06-01",
-    studentName: "김정은",
-    subject: "수학",
-    classStartedAt: "16:00",
-    classEndedAt: "18:30",
-    content: "",
-    themeColor: "#FDED91",
-    scheduleId: 123,
-  },
-  {
-    date: "2025-06-01",
-    studentName: "장유빈",
-    subject: "영어",
-    classStartedAt: "19:00",
-    classEndedAt: "22:00",
-    content: "메모메모",
-    themeColor: "#D3ED70",
-    scheduleId: 124,
-  },
-  {
-    date: "2025-06-03",
-    studentName: "장유빈",
-    subject: "영어",
-    classStartedAt: "19:00",
-    classEndedAt: "22:00",
-    content: "메모메모",
-    themeColor: "#D3ED70",
-    scheduleId: 125,
-  },
-  {
-    date: "2025-06-05",
-    studentName: "정채영",
+    connectionId: 1,
+    calendarId: 1,
+    date: "2025-06-02",
+    name: "눈송이",
     subject: "과학",
-    classStartedAt: "16:00",
-    classEndedAt: "18:00",
-    content: "진도 빨리 나가야 함.",
-    themeColor: "#FDB786",
-    scheduleId: 126,
+    startTime: "19:00",
+    endTime: "22:00",
+    content: null,
+    themeColor: "yellow",
+  },
+  {
+    connectionId: 3,
+    calendarId: 3,
+    date: "2025-06-06",
+    name: "눈송이",
+    subject: "과학",
+    startTime: "19:00",
+    endTime: "22:00",
+    content: null,
+    themeColor: "yellow",
   },
 ];
 
 const homework = [
   {
+    connectionId: 1,
+    homeworkDateId: 1,
+    name: "눈송이",
+    info: "숙명고1",
+    subject: "과학",
     date: "2025-06-01",
-    studentName: "장유빈",
-    homeworkId: 1233,
-    homeworkDateGrupId: 2002,
-    isAssigned: false,
+    isAllCompleted: true,
+    homeworkList: [
+      {
+        homeworkId: 1,
+        content: "쎈 수학 p.45-48 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+      {
+        homeworkId: 2,
+        content: "개념원리 예제 3-4 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+    ],
   },
   {
-    date: "2025-06-10",
-    studentName: "장유빈",
-    homeworkId: 1234,
-    homeworkDateGrupId: 2003,
-    isAssigned: true,
+    connectionId: 2,
+    homeworkDateId: 2,
+    name: "눈송이",
+    info: "숙명고1",
+    subject: "과학",
+    date: "2025-06-03",
+    isAllCompleted: true,
+    homeworkList: [
+      {
+        homeworkId: 1,
+        content: "쎈 수학 p.49-52 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+      {
+        homeworkId: 2,
+        content: "개념원리 연습문제 3-5 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+    ],
   },
   {
-    date: "2025-06-05",
-    studentName: "정채영",
-    homeworkId: 1235,
-    homeworkDateGrupId: 2004,
-    isAssigned: true,
+    connectionId: 4,
+    homeworkDateId: 4,
+    name: "눈송이",
+    info: "숙명고1",
+    subject: "과학",
+    date: "2025-06-07",
+    isAllCompleted: true,
+    homeworkList: [
+      {
+        homeworkId: 1,
+        content: "쎈 수학 p.57-60 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+      {
+        homeworkId: 2,
+        content: "개념원리 연습문제 3-7 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+    ],
   },
   {
-    date: "2025-06-12",
-    studentName: "정채영",
-    homeworkId: 1235,
-    homeworkDateGrupId: 2005,
-    isAssigned: false,
+    connectionId: 5,
+    homeworkDateId: 5,
+    name: "눈송이",
+    info: "숙명고1",
+    subject: "과학",
+    date: "2025-06-08",
+    isAllCompleted: false,
+    homeworkList: [
+      {
+        homeworkId: 1,
+        content: "쎈 수학 p.61-64 풀어오기",
+        isCompleted: true,
+        isPhotoRequired: false,
+      },
+      {
+        homeworkId: 2,
+        content: "개념원리 예제 3-8 풀어오기",
+        isCompleted: false,
+        isPhotoRequired: false,
+      },
+    ],
   },
 ];
 
 export default function CalendarTab() {
   const today = new Date().toISOString().split("T")[0];
   const [currentDate, setCurrentDate] = useState(new Date(today));
+  const [currentCalendar, setCurrentCalendar] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -150,6 +257,37 @@ export default function CalendarTab() {
         closeRegisterModal={() => setRegisterModalType("")}
       />
 
+      {/* 메인 타이틀 */}
+      <View style={styles.mainTitleContainer}>
+        <MainTitle text="캘린더" />
+        <Image
+          source={calendarImage.calendarIcon}
+          style={{ width: 24, height: 24 }}
+        />
+      </View>
+
+      {/* 학생 리스트 */}
+      <View style={styles.studentList}>
+        <TotalComponent
+          on={currentCalendar == null}
+          onPress={() => setCurrentCalendar(null)}
+        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {list.map(
+            (elt) =>
+              elt.connectionStatus == "ACCEPTED" && (
+                <StudentComponent
+                  name={elt.studentName}
+                  subject={elt.subject}
+                  key={elt.studentId}
+                  on={currentCalendar == elt.studentId}
+                  onPress={() => setCurrentCalendar(elt.studentId)}
+                />
+              )
+          )}
+        </ScrollView>
+      </View>
+
       {/* 헤더 */}
       <View style={styles.headerContainer}>
         {/* 달 선택 */}
@@ -200,9 +338,9 @@ export default function CalendarTab() {
                 {classShow &&
                   daySchedules.map((item) => (
                     <DayScheduleElement
-                      key={item.scheduleId}
-                      themeColor={item.themeColor}
-                      studentName={item.studentName}
+                      key={item.calendarId}
+                      themeColor={themeColors[item.themeColor]}
+                      studentName={item.name}
                       subject={item.subject}
                     />
                   ))}
@@ -211,9 +349,9 @@ export default function CalendarTab() {
                 {hwShow &&
                   dayHomework.map((item) => (
                     <DayHomeworkElement
-                      key={item.homeworkId}
-                      isAssigned={item.isAssigned}
-                      studentName={item.studentName}
+                      key={item.homeworkDateId}
+                      isAssigned={item.isAllCompleted}
+                      studentName={item.name}
                     />
                   ))}
               </View>
@@ -248,9 +386,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 30,
-    paddingHorizontal: 14,
     alignItems: "center",
+  },
+
+  mainTitleContainer: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 13,
+    marginBottom: 10,
+    marginLeft: 41,
+  },
+
+  studentList: {
+    width: "100%",
+    height: 85,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    paddingHorizontal: 15,
   },
 
   headerContainer: {
@@ -260,6 +414,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingLeft: 17,
     paddingRight: 23,
+    marginTop: 11,
     marginBottom: 12,
   },
 
