@@ -82,12 +82,14 @@ const list = [
   },
 ];
 
+const acceptedList = list.filter((elt) => elt.connectionStatus == "ACCEPTED");
+
 const schedules = [
   {
     connectionId: 1,
     calendarId: 1,
-    date: "2025-06-02",
-    name: "눈송이",
+    date: "2025-07-02", // 6월 → 7월
+    name: "학생2",
     subject: "과학",
     startTime: "19:00",
     endTime: "22:00",
@@ -97,8 +99,8 @@ const schedules = [
   {
     connectionId: 3,
     calendarId: 3,
-    date: "2025-06-06",
-    name: "눈송이",
+    date: "2025-07-06", // 6월 → 7월
+    name: "학생3",
     subject: "과학",
     startTime: "19:00",
     endTime: "22:00",
@@ -111,10 +113,10 @@ const homework = [
   {
     connectionId: 1,
     homeworkDateId: 1,
-    name: "눈송이",
+    name: "학생2",
     info: "숙명고1",
     subject: "과학",
-    date: "2025-06-01",
+    date: "2025-07-01",
     isAllCompleted: true,
     homeworkList: [
       {
@@ -134,16 +136,16 @@ const homework = [
   {
     connectionId: 2,
     homeworkDateId: 2,
-    name: "눈송이",
+    name: "학생2",
     info: "숙명고1",
     subject: "과학",
-    date: "2025-06-03",
-    isAllCompleted: true,
+    date: "2025-07-03",
+    isAllCompleted: false,
     homeworkList: [
       {
         homeworkId: 1,
         content: "쎈 수학 p.49-52 풀어오기",
-        isCompleted: true,
+        isCompleted: false,
         isPhotoRequired: false,
       },
       {
@@ -205,14 +207,31 @@ const homework = [
 export default function CalendarTab() {
   const today = new Date().toISOString().split("T")[0];
   const [currentDate, setCurrentDate] = useState(new Date(today));
-  const [currentCalendar, setCurrentCalendar] = useState(null);
+  const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
-  // 월 변경 함수
+  // 필터 함수는 여기서 선언!
+  const getFilteredSchedules = () => {
+    if (currentTarget == null) return schedules;
+    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
+    if (!student) return [];
+    return schedules.filter((item) => item.name === student.studentName);
+  };
+
+  const getFilteredHomework = () => {
+    if (currentTarget == null) return homework;
+    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
+    if (!student) return [];
+    return homework.filter((item) => item.name === student.studentName);
+  };
+
+  const filteredSchedules = getFilteredSchedules();
+  const filteredHomework = getFilteredHomework();
+
   const changeMonth = (diff) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + diff);
@@ -235,8 +254,8 @@ export default function CalendarTab() {
   const getItemsByDate = (arr, dateString) =>
     arr.filter((item) => item.date === dateString);
 
-  const modalSchedules = getItemsByDate(schedules, modalDate);
-  const modalHomework = getItemsByDate(homework, modalDate);
+  const modalSchedules = getItemsByDate(filteredSchedules, modalDate);
+  const modalHomework = getItemsByDate(filteredHomework, modalDate);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -269,22 +288,19 @@ export default function CalendarTab() {
       {/* 학생 리스트 */}
       <View style={styles.studentList}>
         <TotalComponent
-          on={currentCalendar == null}
-          onPress={() => setCurrentCalendar(null)}
+          on={currentTarget == null}
+          onPress={() => setCurrentTarget(null)}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {list.map(
-            (elt) =>
-              elt.connectionStatus == "ACCEPTED" && (
-                <StudentComponent
-                  name={elt.studentName}
-                  subject={elt.subject}
-                  key={elt.studentId}
-                  on={currentCalendar == elt.studentId}
-                  onPress={() => setCurrentCalendar(elt.studentId)}
-                />
-              )
-          )}
+          {acceptedList.map((elt) => (
+            <StudentComponent
+              name={elt.studentName}
+              subject={elt.subject}
+              key={elt.studentId}
+              on={currentTarget == elt.studentId}
+              onPress={() => setCurrentTarget(elt.studentId)}
+            />
+          ))}
         </ScrollView>
       </View>
 
@@ -321,8 +337,11 @@ export default function CalendarTab() {
         markingType={"custom"}
         hideDayNames={true}
         dayComponent={({ date }) => {
-          const daySchedules = getItemsByDate(schedules, date.dateString);
-          const dayHomework = getItemsByDate(homework, date.dateString);
+          const daySchedules = getItemsByDate(
+            filteredSchedules,
+            date.dateString
+          );
+          const dayHomework = getItemsByDate(filteredHomework, date.dateString);
           const isToday = today === date.dateString;
           return (
             <TouchableOpacity
