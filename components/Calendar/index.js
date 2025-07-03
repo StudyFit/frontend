@@ -12,3 +12,5 @@ export * from "./StudentInput";
 export * from "./ScheduleTimeInput";
 export * from "./HwDeadlineInput";
 export * from "./ContentInput";
+
+export * from "./studentList/Component";

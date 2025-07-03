@@ -13,6 +13,7 @@ import { ko } from "date-fns/locale";
 import { useState } from "react";
 import { calendarImage } from "@/assets/images/calendar";
 import { useUser } from "@/contexts/UserContext";
+import { themeColors } from "@/assets";
 
 function CalendarModal({
   visible,
@@ -114,13 +115,16 @@ function CalendarModal({
 const ScheduleItem = ({ item }) => {
   return (
     <View
-      style={[styles.scheduleContainer, { backgroundColor: item.themeColor }]}
+      style={[
+        styles.scheduleContainer,
+        { backgroundColor: themeColors[item.themeColor] },
+      ]}
     >
       <Text style={styles.mainText}>
-        {item.studentName.slice(1)} {item.subject}
+        {item.name.slice(1)} {item.subject}
       </Text>
       <Text style={{ fontSize: 10 }}>
-        {item.classStartedAt} ~ {item.classEndedAt}
+        {item.startTime} ~ {item.endTime}
       </Text>
       {item.content && (
         <Text style={{ fontSize: 10, color: "#616161" }}>{item.content}</Text>
@@ -132,8 +136,11 @@ const ScheduleItem = ({ item }) => {
 const HomeworkItem = ({ item }) => {
   return (
     <View style={styles.homeworkContainer}>
-      <HwIcon isAssigned={item.isAssigned} style={{ width: 11, height: 11 }} />
-      <Text style={styles.mainText}>{item.studentName.slice(1)} 숙제</Text>
+      <HwIcon
+        isAssigned={item.isAllCompleted}
+        style={{ width: 11, height: 11 }}
+      />
+      <Text style={styles.mainText}>{item.name.slice(1)} 숙제</Text>
     </View>
   );
 };
