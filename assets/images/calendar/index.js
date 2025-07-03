@@ -18,4 +18,7 @@ export const calendarImage = {
   homeworkUploadOffToggle: require("./homework_upload_off.png"),
   listIcon: require("./list_icon.png"),
   dash: require("./dash.png"),
+
+  basicProfileOn: require("./studentList/basicProfileOn.png"),
+  basicProfileOff: require("./studentList/basicProfileOff.png"),
 };
