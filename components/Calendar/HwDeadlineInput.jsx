@@ -35,7 +35,7 @@ const HwDeadlineInput = ({ hwDeadline, setHwDeadline }) => {
       >
         <Text style={commonStyles.selectedText}>{hwDeadline}</Text>
         <Image
-          source={calendarImage.calendarIcon}
+          source={calendarImage.calendarInputIcon}
           style={{ width: 15, height: 17 }}
         />
       </Pressable>
