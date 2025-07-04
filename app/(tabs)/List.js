@@ -5,18 +5,18 @@ import {
   View,
   Text,
   Image,
-  Pressable,
 } from "react-native";
 import MainTitle from "@/components/MainTitle";
 import { listImage } from "@/assets/images/list";
-import NoList from "@/components/ListTab/NoList";
 import { useUser } from "@/contexts/UserContext";
+import { useEffect, useState } from "react";
 import {
+  AddStudentBtn,
   ListEltForStudent,
   ListEltForStudentAccept,
   ListEltForTeacher,
-} from "@/components/ListTab/ListElt";
-import { useEffect, useState } from "react";
+  NoList,
+} from "@/components";
 
 const teacherData = [
   {
@@ -72,11 +72,13 @@ export default function List() {
     (elt) => elt.connectionStatus === "REQUESTED"
   );
 
-  // 띄울 데이터
+  // 띄울 데이터 설정
   useEffect(() => {
     if (userRole == "학생") setData(teacherData);
     else setData(studentData);
   }, []);
+
+  const addStudent = () => {};
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -89,6 +91,7 @@ export default function List() {
           />
         </View>
 
+        {/* 학생 목록 띄우기 */}
         {list.length > 0 &&
           (userRole == "학생" ? (
             <View style={[styles.listContainer, { marginTop: 29 }]}>
@@ -104,6 +107,7 @@ export default function List() {
             </View>
           ))}
 
+        {/* 친구 대기 목록 띄우기 */}
         {waitingList.length > 0 && (
           <>
             {userRole == "학생" ? (
@@ -131,30 +135,11 @@ export default function List() {
         {list.length === 0 && waitingList.length === 0 && <NoList />}
       </ScrollView>
 
-      {userRole == "선생님" && <AddStudentBtn />}
+      {/* 친구 추가 버튼 (선생님용) */}
+      {userRole == "선생님" && <AddStudentBtn onPress={addStudent} />}
     </SafeAreaView>
   );
 }
-
-const AddStudentBtn = () => {
-  const addStudent = () => {};
-
-  return (
-    <Pressable
-      onPress={addStudent}
-      style={{
-        position: "absolute",
-        bottom: 37,
-        right: 19,
-      }}
-    >
-      <Image
-        source={listImage.addStudentBtn}
-        style={{ width: 43, height: 43 }}
-      />
-    </Pressable>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {

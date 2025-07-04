@@ -21,4 +21,4 @@ const NoList = () => {
   );
 };
 
-export default NoList;
+export { NoList };
