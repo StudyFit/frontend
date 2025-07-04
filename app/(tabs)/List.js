@@ -16,8 +16,9 @@ import {
   ListEltForStudentAccept,
   ListEltForTeacher,
 } from "@/components/ListTab/ListElt";
+import { useEffect, useState } from "react";
 
-const data = [
+const teacherData = [
   {
     connectionId: 1,
     teacherId: 1,
@@ -36,7 +37,33 @@ const data = [
   },
 ];
 
+const studentData = [
+  {
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    studentInfo: "태원고등학교2",
+    subject: "수학",
+    themeColor: "blue",
+    memo: "메모",
+    address: "집 주소",
+    connectionStatus: "REQUESTED",
+  },
+  {
+    connecitonId: 3,
+    studentId: 2,
+    studentName: "학생2",
+    studentInfo: "야탑중2",
+    subject: "물리1",
+    themeColor: "pink",
+    memo: "메모.",
+    address: "서울",
+    connectionStatus: "ACCEPTED",
+  },
+];
+
 export default function List() {
+  const [data, setData] = useState([]);
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
 
@@ -44,6 +71,12 @@ export default function List() {
   const waitingList = data.filter(
     (elt) => elt.connectionStatus === "REQUESTED"
   );
+
+  // 띄울 데이터
+  useEffect(() => {
+    if (userRole == "학생") setData(teacherData);
+    else setData(studentData);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
