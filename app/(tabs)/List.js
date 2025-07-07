@@ -5,6 +5,9 @@ import {
   View,
   Text,
   Image,
+  Modal,
+  Pressable,
+  TextInput,
 } from "react-native";
 import MainTitle from "@/components/MainTitle";
 import { listImage } from "@/assets/images/list";
@@ -67,6 +70,9 @@ export default function List() {
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [studentId, setStudentId] = useState("");
+
   const list = data.filter((elt) => elt.connectionStatus === "ACCEPTED");
   const waitingList = data.filter(
     (elt) => elt.connectionStatus === "REQUESTED"
@@ -78,10 +84,52 @@ export default function List() {
     else setData(studentData);
   }, []);
 
-  const addStudent = () => {};
+  // 모달 여닫기 함수
+  const toggleModal = () => setModalVisible(!modalVisible);
+
+  // 학생 추가하는 함수
+  const addStudent = () => {
+    // 오류1 : 이미 추가한 사용자인 경우
+    // 오류2 : 없는 사용자인 경우
+    // 성공 : 학생 추가 신청 보내기
+    toggleModal();
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      {/* 학생 추가 모달창 */}
+      {userRole == "선생님" && (
+        <Modal visible={modalVisible} transparent animationType="fade">
+          <Pressable style={styles.modalBackground} onPress={toggleModal}>
+            <Pressable
+              style={styles.modalContainer}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <Text style={{ fontSize: 16 }}>학생 ID를 입력해주세요</Text>
+              <View style={styles.idInputBox}>
+                <Image
+                  source={listImage.studentIdIcon}
+                  style={{ width: 16, height: 16 }}
+                />
+                <TextInput
+                  placeholder="학생 ID"
+                  value={studentId}
+                  onChangeText={setStudentId}
+                  style={{ fontSize: 16 }}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  maxLength={20}
+                />
+              </View>
+              <Pressable onPress={addStudent} style={styles.confirmBtn}>
+                <Text style={{ color: "white" }}>확인</Text>
+              </Pressable>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      )}
+
+      {/* List 탭 본문 */}
       <ScrollView style={styles.container}>
         <View style={styles.mainTitleContainer}>
           <MainTitle text={showRole + " 목록"} />
@@ -136,7 +184,7 @@ export default function List() {
       </ScrollView>
 
       {/* 친구 추가 버튼 (선생님용) */}
-      {userRole == "선생님" && <AddStudentBtn onPress={addStudent} />}
+      {userRole == "선생님" && <AddStudentBtn onPress={toggleModal} />}
     </SafeAreaView>
   );
 }
@@ -149,6 +197,38 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     backgroundColor: "white",
   },
+
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 24,
+    width: 280,
+  },
+  idInputBox: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 8.6,
+    alignItems: "center",
+    backgroundColor: "#F2F2F2",
+    paddingLeft: 11,
+    paddingVertical: 8,
+    marginVertical: 10,
+  },
+  confirmBtn: {
+    width: "100%",
+    height: 34,
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+  },
+
   mainTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
