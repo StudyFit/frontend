@@ -8,7 +8,7 @@ const ProfileListItem = ({
   rightElement,
 }) => {
   return (
-    <Pressable
+    <View
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -47,7 +47,7 @@ const ProfileListItem = ({
       {rightElement && (
         <View style={{ marginLeft: "auto" }}>{rightElement}</View>
       )}
-    </Pressable>
+    </View>
   );
 };
 

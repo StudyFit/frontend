@@ -10,6 +10,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
+import { useRouter } from "expo-router";
 
 const data = [
   {
@@ -95,9 +96,13 @@ const data = [
 ];
 
 export default function Chat() {
+  const router = useRouter();
   const addStudent = () => {
     // 채팅방에 학생 추가하는 로직
   };
+
+  // 채팅방 이동 함수
+  const goToChatRoom = (chatId) => router.push(`/chatroom/${chatId}`);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -111,7 +116,11 @@ export default function Chat() {
           showsVerticalScrollIndicator={false}
         >
           {data.map((elt) => (
-            <Pressable key={elt.id} style={styles.chatItemWrapper}>
+            <Pressable
+              key={elt.id}
+              style={styles.chatItemWrapper}
+              onPress={() => goToChatRoom(elt.id)}
+            >
               <ProfileListItem
                 name={elt.name}
                 content={elt.content}
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
     marginVertical: 18,
   },
   chatItemWrapper: {
-    marginBottom: 38,
+    paddingVertical: 19,
   },
   rightElement: {
     flex: 1,
