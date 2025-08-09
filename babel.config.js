@@ -7,8 +7,19 @@ module.exports = function (api) {
         "module-resolver",
         {
           alias: {
-            "@": "./", // 또는 './' 로 전체 프로젝트 루트로 잡을 수도 있음
+            "@": "./",
           },
+        },
+      ],
+      [
+        "module:react-native-dotenv",
+        {
+          moduleName: "@env",
+          path: ".env",
+          blacklist: null,
+          whitelist: null,
+          safe: false,
+          allowUndefined: true,
         },
       ],
     ],

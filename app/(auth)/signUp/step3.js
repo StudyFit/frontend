@@ -17,6 +17,7 @@ import {
 } from "@/components";
 import { loginImage } from "@/assets";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import api from "@/api";
 
 export default function Step3() {
   const [id, setId] = useState("");
@@ -30,18 +31,35 @@ export default function Step3() {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const router = useRouter();
-  const { signUpData, setSignUpData } = useSignUp();
+  const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
 
-  const goToStep4 = () => {
-    if (!id || !pw || !pwConfirm || !name || !birth) return;
-    if (pw !== pwConfirm) return;
-    router.push(RouterName.signUpStep4);
+  const goToStep4 = async () => {
+    if (saveData()) router.push(RouterName.SignUpComplete);
   };
 
-  const goToComplete = () => {
-    if (!id || !pw || !pwConfirm || !name || !birth) return;
-    if (pw !== pwConfirm) return;
-    router.push(RouterName.SignUpComplete);
+  const goToComplete = async () => {
+    if (saveData()) {
+      try {
+        const payload = getFilteredSignUpData();
+        const response = await api.post(`/api/auth/signup/teacher`, payload);
+        router.push(RouterName.signUpStep4);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const saveData = async () => {
+    if (!id || !pw || !pwConfirm || !name || !birth) return false;
+    if (pw !== pwConfirm) return false;
+    await setSignUpData((prev) => ({
+      ...prev,
+      loginId: id,
+      password: pw,
+      name: name,
+      birth: birth,
+    }));
+    return true;
   };
 
   // 날짜를 YYYY-MM-DD 형식으로 변환

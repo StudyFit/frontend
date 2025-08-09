@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <Redirect
       // 임시로 로그인 없이도 메인 페이지 들어갈 수 있게 변경
-      href={isLoggedIn ? RouterName.loginPage : RouterName.TodaysLessonTab}
+      href={!isLoggedIn ? RouterName.loginPage : RouterName.TodaysLessonTab}
     />
   );
 }
