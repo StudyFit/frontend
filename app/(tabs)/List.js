@@ -3,8 +3,8 @@ import {
   SafeAreaView,
   ScrollView,
   View,
-  Text,
   Image,
+  TextInput,
 } from "react-native";
 import MainTitle from "@/components/MainTitle";
 import { listImage } from "@/assets/images/list";
@@ -13,14 +13,14 @@ import { useEffect, useState } from "react";
 import {
   AddStudentBtn,
   AddStudentModal,
-  ListEltForStudent,
-  ListEltForStudentAccept,
-  ListEltForTeacher,
   NoList,
+  MemberList,
 } from "@/components";
+import { defaultProfileImage } from "@/assets";
 
 const teacherData = [
   {
+    profileImage: defaultProfileImage,
     connectionId: 1,
     teacherId: 1,
     teacherName: "엔젤라",
@@ -29,17 +29,19 @@ const teacherData = [
     connectionStatus: "ACCEPTED",
   },
   {
+    profileImage: defaultProfileImage,
     connectionId: 2,
     teacherId: 2,
     teacherName: "장유빈",
     subject: "수학",
-    themeColor: null, // REQUESTED(아직 수락 안함) 이면 null로 뜸.
+    themeColor: null,
     connectionStatus: "REQUESTED",
   },
 ];
 
 const studentData = [
   {
+    profileImage: defaultProfileImage,
     connecitonId: 1,
     studentId: 1,
     studentName: "학생1",
@@ -51,6 +53,43 @@ const studentData = [
     connectionStatus: "REQUESTED",
   },
   {
+    profileImage: defaultProfileImage,
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    studentInfo: "태원고등학교2",
+    subject: "수학",
+    themeColor: "blue",
+    memo: "메모",
+    address: "집 주소",
+    connectionStatus: "REQUESTED",
+  },
+  {
+    profileImage: defaultProfileImage,
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    studentInfo: "태원고등학교2",
+    subject: "수학",
+    themeColor: "blue",
+    memo: "메모",
+    address: "집 주소",
+    connectionStatus: "REQUESTED",
+  },
+  {
+    profileImage: defaultProfileImage,
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    studentInfo: "태원고등학교2",
+    subject: "수학",
+    themeColor: "blue",
+    memo: "메모",
+    address: "집 주소",
+    connectionStatus: "ACCEPTED",
+  },
+  {
+    profileImage: defaultProfileImage,
     connecitonId: 3,
     studentId: 2,
     studentName: "학생2",
@@ -67,6 +106,7 @@ export default function List() {
   const [data, setData] = useState([]);
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
+  const [searchText, setSearchText] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -98,46 +138,17 @@ export default function List() {
           />
         </View>
 
-        {/* 학생 목록 띄우기 */}
-        {list.length > 0 &&
-          (userRole == "학생" ? (
-            <View style={[styles.listContainer, { marginTop: 29 }]}>
-              {list.map((elt) => (
-                <ListEltForStudent elt={elt} key={elt.teacherId} />
-              ))}
-            </View>
-          ) : (
-            <View style={[styles.listContainer, { marginTop: 29 }]}>
-              {list.map((elt) => (
-                <ListEltForTeacher elt={elt} key={elt.studentId} />
-              ))}
-            </View>
-          ))}
+        {/* 검색창 */}
+        <SearchBar text={searchText} setText={setSearchText} />
 
-        {/* 친구 대기 목록 띄우기 */}
-        {waitingList.length > 0 && (
-          <>
-            {userRole == "학생" ? (
-              <>
-                <Text style={styles.waitingText}>수락 요청</Text>
-                <View style={styles.listContainer}>
-                  {waitingList.map((elt) => (
-                    <ListEltForStudentAccept elt={elt} key={elt.teacherId} />
-                  ))}
-                </View>
-              </>
-            ) : (
-              <>
-                <Text style={styles.waitingText}>수락 대기 중</Text>
-                <View style={styles.listContainer}>
-                  {waitingList.map((elt) => (
-                    <ListEltForTeacher elt={elt} key={elt.studentId} waiting />
-                  ))}
-                </View>
-              </>
-            )}
-          </>
-        )}
+        <View style={{ marginHorizontal: 26 }}>
+          <MemberList list={waitingList} title="수락 대기 중" waiting />
+          <MemberList
+            list={list}
+            showRole={showRole}
+            title={"나의 " + (showRole == "학생" ? "학생들" : "선생님")}
+          />
+        </View>
 
         {list.length === 0 && waitingList.length === 0 && <NoList />}
       </ScrollView>
@@ -148,12 +159,39 @@ export default function List() {
   );
 }
 
+const SearchBar = ({ text, setText }) => {
+  return (
+    <View
+      style={{
+        height: 44,
+        borderColor: "#E4E4E4",
+        borderWidth: 1,
+        borderRadius: 15,
+        alignItems: "center",
+        flexDirection: "row",
+        marginHorizontal: 12,
+        marginTop: 23,
+        paddingHorizontal: 14,
+      }}
+    >
+      <Image
+        source={listImage.searchIcon}
+        style={{ width: 16.8, height: 16.8, marginRight: 13 }}
+      />
+      <TextInput
+        placeholder="Search . . ."
+        style={{ fontFamily: "Pretendard-Medium", fontSize: 14 }}
+        value={text}
+        onChangeText={setText}
+        maxLength={20}
+      />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 13,
-    paddingHorizontal: 27,
-    paddingBottom: 32,
     backgroundColor: "white",
   },
 
@@ -161,16 +199,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    paddingTop: 13,
+    paddingHorizontal: 27,
     marginLeft: 7,
-  },
-  listContainer: {
-    gap: 7,
-  },
-
-  waitingText: {
-    marginTop: 22,
-    marginBottom: 7,
-    fontSize: 20,
-    fontFamily: "Pretendard-Bold",
   },
 });

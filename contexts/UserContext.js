@@ -7,7 +7,7 @@ const teacher = "선생님";
 
 export const UserProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(teacher); // "학생" 또는 "선생님"
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부
 
   // 로그인 처리 함수
   const login = (role = teacher) => {
