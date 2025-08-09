@@ -51,6 +51,7 @@ export default function Step2() {
   const goToStep3 = () => {
     // if (timeLeft <= 0) return; // 졸프 버전
     if (!phoneNum) return; // 자진프 버전
+    setSignUpData((prev) => ({ ...prev, phoneNumber: phoneNum }));
     router.push(RouterName.signUpStep3);
   };
 
