@@ -405,7 +405,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
   },
 
   mainTitleContainer: {
@@ -415,7 +414,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 13,
     marginBottom: 10,
-    marginLeft: 41,
+    marginLeft: 34,
   },
 
   studentList: {
