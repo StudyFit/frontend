@@ -1,5 +1,5 @@
-const { listImage } = require("@/assets");
-const { Pressable, Image } = require("react-native");
+import { listImage } from "@/assets";
+import { Image, Pressable } from "react-native";
 
 const AddStudentBtn = ({ onPress }) => {
   return (
