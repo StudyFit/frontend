@@ -5,19 +5,21 @@ import {
   View,
   Text,
   Image,
-  Pressable,
 } from "react-native";
 import MainTitle from "@/components/MainTitle";
 import { listImage } from "@/assets/images/list";
-import NoList from "@/components/ListTab/NoList";
 import { useUser } from "@/contexts/UserContext";
+import { useEffect, useState } from "react";
 import {
+  AddStudentBtn,
+  AddStudentModal,
   ListEltForStudent,
   ListEltForStudentAccept,
   ListEltForTeacher,
-} from "@/components/ListTab/ListElt";
+  NoList,
+} from "@/components";
 
-const data = [
+const teacherData = [
   {
     connectionId: 1,
     teacherId: 1,
@@ -36,17 +38,57 @@ const data = [
   },
 ];
 
+const studentData = [
+  {
+    connecitonId: 1,
+    studentId: 1,
+    studentName: "학생1",
+    studentInfo: "태원고등학교2",
+    subject: "수학",
+    themeColor: "blue",
+    memo: "메모",
+    address: "집 주소",
+    connectionStatus: "REQUESTED",
+  },
+  {
+    connecitonId: 3,
+    studentId: 2,
+    studentName: "학생2",
+    studentInfo: "야탑중2",
+    subject: "물리1",
+    themeColor: "pink",
+    memo: "메모.",
+    address: "서울",
+    connectionStatus: "ACCEPTED",
+  },
+];
+
 export default function List() {
+  const [data, setData] = useState([]);
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   const list = data.filter((elt) => elt.connectionStatus === "ACCEPTED");
   const waitingList = data.filter(
     (elt) => elt.connectionStatus === "REQUESTED"
   );
 
+  // 띄울 데이터 설정
+  useEffect(() => {
+    if (userRole == "학생") setData(teacherData);
+    else setData(studentData);
+  }, []);
+
+  // 모달 여닫기 함수
+  const toggleModal = () => setModalVisible(!modalVisible);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      {modalVisible && <AddStudentModal toggleModal={toggleModal} />}
+
+      {/* List 탭 본문 */}
       <ScrollView style={styles.container}>
         <View style={styles.mainTitleContainer}>
           <MainTitle text={showRole + " 목록"} />
@@ -56,6 +98,7 @@ export default function List() {
           />
         </View>
 
+        {/* 학생 목록 띄우기 */}
         {list.length > 0 &&
           (userRole == "학생" ? (
             <View style={[styles.listContainer, { marginTop: 29 }]}>
@@ -71,6 +114,7 @@ export default function List() {
             </View>
           ))}
 
+        {/* 친구 대기 목록 띄우기 */}
         {waitingList.length > 0 && (
           <>
             {userRole == "학생" ? (
@@ -98,30 +142,11 @@ export default function List() {
         {list.length === 0 && waitingList.length === 0 && <NoList />}
       </ScrollView>
 
-      {userRole == "선생님" && <AddStudentBtn />}
+      {/* 친구 추가 버튼 (선생님용) */}
+      {userRole == "선생님" && <AddStudentBtn onPress={toggleModal} />}
     </SafeAreaView>
   );
 }
-
-const AddStudentBtn = () => {
-  const addStudent = () => {};
-
-  return (
-    <Pressable
-      onPress={addStudent}
-      style={{
-        position: "absolute",
-        bottom: 37,
-        right: 19,
-      }}
-    >
-      <Image
-        source={listImage.addStudentBtn}
-        style={{ width: 43, height: 43 }}
-      />
-    </Pressable>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -131,6 +156,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     backgroundColor: "white",
   },
+
   mainTitleContainer: {
     flexDirection: "row",
     alignItems: "center",

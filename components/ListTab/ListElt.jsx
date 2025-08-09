@@ -2,7 +2,7 @@ import { themeColors } from "@/assets";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 // 학생이 보는 선생님 목록
-export const ListEltForStudent = ({ elt }) => {
+const ListEltForStudent = ({ elt }) => {
   return (
     <View style={styles.listEltContainer}>
       <View
@@ -20,7 +20,7 @@ export const ListEltForStudent = ({ elt }) => {
 };
 
 // 학생이 보는 선생님 수락 대기 목록
-export const ListEltForStudentAccept = ({ elt }) => {
+const ListEltForStudentAccept = ({ elt }) => {
   return (
     <View style={styles.listEltContainer}>
       <View style={[styles.listElt, { backgroundColor: "#E1E1E1" }]}>
@@ -41,7 +41,7 @@ export const ListEltForStudentAccept = ({ elt }) => {
 };
 
 // 선생님이 보는 학생 목록
-export const ListEltForTeacher = ({ elt, waiting }) => {
+const ListEltForTeacher = ({ elt, waiting }) => {
   const backgroundColor = !waiting ? themeColors[elt.themeColor] : "#E1E1E1";
   return (
     <View style={styles.listEltContainer}>
@@ -54,6 +54,8 @@ export const ListEltForTeacher = ({ elt, waiting }) => {
     </View>
   );
 };
+
+export { ListEltForStudent, ListEltForStudentAccept, ListEltForTeacher };
 
 const styles = StyleSheet.create({
   listEltContainer: { flexDirection: "row", gap: 4 },
