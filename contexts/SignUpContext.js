@@ -17,7 +17,14 @@ export const SignUpProvider = ({ children }) => {
   const getFilteredSignUpData = () => {
     const { role, phoneNumber, loginId, password, name, birth, school, grade } =
       signUpData;
-    const splitedBirth = birth.split("T")[0];
+    let splitedBirth = "";
+    if (birth) {
+      if (typeof birth === "string") {
+        splitedBirth = birth.split("T")[0];
+      } else if (birth instanceof Date) {
+        splitedBirth = birth.toISOString().split("T")[0];
+      }
+    }
     const base = { phoneNumber, loginId, password, name, birth: splitedBirth };
 
     if (role === "student") {
