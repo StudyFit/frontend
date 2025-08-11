@@ -34,15 +34,15 @@ export default function Step3() {
   const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
 
   const goToStep4 = async () => {
-    if (saveData()) router.push(RouterName.SignUpComplete);
+    if (await saveData()) router.push(RouterName.signUpStep4);
   };
 
   const goToComplete = async () => {
-    if (saveData()) {
+    if (await saveData()) {
       try {
         const payload = getFilteredSignUpData();
-        const response = await api.post(`/api/auth/signup/teacher`, payload);
-        router.push(RouterName.signUpStep4);
+        await api.post(`/api/auth/signup/teacher`, payload);
+        router.push(RouterName.SignUpComplete);
       } catch (e) {
         console.error(e);
       }
@@ -93,7 +93,7 @@ export default function Step3() {
           secureTextEntry={!showPw}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPw}
+              show={!!showPw}
               onPress={() => setShowPw(!showPw)}
             />
           }
@@ -106,7 +106,7 @@ export default function Step3() {
           secureTextEntry={!showPwConfirm}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPwConfirm}
+              show={!!showPwConfirm}
               onPress={() => setShowPwConfirm(!showPwConfirm)}
             />
           }
