@@ -1,3 +1,4 @@
+import api from "@/api";
 import { createContext, useState, useContext } from "react";
 
 const UserContext = createContext();
@@ -10,9 +11,23 @@ export const UserProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
 
   // 로그인 처리 함수
-  const login = (role = teacher) => {
-    setUserRole(role);
-    setIsLoggedIn(true);
+  const login = async (id, pw) => {
+    try {
+      const response = await api.post(`/api/auth/login`, {
+        loginId: id,
+        password: pw,
+      });
+      console.log(JSON.stringify(response.data, null, 2));
+      const accessToken = response.data.accessToken;
+      const refreshToken = response.data.refreshToken; // 토큰 저장 로직 필요!
+      const role = response.data.role == "STUDENT" ? student : teacher;
+      setUserRole(role);
+      setIsLoggedIn(true);
+      return true;
+    } catch (e) {
+      console.error(e.code);
+      return false;
+    }
   };
 
   // 로그아웃 처리 함수
