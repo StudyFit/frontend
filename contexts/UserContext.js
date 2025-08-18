@@ -8,7 +8,8 @@ const student = "학생";
 const teacher = "선생님";
 
 export const UserProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState(teacher); // "학생" 또는 "선생님"
+  const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null); // "학생" 또는 "선생님"
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
 
   // 앱 시작 시 저장된 토큰 확인
@@ -17,6 +18,7 @@ export const UserProvider = ({ children }) => {
       const { accessToken, role } = await getAuthData();
       if (accessToken) setIsLoggedIn(true);
       if (role) setUserRole(role);
+      setLoading(false);
     };
     loadToken();
   }, []);
@@ -30,10 +32,11 @@ export const UserProvider = ({ children }) => {
       });
 
       // 로그인 정보 저장
-      const accessToken = response.data.accessToken;
-      const refreshToken = response.data.refreshToken;
-      const role = response.data.role == "STUDENT" ? student : teacher;
-      saveAuthData(accessToken, refreshToken, role);
+      const accessToken = response.data.data.accessToken;
+      const refreshToken = response.data.data.refreshToken;
+      const role = response.data.data.role == "STUDENT" ? student : teacher;
+
+      await saveAuthData(accessToken, refreshToken, role);
       setUserRole(role);
       setIsLoggedIn(true);
       return true;
@@ -55,6 +58,7 @@ export const UserProvider = ({ children }) => {
       value={{
         userRole,
         setUserRole,
+        loading,
         isLoggedIn,
         login,
         logout,
