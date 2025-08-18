@@ -1,5 +1,6 @@
-import api from "@/api";
-import { createContext, useState, useContext } from "react";
+import { apiPublic } from "@/api";
+import { createContext, useState, useContext, useEffect } from "react";
+import { getAuthData, removeAuthData, saveAuthData } from "./AuthSecureStore";
 
 const UserContext = createContext();
 
@@ -10,17 +11,29 @@ export const UserProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(teacher); // "학생" 또는 "선생님"
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
 
+  // 앱 시작 시 저장된 토큰 확인
+  useEffect(() => {
+    const loadToken = async () => {
+      const { accessToken, role } = await getAuthData();
+      if (accessToken) setIsLoggedIn(true);
+      if (role) setUserRole(role);
+    };
+    loadToken();
+  }, []);
+
   // 로그인 처리 함수
   const login = async (id, pw) => {
     try {
-      const response = await api.post(`/api/auth/login`, {
+      const response = await apiPublic.post(`/api/auth/login`, {
         loginId: id,
         password: pw,
       });
-      console.log(JSON.stringify(response.data, null, 2));
+
+      // 로그인 정보 저장
       const accessToken = response.data.accessToken;
-      const refreshToken = response.data.refreshToken; // 토큰 저장 로직 필요!
+      const refreshToken = response.data.refreshToken;
       const role = response.data.role == "STUDENT" ? student : teacher;
+      saveAuthData(accessToken, refreshToken, role);
       setUserRole(role);
       setIsLoggedIn(true);
       return true;
@@ -34,6 +47,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     setUserRole(null);
     setIsLoggedIn(false);
+    removeAuthData();
   };
 
   return (

@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { useState } from "react";
 import { loginImage } from "@/assets";
-import api from "@/api";
+import { apiPublic } from "@/api";
 
 export default function Step4() {
   const [school, setSchool] = useState("");
@@ -23,7 +23,7 @@ export default function Step4() {
         const payload = getFilteredSignUpData();
         console.log(payload);
 
-        await api.post(`/api/auth/signup/student`, payload);
+        await apiPublic.post(`/api/auth/signup/student`, payload);
         router.push(RouterName.SignUpComplete);
       } catch (e) {
         console.error(e);

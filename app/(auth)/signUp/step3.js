@@ -17,7 +17,7 @@ import {
 } from "@/components";
 import { loginImage } from "@/assets";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import api from "@/api";
+import { apiPublic } from "@/api";
 
 export default function Step3() {
   const [id, setId] = useState("");
@@ -41,7 +41,7 @@ export default function Step3() {
     if (await saveData()) {
       try {
         const payload = getFilteredSignUpData();
-        await api.post(`/api/auth/signup/teacher`, payload);
+        await apiPublic.post(`/api/auth/signup/teacher`, payload);
         router.push(RouterName.SignUpComplete);
       } catch (e) {
         console.error(e);
