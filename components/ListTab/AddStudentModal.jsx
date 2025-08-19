@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-const AddStudentModal = ({ toggleModal }) => {
+const AddStudentModal = ({ toggleModal, setAddMode }) => {
   const [type, setType] = useState("search"); // "search" or "add"
   const [studentId, setStudentId] = useState("");
   const [error, setError] = useState(null);
@@ -31,6 +31,7 @@ const AddStudentModal = ({ toggleModal }) => {
   // 학생 추가하는 함수
   const addStudent = () => {
     toggleModal();
+    setAddMode(true);
   };
 
   return (
