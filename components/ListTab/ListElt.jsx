@@ -1,6 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { HorizontalLine } from ".";
 import { listImage } from "@/assets";
+import { HorizontalLine } from "./HorizontalLine";
 
 const MemberList = ({ list, title, waiting }) => {
   return (
