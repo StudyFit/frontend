@@ -55,7 +55,7 @@ const AddStudentModal = ({ toggleModal }) => {
                 placeholder="학생 ID"
                 value={studentId}
                 onChangeText={setStudentId}
-                style={{ fontSize: 16 }}
+                style={{ height: 20, fontSize: 16 }}
                 autoCapitalize="none"
                 autoCorrect={false}
                 maxLength={20}
