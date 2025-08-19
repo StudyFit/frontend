@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-const AddStudentModal = ({ toggleModal, setAddMode }) => {
+const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
   const [type, setType] = useState("search"); // "search" or "add"
   const [studentId, setStudentId] = useState("");
   const [error, setError] = useState(null);
@@ -25,6 +25,7 @@ const AddStudentModal = ({ toggleModal, setAddMode }) => {
     // 오류2 : 없는 사용자인 경우
     //   setError("없는 아이디입니다!");
     // 성공 : 추가할 학생 정보 띄우기
+    setStudentInfo({ studentId: studentId, name: "김정은", grade: "중3" });
     setType("add");
   };
 

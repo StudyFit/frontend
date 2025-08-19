@@ -94,7 +94,7 @@ const studentData = [
   },
 ];
 
-export default function ListScreen({ setAddMode }) {
+export default function ListScreen({ setAddMode, setStudentInfo }) {
   const [data, setData] = useState([]);
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
@@ -120,7 +120,11 @@ export default function ListScreen({ setAddMode }) {
     <>
       <ScrollView style={styles.container}>
         {modalVisible && (
-          <AddStudentModal toggleModal={toggleModal} setAddMode={setAddMode} />
+          <AddStudentModal
+            toggleModal={toggleModal}
+            setAddMode={setAddMode}
+            setStudentInfo={setStudentInfo}
+          />
         )}
 
         {/* 검색창 */}

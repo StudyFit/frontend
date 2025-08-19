@@ -8,6 +8,7 @@ import { useUser } from "@/contexts/UserContext";
 
 export default function List() {
   const [addMode, setAddMode] = useState(false);
+  const [studentInfo, setStudentInfo] = useState({ name: "", grade: "" });
   const { userRole } = useUser();
   const titleText = addMode
     ? "학생 추가"
@@ -23,9 +24,9 @@ export default function List() {
       </View>
 
       {addMode ? (
-        <RegisterScreen setAddMode={setAddMode} />
+        <RegisterScreen setAddMode={setAddMode} studentInfo={studentInfo} />
       ) : (
-        <ListScreen setAddMode={setAddMode} />
+        <ListScreen setAddMode={setAddMode} setStudentInfo={setStudentInfo} />
       )}
     </SafeAreaView>
   );
