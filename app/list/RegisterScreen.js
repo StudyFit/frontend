@@ -1,14 +1,8 @@
-import { registerIcon, themeColorName, themeColors } from "@/assets";
-import { BottomBtn } from "@/components";
+import { themeColorName } from "@/assets";
+import { BottomBtn, ColorModal } from "@/components";
+import { TextInputBox } from "@/components/ListTab/register/TextInputBox";
 import { useState } from "react";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [subject, setSubject] = useState("");
@@ -16,7 +10,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [schedule, setSchedule] = useState("");
   const [address, setAddress] = useState("");
   const [memo, setMemo] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState("");
   const [error, setError] = useState("");
 
   const handleRequest = async () => {
@@ -39,93 +33,93 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
     }
   };
 
+  const closeModal = () => setModalVisible("");
+
   return (
-    <View style={styles.container}>
-      <View style={styles.studentNameBox}>
-        <Text style={{ fontSize: 20, fontFamily: "Pretendard-Bold" }}>
-          {studentInfo?.name}
-        </Text>
-        <Text style={{ fontSize: 16 }}>{studentInfo?.grade}</Text>
-      </View>
-
-      <View style={{ gap: 6 }}>
-        <Text style={styles.questionText}>필수 정보를 입력해주세요</Text>
-        <TextInputBox
-          placeholder="과목"
-          value={subject}
-          onChangeText={setSubject}
-        />
-        <TextInputBox
-          placeholder="색상"
-          value={color}
-          onChangeText={setColor}
-          editable={false}
-          onPress={() => setModalVisible("색상")}
-        />
-      </View>
-
-      <View style={{ gap: 6 }}>
-        <Text style={styles.questionText}>추가 정보를 입력해주세요 (선택)</Text>
-        <TextInputBox
-          placeholder="수업 일정"
-          value={schedule}
-          onChangeText={setSchedule}
-          editable={false}
-          onPress={() => setModalVisible("일정")}
-        />
-        <TextInputBox
-          placeholder="주소"
-          value={address}
-          onChangeText={setAddress}
-        />
-        <TextInputBox
-          placeholder="메모"
-          value={subject}
-          onChangeText={setSubject}
-        />
-      </View>
-
-      <Text style={styles.errorText}>{error}</Text>
-      <BottomBtn
-        text="요청하기"
-        style={{ width: "100%", marginTop: -10 }}
-        onPress={handleRequest}
+    <>
+      <ColorModal
+        visible={modalVisible === "색상"}
+        onRequestClose={closeModal}
+        selectedColor={color}
+        setColor={setColor}
       />
-    </View>
+
+      <View style={styles.container}>
+        <View
+          style={[styles.studentNameBox, color && { backgroundColor: color }]}
+        >
+          <Text style={{ fontSize: 20, fontFamily: "Pretendard-Bold" }}>
+            {studentInfo?.name}
+          </Text>
+          <Text style={{ fontSize: 16 }}>{studentInfo?.grade}</Text>
+        </View>
+
+        <View style={{ gap: 6 }}>
+          <Text style={styles.questionText}>필수 정보를 입력해주세요</Text>
+          <TextInputBox
+            placeholder="과목"
+            value={subject}
+            onChangeText={setSubject}
+          />
+          <TextInputBox
+            placeholder="색상"
+            value={color && "캘린더 색상"}
+            onChangeText={setColor}
+            editable={false}
+            onPress={() => setModalVisible("색상")}
+            rightElement={
+              color && (
+                <View
+                  style={[
+                    { width: 31, height: 31, borderRadius: "100%" },
+                    { backgroundColor: color },
+                  ]}
+                ></View>
+              )
+            }
+          />
+        </View>
+
+        <View style={{ gap: 6 }}>
+          <Text style={styles.questionText}>
+            추가 정보를 입력해주세요 (선택)
+          </Text>
+          <TextInputBox
+            placeholder="수업 일정"
+            value={schedule}
+            onChangeText={setSchedule}
+            editable={false}
+            onPress={() => setModalVisible("일정")}
+          />
+          <TextInputBox
+            placeholder="주소"
+            value={address}
+            onChangeText={setAddress}
+          />
+          <TextInputBox
+            placeholder="메모"
+            value={memo}
+            onChangeText={setMemo}
+          />
+        </View>
+
+        <Text style={styles.errorText}>{error}</Text>
+        <BottomBtn
+          text="요청하기"
+          style={{ width: "100%", marginTop: -10 }}
+          onPress={handleRequest}
+        />
+      </View>
+    </>
   );
 };
 
 export default RegisterScreen;
 
-const TextInputBox = ({
-  placeholder,
-  value,
-  onChangeText,
-  onPress,
-  editable = true,
-}) => {
-  return (
-    <Pressable style={styles.textInputBox} onPress={onPress}>
-      <Image source={registerIcon[placeholder]} style={styles.textInputIcon} />
-      <TextInput
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        style={styles.textInputStyle}
-        placeholderTextColor="#676767"
-        editable={editable}
-      />
-    </Pressable>
-  );
-};
-
 const styles = StyleSheet.create({
   container: { flex: 1, marginHorizontal: 28, marginTop: 20, gap: 23 },
 
-  questionText: {
-    fontSize: 16,
-    // fontFamily: "Pretendard-Medium",
-  },
+  questionText: { fontSize: 16 },
 
   studentNameBox: {
     height: 50,
@@ -135,21 +129,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "space-between",
     alignItems: "center",
-  },
-
-  textInputBox: {
-    height: 40,
-    flexDirection: "row",
-    gap: 5,
-    alignItems: "center",
-    paddingLeft: 8,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 8,
-  },
-  textInputIcon: { width: 24, height: 24 },
-  textInputStyle: {
-    fontFamily: "Pretendard-Medium",
-    fontSize: 15,
   },
 
   errorText: {

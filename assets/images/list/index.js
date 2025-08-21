@@ -13,4 +13,5 @@ export const registerIcon = {
   메모: require("./register/memo_icon.png"),
   "수업 일정": require("./register/schedule_icon.png"),
   과목: require("./register/subject_icon.png"),
+  checkIcon: require("./register/check_icon.png"),
 };
