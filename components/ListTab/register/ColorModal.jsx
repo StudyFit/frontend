@@ -3,14 +3,9 @@ import { BottomBtn } from "@/components/login";
 import React from "react";
 import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
-const ColorModal = ({ visible, onRequestClose, selectedColor, setColor }) => {
+const ColorModal = ({ onRequestClose, selectedColor, setColor }) => {
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onRequestClose}
-    >
+    <Modal transparent animationType="slide" onRequestClose={onRequestClose}>
       <Pressable style={styles.overlay} onPress={onRequestClose}>
         <View style={styles.modalBox}>
           {/* Header */}

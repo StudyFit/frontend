@@ -1,6 +1,10 @@
 import { themeColorName } from "@/assets";
-import { BottomBtn, ColorModal } from "@/components";
-import { TextInputBox } from "@/components/ListTab/register/TextInputBox";
+import {
+  BottomBtn,
+  ColorModal,
+  ScheduleModal,
+  TextInputBox,
+} from "@/components";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -37,12 +41,21 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
 
   return (
     <>
-      <ColorModal
-        visible={modalVisible === "색상"}
-        onRequestClose={closeModal}
-        selectedColor={color}
-        setColor={setColor}
-      />
+      {modalVisible === "색상" && (
+        <ColorModal
+          onRequestClose={closeModal}
+          selectedColor={color}
+          setColor={setColor}
+        />
+      )}
+
+      {modalVisible === "일정" && (
+        <ScheduleModal
+          onRequestClose={closeModal}
+          schedule={schedule}
+          setSchedule={setSchedule}
+        />
+      )}
 
       <View style={styles.container}>
         <View
