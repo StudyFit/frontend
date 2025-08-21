@@ -1,2 +1,2 @@
-export * from "./RegisterModal";
+export * from "./ColorModal";
 export * from "./TextInputBox";
