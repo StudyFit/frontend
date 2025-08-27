@@ -1,6 +1,8 @@
-import { apiPublic } from "@/api";
+import { api, apiPublic } from "@/api";
 import { createContext, useState, useContext, useEffect } from "react";
 import { getAuthData, removeAuthData, saveAuthData } from "./AuthSecureStore";
+import { useRouter } from "expo-router";
+import { RouterName } from "@/components";
 
 const UserContext = createContext();
 
@@ -11,6 +13,7 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null); // "학생" 또는 "선생님"
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
+  const router = useRouter();
 
   // 앱 시작 시 저장된 토큰 확인
   useEffect(() => {
@@ -47,10 +50,16 @@ export const UserProvider = ({ children }) => {
   };
 
   // 로그아웃 처리 함수
-  const logout = () => {
-    setUserRole(null);
-    setIsLoggedIn(false);
-    removeAuthData();
+  const logout = async () => {
+    try {
+      await api.post(`/api/auth/logout`);
+      await removeAuthData();
+      setUserRole(null);
+      setIsLoggedIn(false);
+      router.navigate(RouterName.loginPage);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

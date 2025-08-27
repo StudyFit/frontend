@@ -2,6 +2,7 @@ import api from "@/api";
 import { myPageImage } from "@/assets/images/my-page";
 import { CustomSwitch } from "@/components";
 import MainTitle from "@/components/MainTitle";
+import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -18,6 +19,7 @@ export default function MyPage() {
   const [darkMode, setDarkMode] = useState(false);
   const [isDoNotDisturb, setIsDoNotDisturb] = useState(false);
   const [startDay, setStartDay] = useState("일");
+  const { logout } = useUser();
 
   const toggleStartDate = () => {
     const newStartDay = startDay == "일" ? "월" : "일";
@@ -112,6 +114,10 @@ export default function MyPage() {
           }
         />
       </View>
+
+      <Pressable onPress={logout}>
+        <Text>로그아웃</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
