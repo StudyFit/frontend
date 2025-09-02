@@ -1,7 +1,6 @@
 import api from "@/api";
 import * as ImagePicker from "expo-image-picker";
-import { defaultProfileImage } from "@/assets";
-import { myPageImage } from "@/assets/images/my-page";
+import { defaultProfileImage, myPageImage } from "@/assets";
 import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
 import { useState } from "react";

@@ -1,4 +1,4 @@
-import { myPageImage } from "@/assets/images/my-page";
+import { myPageImage } from "@/assets";
 import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import {
