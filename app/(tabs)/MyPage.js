@@ -1,4 +1,5 @@
 import api from "@/api";
+import * as ImagePicker from "expo-image-picker";
 import { defaultProfileImage } from "@/assets";
 import { myPageImage } from "@/assets/images/my-page";
 import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
@@ -12,14 +13,42 @@ import {
   Image,
   Pressable,
   ScrollView,
-  Modal,
 } from "react-native";
 
 export default function MyPage() {
   const [name, setName] = useState("");
+  const [profileImage, setProfileImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const profileSource = profileImage
+    ? { uri: profileImage }
+    : defaultProfileImage;
 
-  const editProfileImage = () => {};
+  const editProfileImage = async () => {
+    try {
+      // 권한 요청
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        alert("사진 접근 권한이 필요합니다.");
+        return;
+      }
+
+      // 갤러리 열기
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true, // 편집 가능(자르기 등)
+        aspect: [1, 1], // 정사각형 비율
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setProfileImage(result.assets[0].uri); // 선택한 이미지 URI 저장
+        // api로 변경된 프사 저장하는 로직 추가
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const toggleModal = () => setModalVisible((prev) => !prev);
 
@@ -36,7 +65,7 @@ export default function MyPage() {
         {/* 프로필 */}
         <View style={styles.centered}>
           <View style={styles.profileBox}>
-            <Image source={defaultProfileImage} style={styles.profileImage} />
+            <Image source={profileSource} style={styles.profileImage} />
             <Pressable onPress={editProfileImage}>
               <Image source={myPageImage.editImageBtn} style={styles.editBtn} />
             </Pressable>
@@ -87,6 +116,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 106,
     height: 106,
+    borderRadius: "100%",
   },
   editBtn: {
     width: 27,
