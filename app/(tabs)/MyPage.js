@@ -1,7 +1,7 @@
 import api from "@/api";
 import { defaultProfileImage } from "@/assets";
 import { myPageImage } from "@/assets/images/my-page";
-import { LogoutBtn, UserInfo } from "@/components";
+import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
 import { useState } from "react";
 import {
@@ -12,15 +12,20 @@ import {
   Image,
   Pressable,
   ScrollView,
+  Modal,
 } from "react-native";
 
 export default function MyPage() {
   const [name, setName] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const editProfileImage = () => {};
 
+  const toggleModal = () => setModalVisible((prev) => !prev);
+
   return (
     <SafeAreaView style={styles.container}>
+      {modalVisible && <ChangePwModal toggleModal={toggleModal} />}
       <ScrollView>
         {/* 상단 타이틀 */}
         <View style={styles.mainTitleContainer}>
@@ -42,7 +47,7 @@ export default function MyPage() {
           {/* 카드 리스트 */}
           <View style={styles.cardList}>
             {/* 개인정보 */}
-            <UserInfo setName={setName} />
+            <UserInfo setName={setName} setModalVisible={setModalVisible} />
 
             {/* 이번 달 통계 */}
             <View style={styles.card}>

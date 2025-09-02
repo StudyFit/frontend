@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-const UserInfo = ({ setName }) => {
+const UserInfo = ({ setName, setModalVisible }) => {
   const { userRole } = useUser();
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -57,7 +57,9 @@ const UserInfo = ({ setName }) => {
     setEditMode(false);
   };
 
-  const editPw = () => {};
+  const editPw = () => {
+    setModalVisible(true);
+  };
 
   return (
     <View style={styles.card}>
