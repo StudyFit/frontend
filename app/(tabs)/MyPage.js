@@ -1,8 +1,10 @@
 import api from "@/api";
+import * as ImagePicker from "expo-image-picker";
+import { defaultProfileImage } from "@/assets";
 import { myPageImage } from "@/assets/images/my-page";
-import { CustomSwitch } from "@/components";
+import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -10,148 +12,90 @@ import {
   SafeAreaView,
   Image,
   Pressable,
-  Alert,
+  ScrollView,
 } from "react-native";
 
 export default function MyPage() {
-  const [userInfo, setUserInfo] = useState({});
-  const [darkMode, setDarkMode] = useState(false);
-  const [isDoNotDisturb, setIsDoNotDisturb] = useState(false);
-  const [startDay, setStartDay] = useState("일");
+  const [name, setName] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const profileSource = profileImage
+    ? { uri: profileImage }
+    : defaultProfileImage;
 
-  const toggleStartDate = () => {
-    const newStartDay = startDay == "일" ? "월" : "일";
-    Alert.alert(
-      "달력 시작 요일",
-      `달력 시작 요일을 ${newStartDay}요일로 바꾸시겠습니까?`,
-      [
-        { text: "예", onPress: () => setStartDay(newStartDay) },
-        { text: "아니오", style: () => {} },
-      ]
-    );
+  const editProfileImage = async () => {
+    try {
+      // 권한 요청
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        alert("사진 접근 권한이 필요합니다.");
+        return;
+      }
+
+      // 갤러리 열기
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true, // 편집 가능(자르기 등)
+        aspect: [1, 1], // 정사각형 비율
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setProfileImage(result.assets[0].uri); // 선택한 이미지 URI 저장
+        // api로 변경된 프사 저장하는 로직 추가
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  useEffect(() => {
-    // api 호출해서 유저 정보 저장
-    const loadUserInfo = async () => {
-      try {
-        // await api.get(``);
-        setUserInfo({ name: "장유빈", id: "asdf1234" });
-        setDarkMode(false);
-        setIsDoNotDisturb(true);
-        setStartDay("일");
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    loadUserInfo();
-  }, []);
+  const toggleModal = () => setModalVisible((prev) => !prev);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.mainTitleContainer}>
-        <MainTitle text="마이페이지" />
-        <Image
-          source={myPageImage.myPageIcon}
-          style={{ width: 24, height: 24 }}
-        />
-      </View>
+      {modalVisible && <ChangePwModal toggleModal={toggleModal} />}
+      <ScrollView>
+        {/* 상단 타이틀 */}
+        <View style={styles.mainTitleContainer}>
+          <MainTitle text="마이페이지" />
+          <Image source={myPageImage.myPageIcon} style={styles.myPageIcon} />
+        </View>
 
-      <View style={{ paddingHorizontal: 21, gap: 9 }}>
-        <UserInfo name={userInfo.name} id={userInfo.id} />
+        {/* 프로필 */}
+        <View style={styles.centered}>
+          <View style={styles.profileBox}>
+            <Image source={profileSource} style={styles.profileImage} />
+            <Pressable onPress={editProfileImage}>
+              <Image source={myPageImage.editImageBtn} style={styles.editBtn} />
+            </Pressable>
+          </View>
 
-        <CustomView text="개인정보" />
+          <Text style={styles.userName}>{name}</Text>
 
-        <CustomView
-          text="다크모드"
-          rightElement={
-            <CustomSwitch
-              value={darkMode}
-              onValueChange={setDarkMode}
-              scale={0.7}
-            />
-          }
-        />
-        <CustomView
-          text="방해금지모드"
-          rightElement={
-            <CustomSwitch
-              value={isDoNotDisturb}
-              onValueChange={setIsDoNotDisturb}
-              scale={0.7}
-            />
-          }
-        />
-        <CustomView
-          text="달력 시작 요일"
-          rightElement={
-            <View style={{ flexDirection: "row" }}>
-              <Pressable
-                style={{
-                  width: 27,
-                  height: 27,
-                  borderRadius: "100%",
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={toggleStartDate}
-              >
-                <Text style={styles.textStyle}>{startDay}</Text>
-              </Pressable>
+          {/* 카드 리스트 */}
+          <View style={styles.cardList}>
+            {/* 개인정보 */}
+            <UserInfo setName={setName} setModalVisible={setModalVisible} />
+
+            {/* 이번 달 통계 */}
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>이번 달 통계</Text>
             </View>
-          }
-        />
-        <CustomView text="온보딩 다시 보기" />
-        <CustomView
-          text="개발자 정보"
-          rightElement={
-            <Text style={[styles.textStyle, { color: "#848484" }]}>
-              장유빈 김정은 정채영 let’s go
-            </Text>
-          }
-        />
-      </View>
+          </View>
+
+          {/* 로그아웃 버튼 */}
+          <LogoutBtn />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const UserInfo = ({ name, id }) => {
-  return (
-    <View
-      style={[
-        styles.boxStyle,
-        { height: 50, justifyContent: "flex-start", gap: 14, marginBottom: 9 },
-      ]}
-    >
-      <Text style={{ fontFamily: "Pretendard-Bold", fontSize: 20 }}>
-        {name}
-      </Text>
-      <Text style={{ fontFamily: "Pretendard-Medium", fontSize: 16 }}>
-        ID : {id}
-      </Text>
-    </View>
-  );
-};
-
-const CustomView = ({
-  style,
-  text = "",
-  rightElement = <></>,
-  onPress = () => {},
-}) => {
-  return (
-    <Pressable style={[styles.boxStyle, style]} onPress={onPress}>
-      <Text style={styles.textStyle}>{text}</Text>
-      {rightElement}
-    </Pressable>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#F1F1F1",
   },
   mainTitleContainer: {
     flexDirection: "row",
@@ -159,19 +103,51 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 13,
     marginLeft: 21,
-    marginBottom: 90,
+    marginBottom: 28,
   },
-  boxStyle: {
-    height: 36,
-    flexDirection: "row",
-    backgroundColor: "#EBEBEB",
-    justifyContent: "space-between",
+  centered: {
     alignItems: "center",
-    paddingHorizontal: 13,
-    borderRadius: 10,
   },
-  textStyle: {
-    fontSize: 16,
-    fontFamily: "Pretendard-Medium",
+  profileBox: {
+    width: 106,
+    height: 109,
+    position: "relative",
   },
+  profileImage: {
+    width: 106,
+    height: 106,
+    borderRadius: "100%",
+  },
+  editBtn: {
+    width: 27,
+    height: 27,
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+  },
+  userName: {
+    marginTop: 17,
+    marginBottom: 13,
+    fontFamily: "Pretendard-Bold",
+    fontSize: 25,
+  },
+  cardList: {
+    width: 331,
+    gap: 11,
+  },
+  card: {
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingVertical: 23,
+    paddingHorizontal: 27,
+    gap: 12,
+  },
+  cardTitle: {
+    fontFamily: "Pretendard-Bold",
+    fontSize: 18,
+    paddingVertical: 4,
+  },
+
+  myPageIcon: { width: 24, height: 24 },
 });
