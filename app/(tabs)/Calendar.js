@@ -7,14 +7,13 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
-  FlatList,
   ScrollView,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import {
-  CalendarBtn,
+  CalendarHeader,
   CalendarModal,
   DayHomeworkElement,
   DayOfWeekComponent,
@@ -307,16 +306,12 @@ export default function CalendarTab() {
       {/* 헤더 */}
       <View style={styles.headerContainer}>
         {/* 달 선택 */}
-        <View style={styles.headerRow}>
-          <CalendarBtn direction="left" onPress={() => changeMonth(-1)} />
-          <View style={{ alignItems: "center" }}>
-            <Text style={{ fontSize: 10 }}>{currentDate.getFullYear()}</Text>
-            <Text style={{ fontSize: 20 }}>
-              {format(currentDate, "MMM", { locale: enUS })}
-            </Text>
-          </View>
-          <CalendarBtn direction="right" onPress={() => changeMonth(1)} />
-        </View>
+
+        <CalendarHeader
+          year={currentDate.getFullYear()}
+          month={format(currentDate, "MMM", { locale: enUS })}
+          changeCalendar={changeMonth}
+        />
 
         <ShowScheduleToggle
           classShow={classShow}
@@ -475,12 +470,5 @@ const styles = StyleSheet.create({
   todayDayText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-
-  headerRow: {
-    width: 102,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
   },
 });
