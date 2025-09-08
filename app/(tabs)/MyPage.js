@@ -1,6 +1,5 @@
 import api from "@/api";
 import * as ImagePicker from "expo-image-picker";
-import { defaultProfileImage } from "@/assets";
 import { myPageImage } from "@/assets/images/my-page";
 import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
@@ -14,6 +13,7 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
+import { myDefaultProfileImage } from "@/assets";
 
 export default function MyPage() {
   const [name, setName] = useState("");
@@ -21,7 +21,7 @@ export default function MyPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const profileSource = profileImage
     ? { uri: profileImage }
-    : defaultProfileImage;
+    : myDefaultProfileImage();
 
   const editProfileImage = async () => {
     try {

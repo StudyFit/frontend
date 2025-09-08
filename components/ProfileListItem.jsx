@@ -1,8 +1,8 @@
-import { defaultProfileImage } from "@/assets";
-import { Image, Text, View, Platform, Pressable } from "react-native";
+import { yourDefaultProfileImage } from "@/assets";
+import { Image, Text, View } from "react-native";
 
 const ProfileListItem = ({
-  imageSrc = defaultProfileImage,
+  imageSrc = yourDefaultProfileImage(),
   name,
   content,
   rightElement,
