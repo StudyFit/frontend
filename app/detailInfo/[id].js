@@ -16,6 +16,8 @@ import { CalendarHeader, RouterName, WeekRow } from "@/components";
 import { detailInfoIcon, themeColors, yourDefaultProfileImage } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
+import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
+import SortBtn from "@/components/DetailInfo/SortBtn";
 
 // 더미 데이터
 const info = {
@@ -117,6 +119,7 @@ const homework = [
 
 export default function WeekCalendarTab() {
   const { id } = useLocalSearchParams();
+  const [sort, setSort] = useState("날짜"); // 날짜 or 달성
   const today = new Date();
 
   const [currentWeekStart, setCurrentWeekStart] = useState(
@@ -130,6 +133,15 @@ export default function WeekCalendarTab() {
   };
 
   const goToChatRoom = () => router.push(`/chatroom/${id}`);
+
+  const addHw = async () => {
+    console.log("숙제 추가하기");
+  };
+
+  const handleSort = async () => {
+    if (sort === "날짜") setSort("달성");
+    else setSort("날짜");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,6 +169,11 @@ export default function WeekCalendarTab() {
       </View>
 
       <CompletionRate color={themeColors[info.themeColor]} />
+
+      <View style={styles.addHWAndSortContainer}>
+        <AddHwBtn onPress={addHw} />
+        <SortBtn sort={sort} onPress={handleSort} />
+      </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false} // 세로 스크롤바 숨김
@@ -223,6 +240,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     marginBottom: 21,
     gap: 9,
+  },
+
+  addHWAndSortContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+    marginHorizontal: 28,
+    marginBottom: 21,
   },
 
   // 사용자 정보
