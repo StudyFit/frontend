@@ -11,6 +11,19 @@ const themeColors = {
   purple: "#D3BDFE",
 };
 
+const themeSoftColors = {
+  lightPink: "#FFDCEF",
+  pink: "#FFC0DD",
+  coral: "#FFD3B3",
+  orange: "#FFDC8E",
+  yellow: "#FFFACE",
+  lightGreen: "#EDFFA9",
+  green: "#C7EDB9",
+  blue: "#DDEDFF",
+  lavender: "#CDCFFF",
+  purple: "#EBE1FF",
+};
+
 // 백엔드로 보낼 이름 매핑
 const themeColorName = {
   lightPink: "LIGHT_PINK",
@@ -25,4 +38,4 @@ const themeColorName = {
   purple: "PURPLE",
 };
 
-export { themeColors, themeColorName };
+export { themeColors, themeSoftColors, themeColorName };

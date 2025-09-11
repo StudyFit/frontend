@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { format } from "date-fns";
 import { HwIcon } from "@/components";
+import { themeColors } from "@/assets";
 
 const SCREEN_WIDTH = Dimensions.get("window").width - 60;
 
@@ -19,7 +20,10 @@ export function DayCell({ day, isToday, schedules, homework }) {
       {schedules.map((item) => (
         <View
           key={item.calendarId}
-          style={[styles.schedule, { backgroundColor: item.themeColor }]}
+          style={[
+            styles.schedule,
+            { backgroundColor: themeColors[item.themeColor] },
+          ]}
         >
           <Text style={styles.scheduleText}>수업</Text>
         </View>
