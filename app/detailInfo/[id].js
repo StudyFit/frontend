@@ -13,8 +13,9 @@ import { enUS } from "date-fns/locale";
 import { useLocalSearchParams, router } from "expo-router";
 
 import { CalendarHeader, RouterName, WeekRow } from "@/components";
-import { detailInfoIcon, yourDefaultProfileImage } from "@/assets";
+import { detailInfoIcon, themeColors, yourDefaultProfileImage } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
+import CompletionRate from "@/components/DetailInfo/CompletionRate";
 
 // 더미 데이터
 const info = {
@@ -24,6 +25,7 @@ const info = {
   subject: "과학",
   classTime: "월/수 12:00~14:00",
   memo: "기타 메모들",
+  themeColor: "blue",
 };
 
 const schedules = [
@@ -153,6 +155,8 @@ export default function WeekCalendarTab() {
           homework={homework}
         />
       </View>
+
+      <CompletionRate color={themeColors[info.themeColor]} />
 
       <ScrollView
         showsVerticalScrollIndicator={false} // 세로 스크롤바 숨김
