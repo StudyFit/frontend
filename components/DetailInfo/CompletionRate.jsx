@@ -1,9 +1,8 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 
-const CompletionRate = ({ color }) => {
+const CompletionRate = ({ month, color }) => {
   // 이 파일 내부에서 데이터 관리
-  const month = 2; // TODO: API 연동 시 변경
   const completionRate = 70; // TODO: API 연동 시 변경
   const progressWidth = `${completionRate}%`;
 

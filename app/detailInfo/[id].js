@@ -168,7 +168,10 @@ export default function WeekCalendarTab() {
         />
       </View>
 
-      <CompletionRate color={themeColors[info.themeColor]} />
+      <CompletionRate
+        month={currentWeekStart.getMonth() + 1}
+        color={themeColors[info.themeColor]}
+      />
 
       <View style={styles.addHWAndSortContainer}>
         <AddHwBtn onPress={addHw} />
@@ -236,6 +239,7 @@ function UserInfo({ info, profileImage, goToChatRoom }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   calendarContainer: {
+    minHeight: 145,
     marginTop: 32,
     marginHorizontal: 30,
     marginBottom: 21,
