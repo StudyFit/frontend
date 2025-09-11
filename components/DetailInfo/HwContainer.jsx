@@ -24,7 +24,7 @@ export default function HwContainer({ color, date, homeworkList }) {
         <Text style={styles.dateText}>{formattedDate}</Text>
         <CompletionRate homeworkList={homeworkList} />
 
-        {!isBefore(dateObj, today) && (
+        {(isToday(dateObj, today) || isAfter(dateObj, today)) && (
           <Pressable style={{ marginLeft: 18 }}>
             <Image
               source={todaysLessonImages.alarmBtn}
