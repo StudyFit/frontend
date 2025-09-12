@@ -16,34 +16,34 @@ export default function Step4() {
   const [grade, setGrade] = useState("");
   const router = useRouter();
   const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
+  const [readyToSubmit, setReadyToSubmit] = useState(false);
 
-  const goToComplete = async () => {
-    if (await saveData()) {
-      try {
-        const payload = getFilteredSignUpData();
-        console.log(payload);
-
-        await apiPublic.post(`/api/auth/signup/student`, payload);
-        router.push(RouterName.SignUpComplete);
-      } catch (e) {
-        console.error(e);
-      }
+  useEffect(() => {
+    if (readyToSubmit) {
+      const submit = async () => {
+        try {
+          const payload = getFilteredSignUpData();
+          await apiPublic.post(`/api/auth/signup/student`, payload);
+          router.push(RouterName.SignUpComplete);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setReadyToSubmit(false);
+        }
+      };
+      submit();
     }
-  };
+  }, [readyToSubmit]);
 
-  const saveData = async () => {
+  const saveData = () => {
     if (!school || !grade) return;
     const gradeNum = Number(grade);
     if (!Number.isInteger(gradeNum)) {
       console.log("학년은 정수여야 합니다.");
       return;
     }
-    await setSignUpData((prev) => ({
-      ...prev,
-      school: school,
-      grade: gradeNum,
-    }));
-    return true;
+    setSignUpData((prev) => ({ ...prev, school, grade: gradeNum }));
+    setReadyToSubmit(true);
   };
 
   return (
