@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const RegisterScreen = ({ setAddMode, studentInfo }) => {
+const RegisterScreen = ({ modifyMode = false, setAddMode, studentInfo }) => {
   const [subject, setSubject] = useState("");
   const [color, setColor] = useState("");
   const [schedule, setSchedule] = useState("");
@@ -17,6 +17,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [modalVisible, setModalVisible] = useState("");
   const [error, setError] = useState("");
 
+  // 학생 추가 로직
   const handleRequest = async () => {
     if (!subject || !color) {
       setError("필수 정보를 모두 입력해주세요.");
@@ -36,6 +37,9 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
       console.error(e);
     }
   };
+
+  // 수정 로직
+  const modifyTeacher = () => {};
 
   const closeModal = () => setModalVisible("");
 
