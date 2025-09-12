@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const RegisterScreen = ({ modifyMode = false, setAddMode, studentInfo }) => {
+const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [subject, setSubject] = useState("");
   const [color, setColor] = useState("");
   const [schedule, setSchedule] = useState("");
@@ -37,9 +37,6 @@ const RegisterScreen = ({ modifyMode = false, setAddMode, studentInfo }) => {
       console.error(e);
     }
   };
-
-  // 수정 로직
-  const modifyTeacher = () => {};
 
   const closeModal = () => setModalVisible("");
 
