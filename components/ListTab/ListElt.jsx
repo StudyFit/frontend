@@ -1,88 +1,138 @@
-import { themeColors } from "@/assets";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { listImage, yourDefaultProfileImage } from "@/assets";
+import { HorizontalLine } from "./HorizontalLine";
+import { router } from "expo-router";
 
-// 학생이 보는 선생님 목록
-export const ListEltForStudent = ({ elt }) => {
+const MemberList = ({ list, title, waiting }) => {
   return (
-    <View style={styles.listEltContainer}>
+    <>
+      {list.length > 0 ? (
+        <>
+          <HorizontalLine text={title} />
+          <View style={{ gap: 20 }}>
+            {list &&
+              list.map((elt, i) => (
+                <ListElt
+                  elt={elt}
+                  key={i}
+                  leftBtnElt={waiting ? <AcceptButton /> : <InfoButton />}
+                  rightBtnElt={
+                    waiting ? <RejectButton /> : <SendMessageButton />
+                  }
+                />
+              ))}
+          </View>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+};
+
+const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
       <View
-        style={[
-          styles.listElt,
-          { backgroundColor: themeColors[elt.themeColor] },
-        ]}
+        style={{
+          marginRight: 12,
+          shadowColor: "#000",
+          shadowOffset: { width: 0.3, height: 0.3 },
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          elevation: 6,
+        }}
       >
-        <Text style={styles.nameText}>{elt.teacherName}</Text>
-        <Text style={styles.roleText}>선생님</Text>
-        <Text>{elt.subject}</Text>
-      </View>
-    </View>
-  );
-};
-
-// 학생이 보는 선생님 수락 대기 목록
-export const ListEltForStudentAccept = ({ elt }) => {
-  return (
-    <View style={styles.listEltContainer}>
-      <View style={[styles.listElt, { backgroundColor: "#E1E1E1" }]}>
-        <Text style={styles.nameText}>{elt.teacherName}</Text>
-        <Text style={styles.roleText}>선생님</Text>
+        <Image
+          source={elt.profileImage || yourDefaultProfileImage()}
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+          }}
+        />
       </View>
 
-      <Pressable style={styles.acceptBtn}>
-        <Text style={{ fontFamily: "Pretendard-Bold" }}>수락</Text>
-      </Pressable>
-      <Pressable style={[styles.acceptBtn, { borderColor: "red" }]}>
-        <Text style={{ fontFamily: "Pretendard-Bold", color: "red" }}>
-          거절
+      <Pressable
+        style={{ gap: 5, width: "55%" }}
+        onPress={() => {
+          router.push(`/detailInfo/${elt.studentId || elt.teacherId}`);
+        }}
+      >
+        <Text style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}>
+          {elt.studentName || elt.teacherName}
         </Text>
+        <Text style={{ fontSize: 12 }}>{elt.subject}</Text>
       </Pressable>
-    </View>
-  );
-};
 
-// 선생님이 보는 학생 목록
-export const ListEltForTeacher = ({ elt, waiting }) => {
-  const backgroundColor = !waiting ? themeColors[elt.themeColor] : "#E1E1E1";
-  return (
-    <View style={styles.listEltContainer}>
-      <View style={[styles.listElt, { backgroundColor: backgroundColor }]}>
-        <Text style={styles.nameText}>{elt.studentName}</Text>
-        <Text style={styles.roleText}>학생</Text>
-        <Text style={{ fontSize: 16, marginRight: 15 }}>{elt.grade}</Text>
-        <Text>{elt.subject}</Text>
+      <View
+        style={{
+          gap: 7,
+          flexDirection: "row",
+          alignItems: "center",
+          marginLeft: "auto",
+        }}
+      >
+        {leftBtnElt}
+        {rightBtnElt}
       </View>
     </View>
   );
 };
+
+const AcceptButton = ({ onPress }) => {
+  return (
+    <Pressable style={styles.btnContainer} onPress={onPress}>
+      <Text style={[styles.btnText]}>수락</Text>
+    </Pressable>
+  );
+};
+
+const RejectButton = ({ onPress }) => {
+  return (
+    <Pressable
+      style={[styles.btnContainer, { borderColor: "red" }]}
+      onPress={onPress}
+    >
+      <Text style={[styles.btnText, { color: "red" }]}>거절</Text>
+    </Pressable>
+  );
+};
+
+const InfoButton = ({ onPress }) => {
+  return (
+    <Pressable onPress={onPress}>
+      <Image source={listImage.infoBtn} style={{ width: 38, height: 38 }} />
+    </Pressable>
+  );
+};
+
+const SendMessageButton = ({ onPress }) => {
+  return (
+    <Pressable onPress={onPress}>
+      <Image
+        source={listImage.sendMessageBtn}
+        style={{ width: 38, height: 38 }}
+      />
+    </Pressable>
+  );
+};
+
+export { MemberList };
 
 const styles = StyleSheet.create({
-  listEltContainer: { flexDirection: "row", gap: 4 },
-  listElt: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 50,
+  btnContainer: {
+    width: 38,
+    height: 38,
     borderRadius: 10,
-    paddingVertical: 13,
-    paddingLeft: 22,
-    paddingRight: 16,
-    flex: 1,
-  },
-  nameText: {
-    fontSize: 20,
-    marginRight: 4,
-    fontFamily: "Pretendard-Bold",
-  },
-  roleText: {
-    marginRight: "auto",
-    marginBottom: 2,
-    alignSelf: "flex-end",
-  },
-  acceptBtn: {
-    width: 48,
-    height: 50,
-    borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0.5,
     justifyContent: "center",
     alignItems: "center",
   },
+  btnText: { fontSize: 11 },
 });

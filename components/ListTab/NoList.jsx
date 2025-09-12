@@ -11,6 +11,7 @@ const NoList = () => {
         alignItems: "center",
         justifyContent: "center",
         marginTop: 29,
+        marginHorizontal: 26,
       }}
     >
       <Text style={{ fontSize: 20 }}>학생이 없습니다.</Text>
@@ -21,4 +22,4 @@ const NoList = () => {
   );
 };
 
-export default NoList;
+export { NoList };
