@@ -229,7 +229,14 @@ function UserInfo({ info, profileImage, goToChatRoom }) {
       >
         <Image source={detailInfoIcon.chatIcon} style={styles.icon} />
       </Pressable>
-      <Pressable>
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "./ModifyInfo",
+            params: { studentId: "1", name: "김정은", grade: "중3" },
+          })
+        }
+      >
         <Image source={detailInfoIcon.settingIcon} style={styles.icon} />
       </Pressable>
     </View>
