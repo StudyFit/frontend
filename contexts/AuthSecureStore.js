@@ -20,6 +20,14 @@ export const updateAccessToken = async (accessToken) => {
   }
 };
 
+export const removeAccessToken = async () => {
+  try {
+    await SecureStore.deleteItemAsync("accessToken");
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 // 불러오기
 export const getAuthData = async () => {
   const accessToken = await SecureStore.getItemAsync("accessToken");
