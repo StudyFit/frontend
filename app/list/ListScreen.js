@@ -2,7 +2,6 @@ import { StyleSheet, ScrollView, View, Image, TextInput } from "react-native";
 import { listImage } from "@/assets/images/list";
 import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
-import { defaultProfileImage } from "@/assets";
 import {
   AddStudentBtn,
   AddStudentModal,
@@ -12,7 +11,7 @@ import {
 
 const teacherData = [
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connectionId: 1,
     teacherId: 1,
     teacherName: "엔젤라",
@@ -21,7 +20,7 @@ const teacherData = [
     connectionStatus: "ACCEPTED",
   },
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connectionId: 2,
     teacherId: 2,
     teacherName: "장유빈",
@@ -33,7 +32,7 @@ const teacherData = [
 
 const studentData = [
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connecitonId: 1,
     studentId: 1,
     studentName: "학생1",
@@ -45,7 +44,7 @@ const studentData = [
     connectionStatus: "REQUESTED",
   },
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connecitonId: 1,
     studentId: 1,
     studentName: "학생1",
@@ -57,7 +56,7 @@ const studentData = [
     connectionStatus: "REQUESTED",
   },
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connecitonId: 1,
     studentId: 1,
     studentName: "학생1",
@@ -69,7 +68,7 @@ const studentData = [
     connectionStatus: "REQUESTED",
   },
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connecitonId: 1,
     studentId: 1,
     studentName: "학생1",
@@ -81,7 +80,7 @@ const studentData = [
     connectionStatus: "ACCEPTED",
   },
   {
-    profileImage: defaultProfileImage,
+    profileImage: "",
     connecitonId: 3,
     studentId: 2,
     studentName: "학생2",

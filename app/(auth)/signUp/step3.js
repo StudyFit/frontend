@@ -17,7 +17,7 @@ import {
 } from "@/components";
 import { loginImage } from "@/assets";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import api from "@/api";
+import { apiPublic } from "@/api";
 
 export default function Step3() {
   const [id, setId] = useState("");
@@ -34,15 +34,15 @@ export default function Step3() {
   const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
 
   const goToStep4 = async () => {
-    if (saveData()) router.push(RouterName.SignUpComplete);
+    if (await saveData()) router.push(RouterName.signUpStep4);
   };
 
   const goToComplete = async () => {
-    if (saveData()) {
+    if (await saveData()) {
       try {
         const payload = getFilteredSignUpData();
-        const response = await api.post(`/api/auth/signup/teacher`, payload);
-        router.push(RouterName.signUpStep4);
+        await apiPublic.post(`/api/auth/signup/teacher`, payload);
+        router.push(RouterName.SignUpComplete);
       } catch (e) {
         console.error(e);
       }
@@ -93,7 +93,7 @@ export default function Step3() {
           secureTextEntry={!showPw}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPw}
+              show={!!showPw}
               onPress={() => setShowPw(!showPw)}
             />
           }
@@ -106,7 +106,7 @@ export default function Step3() {
           secureTextEntry={!showPwConfirm}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPwConfirm}
+              show={!!showPwConfirm}
               onPress={() => setShowPwConfirm(!showPwConfirm)}
             />
           }

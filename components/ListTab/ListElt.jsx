@@ -1,6 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { listImage } from "@/assets";
+import { listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
+import { router } from "expo-router";
 
 const MemberList = ({ list, title, waiting }) => {
   return (
@@ -48,7 +49,7 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
         }}
       >
         <Image
-          source={elt.profileImage}
+          source={elt.profileImage || yourDefaultProfileImage()}
           style={{
             width: 50,
             height: 50,
@@ -57,12 +58,17 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
         />
       </View>
 
-      <View style={{ gap: 5 }}>
+      <Pressable
+        style={{ gap: 5, width: "55%" }}
+        onPress={() => {
+          router.push(`/detailInfo/${elt.studentId || elt.teacherId}`);
+        }}
+      >
         <Text style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}>
           {elt.studentName || elt.teacherName}
         </Text>
         <Text style={{ fontSize: 12 }}>{elt.subject}</Text>
-      </View>
+      </Pressable>
 
       <View
         style={{

@@ -7,3 +7,5 @@ export * from "./MainTitle";
 export * from "./RouterName";
 export * from "./ProfileListItem";
 export * from "./CustomSwitch";
+export * from "./MyPage/index";
+export * from "./DetailInfo/index";
