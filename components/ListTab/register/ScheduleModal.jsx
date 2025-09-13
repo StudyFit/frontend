@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import ClassPeriodModal from "./ClassPeriodModal";
-import { set } from "date-fns";
 
 const daysOfWeek = [
   ["월", "MONDAY"],
@@ -64,9 +63,6 @@ const ScheduleModal = ({ onRequestClose, schedule, setSchedule }) => {
     }
     setClassTimeDtoList((prev) => [...prev, classTimeDto]);
 
-    // 초기화
-    setStartDate("");
-    setEndDate("");
     setSelectedDay(daysOfWeek[0][0]);
     setStartTime("");
     setEndTime("");
