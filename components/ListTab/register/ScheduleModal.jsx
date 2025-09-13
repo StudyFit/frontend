@@ -9,9 +9,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import ClassPeriodModal from "./ClassPeriodModal";
+import { set } from "date-fns";
 
 const daysOfWeek = [
   ["월", "MONDAY"],
@@ -24,6 +25,7 @@ const daysOfWeek = [
 ];
 
 const ScheduleModal = ({ onRequestClose, schedule, setSchedule }) => {
+  const [isModalVisible, setIsModalVisible] = useState("main"); // main, start, end
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedDay, setSelectedDay] = useState(daysOfWeek[0][0]);
@@ -74,159 +76,202 @@ const ScheduleModal = ({ onRequestClose, schedule, setSchedule }) => {
   const deleteSchedule = (index) =>
     setClassTimeDtoList((prev) => prev.filter((_, i) => i !== index));
 
+  const backToMain = () => setIsModalVisible("main");
+
+  const saveSchedule = () => {
+    setSchedule({
+      startDate,
+      endDate,
+      classTimeDtoList,
+    });
+    setError("");
+    onRequestClose();
+  };
+
   return (
-    <Modal transparent animationType="slide" onRequestClose={onRequestClose}>
-      <Pressable style={styles.overlay} onPress={onRequestClose}>
-        <View style={styles.modalBox}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Image
-              source={registerIcon["수업 일정"]}
-              style={styles.headerIcon}
-            />
-            <Text style={styles.headerText}>수업 일정</Text>
-          </View>
-
-          <View style={{ gap: 7, marginBottom: 19 }}>
-            <Text style={{ fontSize: 20 }}>수업 기간</Text>
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 10,
-                alignItems: "center",
-                gap: 15,
-              }}
-            >
-              <TextInput
-                value={startDate}
-                onChangeText={setStartDate}
-                style={styles.textInput}
-              />
-              <Image
-                source={registerIcon.dashIcon}
-                style={{ width: 24, height: 24 }}
-              />
-              <TextInput
-                value={endDate}
-                onChangeText={setEndDate}
-                style={styles.textInput}
-              />
-            </View>
-          </View>
-
-          <View style={{ gap: 5, marginBottom: 20 }}>
-            <Text style={{ fontSize: 20 }}>수업 요일</Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <Pressable
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "100%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "#F0F0F0",
-                }}
-                onPress={selectDay}
-              >
-                <Text style={{ fontSize: 16 }}>{selectedDay}</Text>
-              </Pressable>
-              <View style={{ flex: 1 }}>
-                <ScheduleTimeInput
-                  startTime={startTime}
-                  setStartTime={setStartTime}
-                  endTime={endTime}
-                  setEndTime={setEndTime}
-                  visible={true}
+    <>
+      <Modal transparent animationType="slide" onRequestClose={onRequestClose}>
+        {isModalVisible === "main" ? (
+          <Pressable style={styles.overlay} onPress={onRequestClose}>
+            <View style={styles.modalBox}>
+              {/* Header */}
+              <View style={styles.header}>
+                <Image
+                  source={registerIcon["수업 일정"]}
+                  style={styles.headerIcon}
                 />
+                <Text style={styles.headerText}>수업 일정</Text>
               </View>
-            </View>
 
-            <Pressable
-              style={{
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#DDDDDD",
-                borderRadius: 4,
-              }}
-              onPress={addSchedule}
-            >
-              <Text style={{ fontSize: 16, color: "#555555" }}>+ 추가하기</Text>
-            </Pressable>
-          </View>
-          <ScrollView>
-            <View style={{ gap: 12 }}>
-              {classTimeDtoList.map((classDto, index) => {
-                const day =
-                  daysOfWeek[
-                    daysOfWeek.findIndex((day) => day[1] === classDto.day)
-                  ][0];
-
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingHorizontal: 10,
-                    }}
+              <View style={{ gap: 7, marginBottom: 19 }}>
+                <Text style={{ fontSize: 20 }}>수업 기간</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: 10,
+                    alignItems: "center",
+                    gap: 15,
+                  }}
+                >
+                  <Pressable
+                    style={styles.textInput}
+                    onPress={() => setIsModalVisible("start")}
                   >
-                    <Text style={[{ fontSize: 16 }, { marginRight: 14 }]}>
-                      {day}
-                    </Text>
-                    <Text style={[{ fontSize: 16 }, { marginRight: "auto" }]}>
-                      {classDto.startTime} ~ {classDto.endTime}
-                    </Text>
-                    <Pressable
-                      style={{
-                        width: 48,
-                        height: 26,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 10,
-                        borderWidth: 1.3,
-                        borderColor: "red",
-                      }}
-                      onPress={() => deleteSchedule(index)}
-                    >
-                      <Text
+                    <Text style={styles.text}>{startDate}</Text>
+                  </Pressable>
+                  <Image
+                    source={registerIcon.dashIcon}
+                    style={{ width: 24, height: 24 }}
+                  />
+                  <Pressable
+                    style={styles.textInput}
+                    onPress={() => setIsModalVisible("end")}
+                  >
+                    <Text style={styles.text}>{endDate}</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View style={{ gap: 5, marginBottom: 20 }}>
+                <Text style={{ fontSize: 20 }}>수업 요일</Text>
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <Pressable
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: "100%",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#F0F0F0",
+                    }}
+                    onPress={selectDay}
+                  >
+                    <Text style={{ fontSize: 16 }}>{selectedDay}</Text>
+                  </Pressable>
+                  <View style={{ flex: 1 }}>
+                    <ScheduleTimeInput
+                      startTime={startTime}
+                      setStartTime={setStartTime}
+                      endTime={endTime}
+                      setEndTime={setEndTime}
+                      visible={true}
+                    />
+                  </View>
+                </View>
+
+                <Pressable
+                  style={{
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#DDDDDD",
+                    borderRadius: 4,
+                  }}
+                  onPress={addSchedule}
+                >
+                  <Text style={{ fontSize: 16, color: "#555555" }}>
+                    + 추가하기
+                  </Text>
+                </Pressable>
+              </View>
+              <ScrollView>
+                <View style={{ gap: 12 }}>
+                  {classTimeDtoList.map((classDto, index) => {
+                    const day =
+                      daysOfWeek[
+                        daysOfWeek.findIndex((day) => day[1] === classDto.day)
+                      ][0];
+
+                    return (
+                      <View
+                        key={index}
                         style={{
-                          fontSize: 11,
-                          fontFamily: "Pretendard-Bold",
-                          color: "red",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          paddingHorizontal: 10,
                         }}
                       >
-                        삭제
-                      </Text>
-                    </Pressable>
-                  </View>
-                );
-              })}
+                        <Text style={[{ fontSize: 16 }, { marginRight: 14 }]}>
+                          {day}
+                        </Text>
+                        <Text
+                          style={[{ fontSize: 16 }, { marginRight: "auto" }]}
+                        >
+                          {classDto.startTime} ~ {classDto.endTime}
+                        </Text>
+                        <Pressable
+                          style={{
+                            width: 48,
+                            height: 26,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 10,
+                            borderWidth: 1.3,
+                            borderColor: "red",
+                          }}
+                          onPress={() => deleteSchedule(index)}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 11,
+                              fontFamily: "Pretendard-Bold",
+                              color: "red",
+                            }}
+                          >
+                            삭제
+                          </Text>
+                        </Pressable>
+                      </View>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+              {error && <ErrorText error={error} />}
+              {/* Save Button */}
+              <BottomBtn
+                text="저장하기"
+                onPress={saveSchedule}
+                style={styles.saveBtn}
+              />
             </View>
-          </ScrollView>
-          {error && (
-            <Text
-              style={{
-                color: "red",
-                alignSelf: "center",
-                fontSize: 15,
-                marginTop: 15,
-              }}
-            >
-              {error}
-            </Text>
-          )}
-          {/* Save Button */}
-          <BottomBtn
-            text="저장하기"
-            onPress={onRequestClose}
-            style={styles.saveBtn}
-          />
-        </View>
-      </Pressable>
-    </Modal>
+          </Pressable>
+        ) : (
+          <Pressable
+            style={[styles.overlay, { justifyContent: "center" }]}
+            onPress={backToMain}
+          >
+            {isModalVisible === "start" ? (
+              <ClassPeriodModal
+                setDate={setStartDate}
+                backToMain={backToMain}
+                maximum={endDate}
+              />
+            ) : (
+              <ClassPeriodModal
+                setDate={setEndDate}
+                backToMain={backToMain}
+                minimum={startDate}
+              />
+            )}
+          </Pressable>
+        )}
+      </Modal>
+    </>
   );
 };
+
+const ErrorText = ({ error }) => (
+  <Text
+    style={{
+      color: "red",
+      alignSelf: "center",
+      fontSize: 15,
+      marginTop: 15,
+    }}
+  >
+    {error}
+  </Text>
+);
 
 export { ScheduleModal };
 
@@ -271,5 +316,14 @@ const styles = StyleSheet.create({
   checkIcon: { width: 20, height: 20 },
   saveBtn: { width: "100%", marginTop: 16 },
 
-  textInput: { flex: 1, height: 40, backgroundColor: "#F0F0F0" },
+  textInput: {
+    flex: 1,
+    height: 40,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: { fontSize: 16 },
 });
