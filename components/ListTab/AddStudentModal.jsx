@@ -37,7 +37,7 @@ const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
           id: studentId,
           name: studentName,
           grade: studentInfo,
-        });
+        }); // 추가 정보들 추가해야 함
         setType("add");
         setError(null);
       }
