@@ -139,9 +139,8 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
         </View>
 
         {list.length === 0 && waitingList.length === 0 && <NoList />}
-
-        {/* 친구 추가 버튼 (선생님용) */}
       </ScrollView>
+      {/* 친구 추가 버튼 (선생님용) */}
       {userRole == "선생님" && <AddStudentBtn onPress={toggleModal} />}
     </>
   );
