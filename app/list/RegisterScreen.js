@@ -37,7 +37,6 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [modalVisible, setModalVisible] = useState("");
   const [error, setError] = useState("");
 
-  // 학생 추가 로직
   const handleRequest = async () => {
     if (!subject || !color) {
       setError("필수 정보를 모두 입력해주세요.");
@@ -83,13 +82,11 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
         <View
           style={[styles.studentNameBox, color && { backgroundColor: color }]}
         >
-          <Text style={{ fontSize: 20, fontFamily: "Pretendard-Bold" }}>
-            {studentInfo?.name}
-          </Text>
-          <Text style={{ fontSize: 16 }}>{studentInfo?.grade}</Text>
+          <Text style={styles.studentName}>{studentInfo?.name}</Text>
+          <Text style={styles.studentGrade}>{studentInfo?.grade}</Text>
         </View>
 
-        <View style={{ gap: 6 }}>
+        <View style={styles.inputGroup}>
           <Text style={styles.questionText}>필수 정보를 입력해주세요</Text>
           <TextInputBox
             placeholder="과목"
@@ -105,66 +102,42 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
             rightElement={
               color && (
                 <View
-                  style={[
-                    { width: 31, height: 31, borderRadius: "100%" },
-                    { backgroundColor: color },
-                  ]}
-                ></View>
+                  style={[styles.colorCircle, { backgroundColor: color }]}
+                />
               )
             }
           />
         </View>
 
-        <View style={{ gap: 6 }}>
+        <View style={styles.inputGroup}>
           <Text style={styles.questionText}>
             추가 정보를 입력해주세요 (선택)
           </Text>
           <Pressable
-            style={{
-              flexDirection: "row",
-              gap: 5,
-              alignItems: "center",
-              paddingLeft: 8,
-              paddingVertical: 10,
-              backgroundColor: "#F2F2F2",
-              borderRadius: 8,
-            }}
+            style={styles.scheduleBox}
             onPress={() => setModalVisible("일정")}
           >
             <Image
               source={registerIcon["수업 일정"]}
-              style={{
-                width: 24,
-                height: 24,
-              }}
+              style={styles.scheduleIcon}
             />
             {!!schedule ? (
-              <View style={{ gap: 18 }}>
-                <Text style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}>
+              <View style={styles.scheduleContent}>
+                <Text style={styles.scheduleDate}>
                   {schedule.startDate} - {schedule.endDate}
                 </Text>
                 {schedule.classTimeDtoList.map((classDto, i) => (
-                  <Text
-                    key={i}
-                    style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}
-                  >
+                  <Text key={i} style={styles.scheduleText}>
                     {getKoreanDay(classDto.day)} {classDto.startTime} ~{" "}
                     {classDto.endTime}
                   </Text>
                 ))}
               </View>
             ) : (
-              <Text
-                style={{
-                  color: "#676767",
-                  fontSize: 15,
-                  fontFamily: "Pretendard-Medium",
-                }}
-              >
-                수업 일정
-              </Text>
+              <Text style={styles.schedulePlaceholder}>수업 일정</Text>
             )}
           </Pressable>
+
           <TextInputBox
             placeholder="주소"
             value={address}
@@ -180,7 +153,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
         <Text style={styles.errorText}>{error}</Text>
         <BottomBtn
           text="요청하기"
-          style={{ width: "100%", marginTop: -10 }}
+          style={styles.submitBtn}
           onPress={handleRequest}
         />
       </View>
@@ -191,9 +164,12 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
 export default RegisterScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginHorizontal: 28, marginTop: 20, gap: 23 },
-
-  questionText: { fontSize: 16 },
+  container: {
+    flex: 1,
+    marginHorizontal: 28,
+    marginTop: 20,
+    gap: 23,
+  },
 
   studentNameBox: {
     height: 50,
@@ -204,11 +180,66 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  studentName: {
+    fontSize: 20,
+    fontFamily: "Pretendard-Bold",
+  },
+  studentGrade: {
+    fontSize: 16,
+  },
+
+  inputGroup: {
+    gap: 6,
+  },
+  questionText: {
+    fontSize: 16,
+  },
+
+  colorCircle: {
+    width: 31,
+    height: 31,
+    borderRadius: 100,
+  },
+
+  scheduleBox: {
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+    paddingLeft: 8,
+    paddingVertical: 10,
+    backgroundColor: "#F2F2F2",
+    borderRadius: 8,
+  },
+  scheduleIcon: {
+    width: 24,
+    height: 24,
+  },
+  scheduleContent: {
+    gap: 18,
+  },
+  scheduleDate: {
+    fontSize: 15,
+    fontFamily: "Pretendard-Medium",
+  },
+  scheduleText: {
+    fontSize: 15,
+    fontFamily: "Pretendard-Medium",
+  },
+  schedulePlaceholder: {
+    color: "#676767",
+    fontSize: 15,
+    fontFamily: "Pretendard-Medium",
+  },
 
   errorText: {
     color: "red",
     marginTop: "auto",
     alignSelf: "center",
     fontSize: 13,
+  },
+
+  submitBtn: {
+    width: "100%",
+    marginTop: -10,
   },
 });
