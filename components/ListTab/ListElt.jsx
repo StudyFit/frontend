@@ -3,7 +3,7 @@ import { listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
 
-const MemberList = ({ list, title, waiting }) => {
+const MemberList = ({ list, title, showRole, waiting }) => {
   return (
     <>
       {list.length > 0 ? (
@@ -15,9 +15,19 @@ const MemberList = ({ list, title, waiting }) => {
                 <ListElt
                   elt={elt}
                   key={i}
-                  leftBtnElt={waiting ? <AcceptButton /> : <InfoButton />}
+                  leftBtnElt={
+                    waiting ? (
+                      showRole == "학생" && <AcceptButton />
+                    ) : (
+                      <InfoButton />
+                    )
+                  }
                   rightBtnElt={
-                    waiting ? <RejectButton /> : <SendMessageButton />
+                    waiting ? (
+                      showRole == "학생" && <RejectButton />
+                    ) : (
+                      <SendMessageButton />
+                    )
                   }
                 />
               ))}
