@@ -3,7 +3,6 @@ import { listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
 import { api } from "@/api";
-import { RouterName } from "../RouterName";
 
 const MemberList = ({ list, title, userRole, waiting, loadData }) => {
   const handlePress = async (connectionId, action) => {
@@ -12,7 +11,7 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
         connectionId,
         action,
       });
-      await loadData();
+      // await loadData();
       console.log(response.data);
     } catch (e) {
       console.error(e);
