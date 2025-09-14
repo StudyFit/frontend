@@ -109,18 +109,19 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
   const waitingList = data.filter((elt) => getStatus(elt) === "REQUESTED");
 
   // 띄울 데이터 설정
+  const loadData = async () => {
+    try {
+      const url =
+        userRole == "학생" ? `/connection/teachers` : `/connection/students`;
+      const response = await api.get(url);
+      setData(response.data.data);
+      console.log(response.data.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const url =
-          userRole == "학생" ? `/connection/teachers` : `/connection/students`;
-        const response = await api.get(url);
-        setData(response.data.data);
-        console.log(response.data.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
     loadData();
   }, []);
 
@@ -147,6 +148,7 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
             title="수락 대기 중"
             userRole={userRole}
             waiting
+            loadData={loadData}
           />
           <MemberList
             list={list}

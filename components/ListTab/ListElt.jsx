@@ -2,8 +2,23 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
+import { api } from "@/api";
+import { RouterName } from "../RouterName";
 
-const MemberList = ({ list, title, userRole, waiting }) => {
+const MemberList = ({ list, title, userRole, waiting, loadData }) => {
+  const handlePress = async (connectionId, action) => {
+    try {
+      const response = await api.post(`/connection/response`, {
+        connectionId,
+        action,
+      });
+      await loadData();
+      console.log(response.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
       {list.length > 0 ? (
@@ -17,14 +32,26 @@ const MemberList = ({ list, title, userRole, waiting }) => {
                   key={i}
                   leftBtnElt={
                     waiting ? (
-                      userRole == "학생" && <AcceptButton />
+                      userRole == "학생" && (
+                        <AcceptButton
+                          onPress={() =>
+                            handlePress(elt.connectionId, "accepted")
+                          }
+                        />
+                      )
                     ) : (
                       <InfoButton />
                     )
                   }
                   rightBtnElt={
                     waiting ? (
-                      userRole == "학생" && <RejectButton />
+                      userRole == "학생" && (
+                        <RejectButton
+                          onPress={() =>
+                            handlePress(elt.connectionId, "rejected")
+                          }
+                        />
+                      )
                     ) : (
                       <SendMessageButton />
                     )
