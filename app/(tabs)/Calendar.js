@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -26,62 +26,20 @@ import {
 import { themeColors } from "@/assets";
 import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const list = [
-  {
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    subject: "수학",
-    connectionStatus: "REQUESTED",
-  },
-  {
-    connecitonId: 3,
-    studentId: 2,
-    studentName: "학생2",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 4,
-    studentId: 3,
-    studentName: "학생3",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 5,
-    studentId: 4,
-    studentName: "학생4",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 5,
-    studentName: "학생5",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 6,
-    studentName: "학생6",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 7,
-    studentName: "학생7",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-];
+const acceptedList = (userRole, list) => {
+  return list.filter((elt) => {
+    const status = userRole == "학생" ? elt.connectionStatus : elt.friendStatus;
+    return status == "ACCEPTED";
+  });
+};
 
-const acceptedList = list.filter((elt) => elt.connectionStatus == "ACCEPTED");
+const getId = (elt) => elt.teacherId || elt.studentId;
+const getName = (elt) => elt.teacherName || elt.studentName;
 
 const schedules = [
   {
@@ -204,6 +162,8 @@ const homework = [
 ];
 
 export default function CalendarTab() {
+  const { userRole } = useUser();
+  const [list, setList] = useState([]);
   const today = new Date().toISOString().split("T")[0];
   const [currentDate, setCurrentDate] = useState(new Date(today));
   const [currentTarget, setCurrentTarget] = useState(null);
@@ -213,19 +173,35 @@ export default function CalendarTab() {
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
+  useEffect(() => {
+    const loadList = async () => {
+      try {
+        const url = `/connection/${
+          userRole == "학생" ? "teachers" : "students"
+        }`;
+        const response = await api.get(url);
+        setList(acceptedList(userRole, response.data.data));
+        console.log(acceptedList(userRole, response.data.data));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadList();
+  }, []);
+
   // 필터 함수는 여기서 선언!
   const getFilteredSchedules = () => {
     if (currentTarget == null) return schedules;
-    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
-    if (!student) return [];
-    return schedules.filter((item) => item.name === student.studentName);
+    const people = list.find((elt) => getId(elt) === currentTarget);
+    if (!people) return [];
+    return schedules.filter((item) => item.name === getName(people));
   };
 
   const getFilteredHomework = () => {
     if (currentTarget == null) return homework;
-    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
-    if (!student) return [];
-    return homework.filter((item) => item.name === student.studentName);
+    const people = list.find((elt) => getId(elt) === currentTarget);
+    if (!people) return [];
+    return homework.filter((item) => item.name === getName(people));
   };
 
   const filteredSchedules = getFilteredSchedules();
@@ -291,13 +267,13 @@ export default function CalendarTab() {
           onPress={() => setCurrentTarget(null)}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {acceptedList.map((elt) => (
+          {list.map((elt) => (
             <StudentComponent
-              name={elt.studentName}
+              name={getName(elt)}
               subject={elt.subject}
-              key={elt.studentId}
-              on={currentTarget == elt.studentId}
-              onPress={() => setCurrentTarget(elt.studentId)}
+              key={getId(elt)}
+              on={currentTarget == getId(elt)}
+              onPress={() => setCurrentTarget(getId(elt))}
             />
           ))}
         </ScrollView>
@@ -400,7 +376,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
   },
 
   mainTitleContainer: {
@@ -410,7 +385,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 13,
     marginBottom: 10,
-    marginLeft: 41,
+    marginLeft: 34,
   },
 
   studentList: {

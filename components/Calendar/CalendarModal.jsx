@@ -58,15 +58,16 @@ function CalendarModal({
               <View style={{ gap: 11 }}>
                 {schedules.length > 0 &&
                   schedules.map((item) => (
-                    <ScheduleItem key={item.scheduleId} item={item} />
+                    <ScheduleItem key={item.calendarId} item={item} />
                   ))}
 
                 {homework.length > 0 &&
                   homework.map((item) => (
-                    <HomeworkItem key={item.homeworkId} item={item} />
+                    <HomeworkItem key={item.homeworkDateId} item={item} />
                   ))}
               </View>
 
+              {/* 일정 등록하기 버튼 (선생님용) */}
               {userRole == "선생님" && (
                 <View style={styles.buttonContainer}>
                   {!isScheduleButtonClicked ? (

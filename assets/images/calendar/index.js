@@ -13,6 +13,8 @@ export const calendarImage = {
   scheduleRegisterCancelBtn: require("./schedule_register_cancel_button.png"),
 
   calendarIcon: require("./calendar_icon.png"),
+
+  calendarInputIcon: require("./calendar_input_icon.png"),
   clockIcon: require("./clock_icon.png"),
   homeworkUploadOnToggle: require("./homework_upload_on.png"),
   homeworkUploadOffToggle: require("./homework_upload_off.png"),
