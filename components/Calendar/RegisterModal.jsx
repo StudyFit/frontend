@@ -12,17 +12,41 @@ import { ScheduleTimeInput } from "./ScheduleTimeInput";
 import { HwDeadlineInput } from "./HwDeadlineInput";
 import { ContentInput } from "./ContentInput";
 import { commonStyles } from "./ModalInputStyle";
+import { useUser } from "@/contexts/UserContext";
+import { api } from "@/api";
 
-const data = ["김정은 - 국어", "장유빈 - 영어", "정채영 - 과학"]; // api로 받아올 학생 목록을 가정
+const acceptedList = (userRole, list) => {
+  return list.filter((elt) => {
+    const status = userRole == "학생" ? elt.connectionStatus : elt.friendStatus;
+    return status == "ACCEPTED";
+  });
+};
 
 function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
-  const [studentList, setStudentList] = useState(data);
-  const [selectedStudent, setSelectedStudent] = useState("");
+  const { userRole } = useUser();
+  const [studentList, setStudentList] = useState([]);
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [hwDeadline, setHwDeadline] = useState("");
   const [content, setContent] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+
+  useEffect(() => {
+    const loadList = async () => {
+      try {
+        const url = `/connection/${
+          userRole == "학생" ? "teachers" : "students"
+        }`;
+        const response = await api.get(url);
+        setStudentList(acceptedList(userRole, response.data.data));
+        console.log(acceptedList(userRole, response.data.data));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadList();
+  }, []);
 
   // 모달이 처음 열릴 때 날짜 저장
   useEffect(() => {
@@ -30,19 +54,19 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
   }, [visible]);
 
   const handleModalClose = () => {
-    setSelectedStudent("");
+    setSelectedConnectionId(null);
     closeRegisterModal();
   };
 
-  const registerSchedule = () => {
-    if (!selectedStudent) return;
+  const registerSchedule = async () => {
+    if (!selectedConnectionId) return;
 
     // 공통 데이터
     const payload = {
-      student: selectedStudent,
+      connectionId: selectedConnectionId,
       content,
-      type: registerModalType,
-      selectedDate,
+      scheduleType: registerModalType == "수업" ? "CLASS" : "ETC",
+      selectedDate: selectedDate.split("T")[0],
     };
 
     // 타입별로 필요한 데이터만 추가
@@ -55,8 +79,14 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
 
     // 나중에 axios.post("/api/schedule", payload) 등으로 사용
     console.log("등록 데이터:", payload);
-
-    handleModalClose();
+    if (registerModalType !== "숙제") {
+      try {
+        await api.post(`/calendar/schedule`, payload);
+        handleModalClose();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   return (
@@ -73,8 +103,8 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
               <View style={styles.inputGroup}>
                 <StudentInput
                   studentList={studentList}
-                  selectedStudent={selectedStudent}
-                  setSelectedStudent={setSelectedStudent}
+                  selectedConnectionId={selectedConnectionId}
+                  setSelectedConnectionId={setSelectedConnectionId}
                 />
                 {registerModalType !== "숙제" ? (
                   <View>
