@@ -71,7 +71,7 @@ function CalendarModal({
                 <View style={styles.buttonContainer}>
                   {!isScheduleButtonClicked ? (
                     <ButtonComponent
-                      text="일정"
+                      text="일정 등록"
                       style={styles.button}
                       onPress={() => setIsScheduleButtonClicked(true)}
                     />
@@ -79,11 +79,11 @@ function CalendarModal({
                     <View style={{ gap: 13, alignItems: "center" }}>
                       <View style={[styles.button, { height: 67, gap: 13 }]}>
                         <ButtonComponent
-                          text="수업"
+                          text="수업 일정"
                           onPress={() => handleScheduleButtonClick("수업")}
                         />
                         <ButtonComponent
-                          text="기타"
+                          text="기타 일정"
                           onPress={() => handleScheduleButtonClick("기타")}
                         />
                       </View>
@@ -98,7 +98,7 @@ function CalendarModal({
                     </View>
                   )}
                   <ButtonComponent
-                    text="숙제"
+                    text="숙제 등록"
                     style={styles.button}
                     onPress={() => handleScheduleButtonClick("숙제")}
                   />
@@ -148,7 +148,7 @@ const HomeworkItem = ({ item }) => {
 const ButtonComponent = ({ text, style, onPress }) => {
   return (
     <Pressable style={style} onPress={onPress}>
-      <Text style={styles.buttonText}>+ {text} 일정</Text>
+      <Text style={styles.buttonText}>+ {text}</Text>
     </Pressable>
   );
 };
