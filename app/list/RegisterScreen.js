@@ -1,5 +1,5 @@
 import { api } from "@/api";
-import { registerIcon, themeColorName, themeColors } from "@/assets";
+import { getColorName, registerIcon } from "@/assets";
 import {
   BottomBtn,
   ColorModal,
@@ -24,10 +24,6 @@ function getKoreanDay(englishDay) {
   return found ? found[0] : null;
 }
 
-function getColorName(hex) {
-  return Object.entries(themeColors).find(([_, value]) => value === hex)?.[0];
-}
-
 const RegisterScreen = ({ setAddMode, studentInfo }) => {
   const [subject, setSubject] = useState("");
   const [color, setColor] = useState("");
@@ -46,7 +42,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
       const requestBody = {
         studentId: studentInfo.id,
         subject,
-        themeColor: themeColorName[getColorName(color)],
+        themeColor: getColorName(color),
         startDate: schedule?.startDate || "",
         endDate: schedule?.endDate || "",
         classTimeDtoList: schedule?.classTimeDtoList || [],

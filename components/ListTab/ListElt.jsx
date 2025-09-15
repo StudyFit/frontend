@@ -1,18 +1,47 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { listImage, yourDefaultProfileImage } from "@/assets";
+import {
+  getColorName,
+  listImage,
+  themeColorName,
+  yourDefaultProfileImage,
+} from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
 import { api } from "@/api";
+import { ColorModal } from "./register";
+import { useState } from "react";
 
 const MemberList = ({ list, title, userRole, waiting, loadData }) => {
-  const handlePress = async (connectionId, action) => {
+  const [showColorModal, setShowColorModal] = useState(false);
+  const [color, setColor] = useState("");
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
+
+  const handleConnectionRequest = async (connectionId, action) => {
     try {
       const response = await api.post(`/connection/response`, {
         connectionId,
         action,
       });
-      // await loadData();
       console.log(response.data);
+      setSelectedConnectionId(connectionId);
+      if (action == "ACCEPTED") setShowColorModal(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const closeColorModal = async () => {
+    if (!color) return;
+    try {
+      const response = await api.patch(`/connection/color`, {
+        connectionId: selectedConnectionId,
+        themeColor: getColorName(color),
+      });
+      console.log(getColorName(color));
+      console.log(response.data);
+      setShowColorModal(false);
+      setSelectedConnectionId(null);
+      // await loadData();
     } catch (e) {
       console.error(e);
     }
@@ -20,6 +49,13 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
 
   return (
     <>
+      {showColorModal && (
+        <ColorModal
+          onRequestClose={closeColorModal}
+          selectedColor={color}
+          setColor={setColor}
+        />
+      )}
       {list.length > 0 ? (
         <>
           <HorizontalLine text={title} />
@@ -34,7 +70,10 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
                       userRole == "학생" && (
                         <AcceptButton
                           onPress={() =>
-                            handlePress(elt.connectionId, "accepted")
+                            handleConnectionRequest(
+                              elt.connectionId,
+                              "ACCEPTED"
+                            )
                           }
                         />
                       )
@@ -47,7 +86,10 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
                       userRole == "학생" && (
                         <RejectButton
                           onPress={() =>
-                            handlePress(elt.connectionId, "rejected")
+                            handleConnectionRequest(
+                              elt.connectionId,
+                              "REJECTED"
+                            )
                           }
                         />
                       )

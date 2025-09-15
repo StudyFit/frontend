@@ -38,4 +38,10 @@ const themeColorName = {
   purple: "PURPLE",
 };
 
-export { themeColors, themeSoftColors, themeColorName };
+function getColorName(hex) {
+  return themeColorName[
+    Object.entries(themeColors).find(([_, value]) => value === hex)?.[0]
+  ];
+}
+
+export { themeColors, themeSoftColors, getColorName };
