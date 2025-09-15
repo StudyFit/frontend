@@ -2,7 +2,7 @@ import { View, Text, SafeAreaView, Image, Pressable } from "react-native";
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { useRouter } from "expo-router";
-import { BottomBtn, CustomTextInput } from "@/components";
+import { BottomBtn, CustomTextInput, RouterName } from "@/components";
 import { loginImage } from "@/assets";
 
 export default function LoginPage() {
@@ -12,10 +12,14 @@ export default function LoginPage() {
   const { login } = useUser();
   const router = useRouter();
 
-  const handleLogin = () => {
-    login("학생");
-    console.log("학생");
-    setPw("");
+  const handleLogin = async () => {
+    if (!id || !pw) return;
+    if (await login(id, pw)) {
+      router.replace(RouterName.TodaysLessonTab);
+    } else {
+      // 로그인 실패
+      alert("아이디 또는 비밀번호가 틀렸습니다.");
+    }
   };
 
   return (
@@ -67,8 +71,8 @@ export default function LoginPage() {
         <Pressable onPress={() => router.push("/(auth)/signUp")}>
           <Text>회원가입</Text>
         </Pressable>
-        {/* 
-        // 졸프 버전
+
+        {/* 졸프 버전 */}
         <Image
           source={loginImage.verticalLine}
           style={{ width: 1, height: 18 }}
@@ -82,7 +86,7 @@ export default function LoginPage() {
         />
         <Pressable>
           <Text>비밀번호 찾기</Text>
-        </Pressable> */}
+        </Pressable>
       </View>
     </SafeAreaView>
   );

@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-const NoList = () => {
+const NoList = ({ showRole }) => {
   return (
     <View
       style={{
@@ -11,14 +11,17 @@ const NoList = () => {
         alignItems: "center",
         justifyContent: "center",
         marginTop: 29,
+        marginHorizontal: 26,
       }}
     >
-      <Text style={{ fontSize: 20 }}>학생이 없습니다.</Text>
+      <Text style={{ fontSize: 20 }}>{showRole}이 없습니다.</Text>
       <Text style={{ fontSize: 12 }}>
-        아래의 추가 버튼을 눌러 학생을 추가해보세요.
+        {showRole == "학생"
+          ? "아래의 추가 버튼을 눌러 학생을 추가해보세요."
+          : "선생님께 말씀드려 추가해보세요."}
       </Text>
     </View>
   );
 };
 
-export default NoList;
+export { NoList };

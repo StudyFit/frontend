@@ -11,6 +11,7 @@ import { StudentInput } from "./StudentInput";
 import { ScheduleTimeInput } from "./ScheduleTimeInput";
 import { HwDeadlineInput } from "./HwDeadlineInput";
 import { ContentInput } from "./ContentInput";
+import { commonStyles } from "./ModalInputStyle";
 
 const data = ["김정은 - 국어", "장유빈 - 영어", "정채영 - 과학"]; // api로 받아올 학생 목록을 가정
 
@@ -76,12 +77,15 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
                   setSelectedStudent={setSelectedStudent}
                 />
                 {registerModalType !== "숙제" ? (
-                  <ScheduleTimeInput
-                    startTime={startTime}
-                    setStartTime={setStartTime}
-                    endTime={endTime}
-                    setEndTime={setEndTime}
-                  />
+                  <View>
+                    <Text style={commonStyles.titleText}>일정 시간</Text>
+                    <ScheduleTimeInput
+                      startTime={startTime}
+                      setStartTime={setStartTime}
+                      endTime={endTime}
+                      setEndTime={setEndTime}
+                    />
+                  </View>
                 ) : (
                   <HwDeadlineInput
                     hwDeadline={hwDeadline}

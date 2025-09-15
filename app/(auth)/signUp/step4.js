@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { View, Text, Button, SafeAreaView } from "react-native";
+import { View, SafeAreaView } from "react-native";
 import { useSignUp } from "@/contexts/SignUpContext";
 import {
   BottomBtn,
@@ -9,16 +9,41 @@ import {
 } from "@/components";
 import { useState } from "react";
 import { loginImage } from "@/assets";
+import { apiPublic } from "@/api";
 
-export default function Step1() {
+export default function Step4() {
   const [school, setSchool] = useState("");
   const [grade, setGrade] = useState("");
   const router = useRouter();
-  const { signUpData, setSignUpData } = useSignUp();
+  const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
+  const [readyToSubmit, setReadyToSubmit] = useState(false);
 
-  const goToComplete = () => {
+  useEffect(() => {
+    if (readyToSubmit) {
+      const submit = async () => {
+        try {
+          const payload = getFilteredSignUpData();
+          await apiPublic.post(`/api/auth/signup/student`, payload);
+          router.push(RouterName.SignUpComplete);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setReadyToSubmit(false);
+        }
+      };
+      submit();
+    }
+  }, [readyToSubmit]);
+
+  const saveData = () => {
     if (!school || !grade) return;
-    router.push(RouterName.SignUpComplete);
+    const gradeNum = Number(grade);
+    if (!Number.isInteger(gradeNum)) {
+      console.log("학년은 정수여야 합니다.");
+      return;
+    }
+    setSignUpData((prev) => ({ ...prev, school, grade: gradeNum }));
+    setReadyToSubmit(true);
   };
 
   return (

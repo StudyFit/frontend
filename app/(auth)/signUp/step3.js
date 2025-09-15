@@ -17,7 +17,7 @@ import {
 } from "@/components";
 import { loginImage } from "@/assets";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import api from "@/api";
+import { apiPublic } from "@/api";
 
 export default function Step3() {
   const [id, setId] = useState("");
@@ -33,32 +33,36 @@ export default function Step3() {
   const router = useRouter();
   const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
 
-  const goToStep4 = async () => {
-    if (saveData()) router.push(RouterName.SignUpComplete);
+  const goToStep4 = () => {
+    if (saveData()) {
+      router.push(RouterName.signUpStep4);
+    }
   };
 
   const goToComplete = async () => {
     if (saveData()) {
       try {
         const payload = getFilteredSignUpData();
-        const response = await api.post(`/api/auth/signup/teacher`, payload);
-        router.push(RouterName.signUpStep4);
+        await apiPublic.post(`/api/auth/signup/teacher`, payload);
+        router.push(RouterName.SignUpComplete);
       } catch (e) {
         console.error(e);
       }
     }
   };
 
-  const saveData = async () => {
+  const saveData = () => {
     if (!id || !pw || !pwConfirm || !name || !birth) return false;
     if (pw !== pwConfirm) return false;
-    await setSignUpData((prev) => ({
+
+    setSignUpData((prev) => ({
       ...prev,
       loginId: id,
       password: pw,
       name: name,
       birth: birth,
     }));
+
     return true;
   };
 
@@ -93,7 +97,7 @@ export default function Step3() {
           secureTextEntry={!showPw}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPw}
+              show={!!showPw}
               onPress={() => setShowPw(!showPw)}
             />
           }
@@ -106,7 +110,7 @@ export default function Step3() {
           secureTextEntry={!showPwConfirm}
           rightElement={
             <ShowSecureTextEntry
-              show={!showPwConfirm}
+              show={!!showPwConfirm}
               onPress={() => setShowPwConfirm(!showPwConfirm)}
             />
           }

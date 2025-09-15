@@ -3,7 +3,7 @@ export * from "./HwIcon";
 export * from "./ShowScheduleToggle";
 export * from "./DayCalendarElement";
 
-export * from "./CalendarBtn";
+export * from "./CalendarHeader";
 export * from "./CalendarModal";
 export * from "./RegisterModal";
 
