@@ -41,30 +41,26 @@ const acceptedList = (userRole, list) => {
 const getId = (elt) => elt.teacherId || elt.studentId;
 const getName = (elt) => elt.teacherName || elt.studentName;
 
-const schedules = [
-  {
-    connectionId: 1,
-    calendarId: 1,
-    date: "2025-07-02", // 6월 → 7월
-    name: "학생2",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-  {
-    connectionId: 3,
-    calendarId: 3,
-    date: "2025-07-06", // 6월 → 7월
-    name: "학생3",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-];
+function monthRange(dateInput) {
+  const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+
+  // UTC 기준 연도, 월(0-11)
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
+
+  // 첫날: year-month-01 (UTC)
+  const first = new Date(Date.UTC(year, month, 1));
+  // 마지막날: 다음달의 0번째 날 -> 해당달의 마지막 날
+  const last = new Date(Date.UTC(year, month + 1, 0));
+
+  const fmt = (dt) =>
+    `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+
+  return { start: fmt(first), end: fmt(last) };
+}
 
 const homework = [
   {
@@ -169,11 +165,13 @@ export default function CalendarTab() {
   const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
+  const [schedules, setSchedules] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
   useEffect(() => {
+    // 연결된 학생/선생님 데이터 불러오기
     const loadList = async () => {
       try {
         const url = `/connection/${
@@ -181,12 +179,30 @@ export default function CalendarTab() {
         }`;
         const response = await api.get(url);
         setList(acceptedList(userRole, response.data.data));
-        console.log(acceptedList(userRole, response.data.data));
+        // console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
         console.error(e);
       }
     };
+
+    // 달력 데이터 불러오기
+    const loadCalendar = async () => {
+      try {
+        const { start, end } = monthRange(currentDate);
+        const url = `/calendar/schedule?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+
+        const response = await api.get(url);
+        setSchedules(response.data.data);
+        console.log(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     loadList();
+    loadCalendar();
   }, []);
 
   // 필터 함수는 여기서 선언!
@@ -194,14 +210,14 @@ export default function CalendarTab() {
     if (currentTarget == null) return schedules;
     const people = list.find((elt) => getId(elt) === currentTarget);
     if (!people) return [];
-    return schedules.filter((item) => item.name === getName(people));
+    return schedules.filter((item) => getName(item) === getName(people));
   };
 
   const getFilteredHomework = () => {
     if (currentTarget == null) return homework;
     const people = list.find((elt) => getId(elt) === currentTarget);
     if (!people) return [];
-    return homework.filter((item) => item.name === getName(people));
+    return homework.filter((item) => getName(item) === getName(people));
   };
 
   const filteredSchedules = getFilteredSchedules();
