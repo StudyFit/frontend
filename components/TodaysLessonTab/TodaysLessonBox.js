@@ -2,28 +2,43 @@ import { StyleSheet, Text, View } from "react-native";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import NoContainer from "./NoContainer";
 import { themeColors } from "@/assets";
+import { useEffect, useState } from "react";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
 
-const TodaysLessonBox = () => {
-  const classList = [
-    {
-      memberId: 101,
-      scheduleId: 32,
-      name: "정채영",
-      grade: "중3",
-      subject: "수학",
-      themeColor: "blue",
-      note: null,
-      address: null,
-      startTime: "13:00",
-      endTime: "16:00",
-    },
-  ];
+const showName = (userRole, classInfo) =>
+  userRole === "학생" ? classInfo.teacherName : classInfo.studentName;
+
+const showThemeColor = (userRole, classInfo) =>
+  userRole === "학생"
+    ? classInfo.teacherThemeColor
+    : classInfo.studentThemeColor;
+
+const TodaysLessonBox = ({ currentDate }) => {
+  const [todaysLesson, setTodaysLesson] = useState([]);
+  const { userRole } = useUser();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const role = userRole == "학생" ? "STUDENT" : "TEACHER";
+        const response = await api.get(
+          `/calendar/todayclass?date=${currentDate}&role=${role}`
+        );
+        console.log(response.data.data);
+        setTodaysLesson(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadData();
+  }, [currentDate]);
 
   return (
     <View style={styles.container}>
-      {classList ? (
-        classList.map((student) => (
-          <View key={student.memberId}>
+      {todaysLesson.length ? (
+        todaysLesson.map((classInfo) => (
+          <View key={classInfo.calendarId}>
             <View
               style={{
                 flexDirection: "row",
@@ -32,16 +47,18 @@ const TodaysLessonBox = () => {
               }}
             >
               <TodaysStudentContainer
-                name={student.name}
-                grade={student.grade}
-                subject={student.subject}
-                color={themeColors[student.themeColor]}
+                name={showName(userRole, classInfo)}
+                grade={classInfo.grade}
+                subject={classInfo.subject}
+                color={themeColors[showThemeColor(userRole, classInfo)]}
               />
-              <Text>{student.startTime + " ~ " + student.endTime}</Text>
+              <Text>
+                {classInfo.classStartedAt + " ~ " + classInfo.classEndedAt}
+              </Text>
             </View>
-            {student.note && (
+            {classInfo.content && (
               <View>
-                <Text style={styles.studentMemo}>{student.note}</Text>
+                <Text style={styles.studentMemo}>{classInfo.content}</Text>
               </View>
             )}
           </View>
