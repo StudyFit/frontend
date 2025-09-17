@@ -56,7 +56,7 @@ export default function TodaysLessonPage() {
         </View>
         <View style={{ marginTop: 32, gap: 15 }}>
           <MainTitle text="오늘의 숙제" />
-          <TodaysHwBox />
+          <TodaysHwBox currentDate={currentDate.toISOString().split("T")[0]} />
         </View>
       </ScrollView>
 
