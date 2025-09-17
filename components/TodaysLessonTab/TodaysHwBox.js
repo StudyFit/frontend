@@ -4,43 +4,66 @@ import TodaysStudentContainer from "./TodaysStudentContainer";
 import FeedbackContainer from "./FeedbackContainer";
 import NoContainer from "./NoContainer";
 import { useUser } from "@/contexts/UserContext";
+import { useEffect, useState } from "react";
+import { api } from "@/api";
 
-const TodaysHwBox = () => {
+const getName = (userRole, hw) =>
+  userRole == "학생" ? hw.teacherName : hw.studentName;
+
+const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
+  const [hwList, setHwList] = useState([]);
 
   const hwInfo = [
     {
       connectionId: 1,
       homeworkDateId: 1,
-      name: "정채영", // 학생이 불러올 경우 00선생님
-      info: null, // 학생이 조회할 경우 null
-      subject: "영어",
-      themeColor: "blue",
+      date: "2025-05-07",
+      teacherName: "정채영",
+      teacherProfileImg: "ex.com",
+      studentName: "김정은",
+      studentProfileImg: "ex.com",
+      grade: "숙명중 2",
+      subject: "수학",
       isAllCompleted: false,
-      feedback: "어려울텐데 잘했어~ 내일도 파이팅!",
+      feedback: "잘햇다. 굿~!",
       homeworkList: [
         {
           homeworkId: 1,
-          content: "Ch1-2 Word Test ",
-          isCompleted: true,
+          content: "여기여기 풀어오셈",
+          isCompleted: false,
           isPhotoRequired: false,
-          isPhotoUploaded: false,
         },
         {
           homeworkId: 2,
-          content: "Jump to Grammar p.56-61",
-          isCompleted: true,
+          content: "여기저기 풀어오셈",
+          isCompleted: false,
           isPhotoRequired: false,
-          isPhotoUploaded: false,
         },
       ],
     },
   ];
 
+  useEffect(() => {
+    const loadHw = async () => {
+      try {
+        const url = `/calendar/homeworks?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${currentDate}&endDate=${currentDate}`;
+        const response = await api.get(url);
+        setHwList(response.data.data);
+        console.log(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadHw();
+  }, [currentDate]);
+
   return (
     <>
-      {hwInfo ? (
-        hwInfo.map((hw) => (
+      {hwList.length ? (
+        hwList.map((hw) => (
           <View
             key={hw.homeworkDateId}
             style={[
@@ -49,8 +72,8 @@ const TodaysHwBox = () => {
             ]}
           >
             <TodaysStudentContainer
-              name={hw.name}
-              grade={hw.info}
+              name={getName(userRole, hw)}
+              grade={hw.grade}
               subject={hw.subject}
               color="white"
             />
@@ -72,8 +95,6 @@ const TodaysHwBox = () => {
                       }}
                     />
                     <Text>{elt.content}</Text>
-                    {/* 
-                    사진 업로드 버튼
                     {elt.isPhotoRequired && (
                       <Image
                         source={
@@ -83,7 +104,7 @@ const TodaysHwBox = () => {
                         }
                         style={{ width: 18, height: 18, marginLeft: "auto" }}
                       />
-                    )} */}
+                    )}
                   </View>
                 ))}
             </View>
@@ -92,6 +113,7 @@ const TodaysHwBox = () => {
               <FeedbackContainer
                 hwId={hw.homeworkDateId}
                 feedback={hw.feedback}
+                role={userRole}
               />
             )}
           </View>

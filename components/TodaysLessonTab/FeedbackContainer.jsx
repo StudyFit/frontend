@@ -2,7 +2,7 @@ import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { todaysLessonImages } from "@/assets";
 import { useState } from "react";
 
-const FeedbackContainer = ({ hwId, feedback }) => {
+const FeedbackContainer = ({ hwId, feedback, role }) => {
   const [feedbackText, setFeedbackText] = useState(feedback);
 
   return (
@@ -14,12 +14,14 @@ const FeedbackContainer = ({ hwId, feedback }) => {
         placeholderTextColor="#676767"
         style={styles.feedbackInput}
       />
-      <Pressable>
-        <Image
-          source={todaysLessonImages.feedbackBtn}
-          style={styles.feedbackBtn}
-        />
-      </Pressable>
+      {role === "선생님" && (
+        <Pressable>
+          <Image
+            source={todaysLessonImages.feedbackBtn}
+            style={styles.feedbackBtn}
+          />
+        </Pressable>
+      )}
     </View>
   );
 };
