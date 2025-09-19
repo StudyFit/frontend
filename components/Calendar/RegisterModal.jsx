@@ -29,6 +29,7 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [hwDeadline, setHwDeadline] = useState("");
+  const [photoRequired, setPhotoRequired] = useState(false);
   const [content, setContent] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -59,7 +60,7 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
   };
 
   const registerSchedule = async () => {
-    if (!selectedConnectionId) return;
+    if (!selectedConnectionId || !content || !startTime || !endTime) return;
 
     // 공통 데이터
     const payload = {
@@ -67,25 +68,36 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
       content,
       scheduleType: registerModalType == "수업" ? "CLASS" : "ETC",
       selectedDate: selectedDate.split("T")[0],
+      startTime: startTime,
+      endTime: endTime,
     };
 
-    // 타입별로 필요한 데이터만 추가
-    if (registerModalType === "숙제") {
-      payload.hwDeadline = hwDeadline;
-    } else {
-      payload.startTime = startTime;
-      payload.endTime = endTime;
+    try {
+      await api.post(`/calendar/schedule`, payload);
+      handleModalClose();
+    } catch (e) {
+      console.error(e);
     }
+  };
 
-    // 나중에 axios.post("/api/schedule", payload) 등으로 사용
+  const registerHomework = async () => {
+    if (!selectedConnectionId || !hwDeadline || !content) return;
+
+    // 공통 데이터
+    const payload = {
+      content,
+      date: hwDeadline,
+      photoRequired,
+    };
+
     console.log("등록 데이터:", payload);
-    if (registerModalType !== "숙제") {
-      try {
-        await api.post(`/calendar/schedule`, payload);
-        handleModalClose();
-      } catch (e) {
-        console.error(e);
-      }
+
+    try {
+      const res = await api.post(`/homeworks/${selectedConnectionId}`, payload);
+      console.log(res.data);
+      handleModalClose();
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -107,27 +119,44 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
                   setSelectedConnectionId={setSelectedConnectionId}
                 />
                 {registerModalType !== "숙제" ? (
-                  <View>
-                    <Text style={commonStyles.titleText}>일정 시간</Text>
-                    <ScheduleTimeInput
-                      startTime={startTime}
-                      setStartTime={setStartTime}
-                      endTime={endTime}
-                      setEndTime={setEndTime}
-                    />
-                  </View>
+                  <>
+                    <View>
+                      <Text style={commonStyles.titleText}>일정 시간</Text>
+                      <ScheduleTimeInput
+                        startTime={startTime}
+                        setStartTime={setStartTime}
+                        endTime={endTime}
+                        setEndTime={setEndTime}
+                      />
+                    </View>
+                    <ContentInput content={content} setContent={setContent} />
+                  </>
                 ) : (
-                  <HwDeadlineInput
-                    hwDeadline={hwDeadline}
-                    setHwDeadline={setHwDeadline}
-                  />
+                  <>
+                    <HwDeadlineInput
+                      hwDeadline={hwDeadline}
+                      setHwDeadline={setHwDeadline}
+                    />
+                    <ContentInput
+                      content={content}
+                      setContent={setContent}
+                      registerModalType={registerModalType}
+                      photoRequired={photoRequired}
+                      togglePhotoRequired={() =>
+                        setPhotoRequired(!photoRequired)
+                      }
+                    />
+                  </>
                 )}
-                <ContentInput content={content} setContent={setContent} />
               </View>
 
               <Pressable
                 style={styles.registerButton}
-                onPress={registerSchedule}
+                onPress={
+                  registerModalType !== "숙제"
+                    ? registerSchedule
+                    : registerHomework
+                }
               >
                 <Text style={styles.registerButtonText}>등록하기</Text>
               </Pressable>
