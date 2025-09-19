@@ -28,6 +28,7 @@ import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
+import { getAuthData } from "@/contexts/AuthSecureStore";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -62,101 +63,6 @@ function monthRange(dateInput) {
   return { start: fmt(first), end: fmt(last) };
 }
 
-const homework = [
-  {
-    connectionId: 1,
-    homeworkDateId: 1,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-01",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.45-48 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-4 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 2,
-    homeworkDateId: 2,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-03",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.49-52 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-5 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 4,
-    homeworkDateId: 4,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-07",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.57-60 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-7 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 5,
-    homeworkDateId: 5,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-08",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.61-64 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-8 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-];
-
 export default function CalendarTab() {
   const { userRole } = useUser();
   const [list, setList] = useState([]);
@@ -166,11 +72,14 @@ export default function CalendarTab() {
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
   const [schedules, setSchedules] = useState([]);
+  const [homeworks, setHomeworks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
   useEffect(() => {
+    const { start, end } = monthRange(currentDate);
+
     // 연결된 학생/선생님 데이터 불러오기
     const loadList = async () => {
       try {
@@ -188,7 +97,8 @@ export default function CalendarTab() {
     // 달력 데이터 불러오기
     const loadCalendar = async () => {
       try {
-        const { start, end } = monthRange(currentDate);
+        const { accessToken } = await getAuthData();
+        console.log(accessToken);
         const url = `/calendar/schedule?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${start}&endDate=${end}`;
@@ -201,8 +111,26 @@ export default function CalendarTab() {
       }
     };
 
+    // 숙제 데이터 불러오기
+    const loadHw = async () => {
+      try {
+        const url = `/calendar/homeworks?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        console.log(url);
+        const { accessToken } = getAuthData();
+        console.log(accessToken);
+        const response = await api.get(url);
+        setHomeworks(response.data.data);
+        console.log(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     loadList();
     loadCalendar();
+    loadHw();
   }, []);
 
   // 필터 함수는 여기서 선언!
@@ -214,10 +142,10 @@ export default function CalendarTab() {
   };
 
   const getFilteredHomework = () => {
-    if (currentTarget == null) return homework;
+    if (currentTarget == null) return homeworks;
     const people = list.find((elt) => getId(elt) === currentTarget);
     if (!people) return [];
-    return homework.filter((item) => getName(item) === getName(people));
+    return homeworks.filter((item) => getName(item) === getName(people));
   };
 
   const filteredSchedules = getFilteredSchedules();
