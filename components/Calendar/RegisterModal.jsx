@@ -67,13 +67,15 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
       connectionId: selectedConnectionId,
       content,
       scheduleType: registerModalType == "수업" ? "CLASS" : "ETC",
-      selectedDate: selectedDate.split("T")[0],
+      date: selectedDate.split("T")[0],
       startTime: startTime,
       endTime: endTime,
     };
 
     try {
-      await api.post(`/calendar/schedule`, payload);
+      const response = await api.post(`/calendar/schedule`, payload);
+      console.log(response.data);
+      console.log("등록한 일정", payload);
       handleModalClose();
     } catch (e) {
       console.error(e);
