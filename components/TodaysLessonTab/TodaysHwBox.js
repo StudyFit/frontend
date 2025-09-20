@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { themeColors, todaysLessonImages } from "@/assets";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import FeedbackContainer from "./FeedbackContainer";
@@ -13,6 +13,7 @@ const getName = (userRole, hw) =>
 const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
   const [hwList, setHwList] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const loadHw = async () => {
@@ -22,13 +23,26 @@ const TodaysHwBox = ({ currentDate }) => {
         }&startDate=${currentDate}&endDate=${currentDate}`;
         const response = await api.get(url);
         setHwList(response.data.data);
-        console.log(response.data.data);
+        console.log("숙제 데이터", response.data.data);
       } catch (e) {
         console.error(e);
       }
     };
     loadHw();
-  }, [currentDate]);
+    setRefresh(false);
+  }, [currentDate, refresh]);
+
+  const toggleHwComplete = async (homeworkId, isCompleted) => {
+    try {
+      const response = await api.patch(`/homeworks/${homeworkId}/check`, {
+        checked: !isCompleted,
+      });
+      console.log(response.data);
+      setRefresh(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <>
@@ -52,18 +66,24 @@ const TodaysHwBox = ({ currentDate }) => {
               {hw.homeworkList &&
                 hw.homeworkList.map((elt) => (
                   <View style={styles.hwTask} key={elt.homeworkId}>
-                    <Image
-                      source={
-                        elt.isCompleted
-                          ? todaysLessonImages.hwCheckTrue
-                          : todaysLessonImages.hwCheckFalse
+                    <Pressable
+                      onPress={() =>
+                        toggleHwComplete(elt.homeworkId, elt.isCompleted)
                       }
-                      style={{
-                        width: 23,
-                        height: 24,
-                        marginRight: 8.5,
-                      }}
-                    />
+                    >
+                      <Image
+                        source={
+                          elt.isCompleted
+                            ? todaysLessonImages.hwCheckTrue
+                            : todaysLessonImages.hwCheckFalse
+                        }
+                        style={{
+                          width: 23,
+                          height: 24,
+                          marginRight: 8.5,
+                        }}
+                      />
+                    </Pressable>
                     <Text>{elt.content}</Text>
                     {elt.isPhotoRequired && (
                       <Image
@@ -81,9 +101,10 @@ const TodaysHwBox = ({ currentDate }) => {
             {(userRole === "선생님" ||
               (userRole === "학생" && hw.feedback)) && (
               <FeedbackContainer
-                hwId={hw.homeworkDateId}
+                homeworkDateId={hw.homeworkDateId}
                 feedback={hw.feedback}
                 role={userRole}
+                toggleRefresh={() => setRefresh(false)}
               />
             )}
           </View>
