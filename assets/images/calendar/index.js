@@ -7,6 +7,9 @@ export const calendarImage = {
   hwShowOnToggle: require("./homework_show_on.png"),
   hwShowOffToggle: require("./homework_show_off.png"),
 
+  photoRequiredOnBtn: require("./photo_required_on_btn.png"),
+  photoRequiredOffBtn: require("./photo_required_off_btn.png"),
+
   hwDoneIcon: require("./homework_done_icon.png"),
   hwNotDoneIcon: require("./homework_not_done_icon.png"),
 

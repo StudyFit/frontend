@@ -28,6 +28,7 @@ import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
+import { getAuthData } from "@/contexts/AuthSecureStore";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -38,128 +39,26 @@ const acceptedList = (userRole, list) => {
   });
 };
 
-const getId = (elt) => elt.teacherId || elt.studentId;
-const getName = (elt) => elt.teacherName || elt.studentName;
+function monthRange(dateInput) {
+  const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
 
-const schedules = [
-  {
-    connectionId: 1,
-    calendarId: 1,
-    date: "2025-07-02", // 6월 → 7월
-    name: "학생2",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-  {
-    connectionId: 3,
-    calendarId: 3,
-    date: "2025-07-06", // 6월 → 7월
-    name: "학생3",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-];
+  // UTC 기준 연도, 월(0-11)
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
 
-const homework = [
-  {
-    connectionId: 1,
-    homeworkDateId: 1,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-01",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.45-48 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-4 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 2,
-    homeworkDateId: 2,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-03",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.49-52 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-5 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 4,
-    homeworkDateId: 4,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-07",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.57-60 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-7 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 5,
-    homeworkDateId: 5,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-08",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.61-64 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-8 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-];
+  // 첫날: year-month-01 (UTC)
+  const first = new Date(Date.UTC(year, month, 1));
+  // 마지막날: 다음달의 0번째 날 -> 해당달의 마지막 날
+  const last = new Date(Date.UTC(year, month + 1, 0));
+
+  const fmt = (dt) =>
+    `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+
+  return { start: fmt(first), end: fmt(last) };
+}
 
 export default function CalendarTab() {
   const { userRole } = useUser();
@@ -169,11 +68,16 @@ export default function CalendarTab() {
   const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
+  const [schedules, setSchedules] = useState([]);
+  const [homeworks, setHomeworks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
   useEffect(() => {
+    const { start, end } = monthRange(currentDate);
+
+    // 연결된 학생/선생님 데이터 불러오기
     const loadList = async () => {
       try {
         const url = `/connection/${
@@ -181,12 +85,46 @@ export default function CalendarTab() {
         }`;
         const response = await api.get(url);
         setList(acceptedList(userRole, response.data.data));
-        console.log(acceptedList(userRole, response.data.data));
+        // console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
         console.error(e);
       }
     };
+
+    // 달력 데이터 불러오기
+    const loadCalendar = async () => {
+      try {
+        const { accessToken } = await getAuthData();
+        console.log(accessToken);
+        const url = `/calendar/schedule?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        console.log(url);
+        const response = await api.get(url);
+        setSchedules(response.data.data);
+        console.log("달력 데이터 불러오기", response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    // 숙제 데이터 불러오기
+    const loadHw = async () => {
+      try {
+        const url = `/calendar/homeworks?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        const response = await api.get(url);
+        setHomeworks(response.data.data);
+        // console.log(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     loadList();
+    loadCalendar();
+    loadHw();
   }, []);
 
   // 필터 함수는 여기서 선언!
@@ -194,14 +132,14 @@ export default function CalendarTab() {
     if (currentTarget == null) return schedules;
     const people = list.find((elt) => getId(elt) === currentTarget);
     if (!people) return [];
-    return schedules.filter((item) => item.name === getName(people));
+    return schedules.filter((item) => getName(item) === getName(people));
   };
 
   const getFilteredHomework = () => {
-    if (currentTarget == null) return homework;
+    if (currentTarget == null) return homeworks;
     const people = list.find((elt) => getId(elt) === currentTarget);
     if (!people) return [];
-    return homework.filter((item) => item.name === getName(people));
+    return homeworks.filter((item) => getName(item) === getName(people));
   };
 
   const filteredSchedules = getFilteredSchedules();
@@ -231,6 +169,10 @@ export default function CalendarTab() {
 
   const modalSchedules = getItemsByDate(filteredSchedules, modalDate);
   const modalHomework = getItemsByDate(filteredHomework, modalDate);
+
+  const getId = (elt) => (userRole === "학생" ? elt.teacherId : elt.studentId);
+  const getName = (elt) =>
+    userRole === "학생" ? elt.teacherName : elt.studentName;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -330,7 +272,7 @@ export default function CalendarTab() {
                     <DayScheduleElement
                       key={item.calendarId}
                       themeColor={themeColors[item.themeColor]}
-                      studentName={item.name}
+                      name={getName(item)}
                       subject={item.subject}
                     />
                   ))}
@@ -341,7 +283,7 @@ export default function CalendarTab() {
                     <DayHomeworkElement
                       key={item.homeworkDateId}
                       isAssigned={item.isAllCompleted}
-                      studentName={item.name}
+                      name={getName(item)}
                     />
                   ))}
               </View>
