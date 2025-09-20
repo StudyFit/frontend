@@ -13,7 +13,7 @@ import { ko } from "date-fns/locale";
 import { useState } from "react";
 import { calendarImage } from "@/assets/images/calendar";
 import { useUser } from "@/contexts/UserContext";
-import { themeColors } from "@/assets";
+import { getHexFromBackend } from "@/assets";
 
 function CalendarModal({
   visible,
@@ -44,6 +44,8 @@ function CalendarModal({
 
   const getName = (item) =>
     userRole === "학생" ? item.teacherName.slice(1) : item.studentName.slice(1);
+  const getThemeColor = (item) =>
+    userRole === "학생" ? item.teacherThemeColor : item.studentThemeColor;
 
   return (
     <Modal
@@ -65,6 +67,7 @@ function CalendarModal({
                       key={item.calendarId}
                       item={item}
                       name={getName(item)}
+                      color={getHexFromBackend(getThemeColor(item))}
                     />
                   ))}
 
@@ -124,19 +127,16 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item, name }) => {
+const ScheduleItem = ({ item, name, color }) => {
+  const shortTime = (time) => time.split(":").slice(0, 2).join(":");
+
   return (
-    <View
-      style={[
-        styles.scheduleContainer,
-        { backgroundColor: themeColors[item.themeColor] },
-      ]}
-    >
+    <View style={[styles.scheduleContainer, { backgroundColor: color }]}>
       <Text style={styles.mainText}>
         {name} {item.subject}
       </Text>
       <Text style={{ fontSize: 10 }}>
-        {item.startTime} ~ {item.endTime}
+        {shortTime(item.classStartedAt)} ~ {shortTime(item.classEndedAt)}
       </Text>
       {item.content && (
         <Text style={{ fontSize: 10, color: "#616161" }}>{item.content}</Text>
