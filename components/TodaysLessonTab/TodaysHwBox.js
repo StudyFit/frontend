@@ -14,36 +14,6 @@ const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
   const [hwList, setHwList] = useState([]);
 
-  const hwInfo = [
-    {
-      connectionId: 1,
-      homeworkDateId: 1,
-      date: "2025-05-07",
-      teacherName: "정채영",
-      teacherProfileImg: "ex.com",
-      studentName: "김정은",
-      studentProfileImg: "ex.com",
-      grade: "숙명중 2",
-      subject: "수학",
-      isAllCompleted: false,
-      feedback: "잘햇다. 굿~!",
-      homeworkList: [
-        {
-          homeworkId: 1,
-          content: "여기여기 풀어오셈",
-          isCompleted: false,
-          isPhotoRequired: false,
-        },
-        {
-          homeworkId: 2,
-          content: "여기저기 풀어오셈",
-          isCompleted: false,
-          isPhotoRequired: false,
-        },
-      ],
-    },
-  ];
-
   useEffect(() => {
     const loadHw = async () => {
       try {
