@@ -25,7 +25,7 @@ const TodaysLessonBox = ({ currentDate }) => {
         const response = await api.get(
           `/calendar/todayclass?date=${currentDate}&role=${role}`
         );
-        console.log(response.data.data);
+        console.log("오늘의 수업 데이터", response.data.data);
         setTodaysLesson(response.data.data);
       } catch (e) {
         console.error(e);

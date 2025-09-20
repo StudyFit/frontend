@@ -102,7 +102,8 @@ export default function CalendarTab() {
         console.log(url);
         const response = await api.get(url);
         setSchedules(response.data.data);
-        console.log("달력 데이터 불러오기", response.data.data);
+        console.log("달력 데이터 불러오기");
+        console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
         console.error(e);
       }
