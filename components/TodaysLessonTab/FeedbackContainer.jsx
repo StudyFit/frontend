@@ -1,9 +1,29 @@
 import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { todaysLessonImages } from "@/assets";
 import { useState } from "react";
+import { api } from "@/api";
 
-const FeedbackContainer = ({ hwId, feedback, role }) => {
+const FeedbackContainer = ({
+  homeworkDateId,
+  feedback,
+  role,
+  toggleRefresh,
+}) => {
   const [feedbackText, setFeedbackText] = useState(feedback);
+
+  const handleFeedback = async () => {
+    if (!feedbackText) return;
+    try {
+      const response = await api.patch(
+        `/homeworks/${homeworkDateId}/feedback`,
+        { feedback: feedbackText }
+      );
+      console.log(response.data);
+      toggleRefresh();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <View style={styles.feedbackContainer}>
@@ -15,7 +35,7 @@ const FeedbackContainer = ({ hwId, feedback, role }) => {
         style={styles.feedbackInput}
       />
       {role === "선생님" && (
-        <Pressable>
+        <Pressable onPress={handleFeedback}>
           <Image
             source={todaysLessonImages.feedbackBtn}
             style={styles.feedbackBtn}
