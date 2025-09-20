@@ -14,6 +14,7 @@ import { useState } from "react";
 import { calendarImage } from "@/assets/images/calendar";
 import { useUser } from "@/contexts/UserContext";
 import { getHexFromBackend } from "@/assets";
+import { shortTime } from "@/util/time";
 
 function CalendarModal({
   visible,
@@ -128,8 +129,6 @@ function CalendarModal({
 }
 
 const ScheduleItem = ({ item, name, color }) => {
-  const shortTime = (time) => time.split(":").slice(0, 2).join(":");
-
   return (
     <View style={[styles.scheduleContainer, { backgroundColor: color }]}>
       <Text style={styles.mainText}>
