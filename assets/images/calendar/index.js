@@ -7,12 +7,17 @@ export const calendarImage = {
   hwShowOnToggle: require("./homework_show_on.png"),
   hwShowOffToggle: require("./homework_show_off.png"),
 
+  photoRequiredOnBtn: require("./photo_required_on_btn.png"),
+  photoRequiredOffBtn: require("./photo_required_off_btn.png"),
+
   hwDoneIcon: require("./homework_done_icon.png"),
   hwNotDoneIcon: require("./homework_not_done_icon.png"),
 
   scheduleRegisterCancelBtn: require("./schedule_register_cancel_button.png"),
 
   calendarIcon: require("./calendar_icon.png"),
+
+  calendarInputIcon: require("./calendar_input_icon.png"),
   clockIcon: require("./clock_icon.png"),
   homeworkUploadOnToggle: require("./homework_upload_on.png"),
   homeworkUploadOffToggle: require("./homework_upload_off.png"),
