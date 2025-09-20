@@ -7,7 +7,7 @@ import {
   RoleImage,
   RouterName,
 } from "@/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginImage } from "@/assets";
 import { apiPublic } from "@/api";
 
@@ -68,7 +68,7 @@ export default function Step4() {
         />
       </View>
 
-      <BottomBtn text="회원가입 하기" onPress={goToComplete} />
+      <BottomBtn text="회원가입 하기" onPress={saveData} />
     </SafeAreaView>
   );
 }
