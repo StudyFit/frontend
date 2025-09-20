@@ -42,6 +42,9 @@ function CalendarModal({
     setRegisterModalType(type);
   };
 
+  const getName = (item) =>
+    userRole === "학생" ? item.teacherName.slice(1) : item.studentName.slice(1);
+
   return (
     <Modal
       visible={visible}
@@ -58,12 +61,20 @@ function CalendarModal({
               <View style={{ gap: 11 }}>
                 {schedules.length > 0 &&
                   schedules.map((item) => (
-                    <ScheduleItem key={item.calendarId} item={item} />
+                    <ScheduleItem
+                      key={item.calendarId}
+                      item={item}
+                      name={getName(item)}
+                    />
                   ))}
 
                 {homework.length > 0 &&
                   homework.map((item) => (
-                    <HomeworkItem key={item.homeworkDateId} item={item} />
+                    <HomeworkItem
+                      key={item.homeworkDateId}
+                      item={item}
+                      name={getName(item)}
+                    />
                   ))}
               </View>
 
@@ -113,7 +124,7 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item }) => {
+const ScheduleItem = ({ item, name }) => {
   return (
     <View
       style={[
@@ -122,7 +133,7 @@ const ScheduleItem = ({ item }) => {
       ]}
     >
       <Text style={styles.mainText}>
-        {item.name.slice(1)} {item.subject}
+        {name} {item.subject}
       </Text>
       <Text style={{ fontSize: 10 }}>
         {item.startTime} ~ {item.endTime}
@@ -134,14 +145,14 @@ const ScheduleItem = ({ item }) => {
   );
 };
 
-const HomeworkItem = ({ item }) => {
+const HomeworkItem = ({ item, name }) => {
   return (
     <View style={styles.homeworkContainer}>
       <HwIcon
         isAssigned={item.isAllCompleted}
         style={{ width: 11, height: 11 }}
       />
-      <Text style={styles.mainText}>{item.name.slice(1)} 숙제</Text>
+      <Text style={styles.mainText}>{name} 숙제</Text>
     </View>
   );
 };

@@ -39,9 +39,6 @@ const acceptedList = (userRole, list) => {
   });
 };
 
-const getId = (elt) => elt.teacherId || elt.studentId;
-const getName = (elt) => elt.teacherName || elt.studentName;
-
 function monthRange(dateInput) {
   const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
 
@@ -102,10 +99,10 @@ export default function CalendarTab() {
         const url = `/calendar/schedule?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${start}&endDate=${end}`;
-
+        console.log(url);
         const response = await api.get(url);
         setSchedules(response.data.data);
-        console.log(response.data.data);
+        console.log("달력 데이터 불러오기", response.data.data);
       } catch (e) {
         console.error(e);
       }
@@ -117,12 +114,9 @@ export default function CalendarTab() {
         const url = `/calendar/homeworks?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${start}&endDate=${end}`;
-        console.log(url);
-        const { accessToken } = getAuthData();
-        console.log(accessToken);
         const response = await api.get(url);
         setHomeworks(response.data.data);
-        console.log(response.data.data);
+        // console.log(response.data.data);
       } catch (e) {
         console.error(e);
       }
@@ -175,6 +169,10 @@ export default function CalendarTab() {
 
   const modalSchedules = getItemsByDate(filteredSchedules, modalDate);
   const modalHomework = getItemsByDate(filteredHomework, modalDate);
+
+  const getId = (elt) => (userRole === "학생" ? elt.teacherId : elt.studentId);
+  const getName = (elt) =>
+    userRole === "학생" ? elt.teacherName : elt.studentName;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -274,7 +272,7 @@ export default function CalendarTab() {
                     <DayScheduleElement
                       key={item.calendarId}
                       themeColor={themeColors[item.themeColor]}
-                      studentName={item.name}
+                      name={getName(item)}
                       subject={item.subject}
                     />
                   ))}
@@ -285,7 +283,7 @@ export default function CalendarTab() {
                     <DayHomeworkElement
                       key={item.homeworkDateId}
                       isAssigned={item.isAllCompleted}
-                      studentName={item.name}
+                      name={getName(item)}
                     />
                   ))}
               </View>
