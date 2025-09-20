@@ -23,7 +23,7 @@ import {
   StudentComponent,
   TotalComponent,
 } from "@/components";
-import { themeColors } from "@/assets";
+import { getHexFromBackend, themeColors } from "@/assets";
 import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
@@ -173,6 +173,8 @@ export default function CalendarTab() {
   const getId = (elt) => (userRole === "학생" ? elt.teacherId : elt.studentId);
   const getName = (elt) =>
     userRole === "학생" ? elt.teacherName : elt.studentName;
+  const getThemeColor = (elt) =>
+    userRole === "학생" ? elt.teacherThemeColor : elt.studentThemeColor;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -271,7 +273,7 @@ export default function CalendarTab() {
                   daySchedules.map((item) => (
                     <DayScheduleElement
                       key={item.calendarId}
-                      themeColor={themeColors[item.themeColor]}
+                      themeColor={getHexFromBackend(getThemeColor(item))}
                       name={getName(item)}
                       subject={item.subject}
                     />
