@@ -49,7 +49,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
         memo: memo || "",
         address: address || "",
       };
-
+      console.log("classTimeDtoList", schedule?.classTimeDtoList);
       await api.patch(`/connection/request`, requestBody);
       setError("");
       setAddMode(false);
@@ -124,8 +124,8 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
                 </Text>
                 {schedule.classTimeDtoList.map((classDto, i) => (
                   <Text key={i} style={styles.scheduleText}>
-                    {getKoreanDay(classDto.day)} {classDto.startTime} ~{" "}
-                    {classDto.endTime}
+                    {getKoreanDay(classDto.day)} {classDto.start} ~{" "}
+                    {classDto.end}
                   </Text>
                 ))}
               </View>
