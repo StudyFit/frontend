@@ -191,6 +191,7 @@ export default function CalendarTab() {
       {/* 수업 일정 등록 모달 */}
       <RegisterModal
         visible={!!registerModalType}
+        modalDate={modalDate}
         registerModalType={registerModalType}
         closeRegisterModal={() => setRegisterModalType("")}
       />
