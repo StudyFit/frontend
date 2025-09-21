@@ -49,7 +49,7 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
         memo: memo || "",
         address: address || "",
       };
-
+      console.log(requestBody);
       await api.patch(`/connection/request`, requestBody);
       setError("");
       setAddMode(false);

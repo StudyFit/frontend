@@ -23,20 +23,18 @@ import {
   StudentComponent,
   TotalComponent,
 } from "@/components";
-import { getHexFromBackend, themeColors } from "@/assets";
+import { getHexFromBackend } from "@/assets";
 import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
 import { getAuthData } from "@/contexts/AuthSecureStore";
+import { getId, getName, getStatus, getThemeColor } from "@/util/roleBranch";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const acceptedList = (userRole, list) => {
-  return list.filter((elt) => {
-    const status = userRole == "학생" ? elt.connectionStatus : elt.friendStatus;
-    return status == "ACCEPTED";
-  });
+  return list.filter((elt) => getStatus(userRole, elt) == "ACCEPTED");
 };
 
 function monthRange(dateInput) {
@@ -102,7 +100,8 @@ export default function CalendarTab() {
         console.log(url);
         const response = await api.get(url);
         setSchedules(response.data.data);
-        console.log("달력 데이터 불러오기", response.data.data);
+        console.log("달력 데이터 불러오기");
+        console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
         console.error(e);
       }
@@ -127,23 +126,19 @@ export default function CalendarTab() {
     loadHw();
   }, []);
 
-  // 필터 함수는 여기서 선언!
-  const getFilteredSchedules = () => {
-    if (currentTarget == null) return schedules;
-    const people = list.find((elt) => getId(elt) === currentTarget);
+  const getFilteredData = (data) => {
+    if (currentTarget == null) return data;
+
+    const people = list.find((elt) => getId(userRole, elt) === currentTarget);
     if (!people) return [];
-    return schedules.filter((item) => getName(item) === getName(people));
+
+    return data.filter(
+      (item) => getName(userRole, item) === getName(userRole, people)
+    );
   };
 
-  const getFilteredHomework = () => {
-    if (currentTarget == null) return homeworks;
-    const people = list.find((elt) => getId(elt) === currentTarget);
-    if (!people) return [];
-    return homeworks.filter((item) => getName(item) === getName(people));
-  };
-
-  const filteredSchedules = getFilteredSchedules();
-  const filteredHomework = getFilteredHomework();
+  const filteredSchedules = getFilteredData(schedules);
+  const filteredHomework = getFilteredData(homeworks);
 
   const changeMonth = (diff) => {
     const newDate = new Date(currentDate);
@@ -169,12 +164,6 @@ export default function CalendarTab() {
 
   const modalSchedules = getItemsByDate(filteredSchedules, modalDate);
   const modalHomework = getItemsByDate(filteredHomework, modalDate);
-
-  const getId = (elt) => (userRole === "학생" ? elt.teacherId : elt.studentId);
-  const getName = (elt) =>
-    userRole === "학생" ? elt.teacherName : elt.studentName;
-  const getThemeColor = (elt) =>
-    userRole === "학생" ? elt.teacherThemeColor : elt.studentThemeColor;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -213,11 +202,11 @@ export default function CalendarTab() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {list.map((elt) => (
             <StudentComponent
-              name={getName(elt)}
+              name={getName(userRole, elt)}
               subject={elt.subject}
-              key={getId(elt)}
-              on={currentTarget == getId(elt)}
-              onPress={() => setCurrentTarget(getId(elt))}
+              key={getId(userRole, elt)}
+              on={currentTarget == getId(userRole, elt)}
+              onPress={() => setCurrentTarget(getId(userRole, elt))}
             />
           ))}
         </ScrollView>
@@ -273,8 +262,10 @@ export default function CalendarTab() {
                   daySchedules.map((item) => (
                     <DayScheduleElement
                       key={item.calendarId}
-                      themeColor={getHexFromBackend(getThemeColor(item))}
-                      name={getName(item)}
+                      themeColor={getHexFromBackend(
+                        getThemeColor(userRole, item)
+                      )}
+                      name={getName(userRole, item)}
                       subject={item.subject}
                     />
                   ))}
@@ -285,7 +276,7 @@ export default function CalendarTab() {
                     <DayHomeworkElement
                       key={item.homeworkDateId}
                       isAssigned={item.isAllCompleted}
-                      name={getName(item)}
+                      name={getName(userRole, item)}
                     />
                   ))}
               </View>

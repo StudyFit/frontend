@@ -9,6 +9,7 @@ import {
   MemberList,
 } from "@/components";
 import { api } from "@/api";
+import { getName, getStatus } from "@/util/roleBranch";
 
 const teacherData = [
   {
@@ -102,22 +103,17 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const getStatus = (elt) =>
-    userRole === "학생" ? elt.connectionStatus : elt.friendStatus;
-
-  // 검색 기준 이름 필드
-  const getName = (elt) =>
-    userRole === "학생" ? elt.teacherName : elt.studentName;
-
   // 검색어 필터
   const filteredData = data.filter((elt) =>
-    getName(elt)?.toLowerCase().includes(searchText.toLowerCase())
+    getName(userRole, elt)?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // 최종 리스트
-  const list = filteredData.filter((elt) => getStatus(elt) === "ACCEPTED");
+  const list = filteredData.filter(
+    (elt) => getStatus(userRole, elt) === "ACCEPTED"
+  );
   const waitingList = filteredData.filter(
-    (elt) => getStatus(elt) === "REQUESTED"
+    (elt) => getStatus(userRole, elt) === "REQUESTED"
   );
 
   // 띄울 데이터 설정

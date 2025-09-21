@@ -1,10 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import {
-  getColorName,
-  listImage,
-  themeColorName,
-  yourDefaultProfileImage,
-} from "@/assets";
+import { getColorName, listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
 import { api } from "@/api";
