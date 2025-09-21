@@ -126,23 +126,19 @@ export default function CalendarTab() {
     loadHw();
   }, []);
 
-  // 필터 함수는 여기서 선언!
-  const getFilteredSchedules = () => {
-    if (currentTarget == null) return schedules;
-    const people = list.find((elt) => getId(elt) === currentTarget);
+  const getFilteredData = (data) => {
+    if (currentTarget == null) return data;
+
+    const people = list.find((elt) => getId(userRole, elt) === currentTarget);
     if (!people) return [];
-    return schedules.filter((item) => getName(item) === getName(people));
+
+    return data.filter(
+      (item) => getName(userRole, item) === getName(userRole, people)
+    );
   };
 
-  const getFilteredHomework = () => {
-    if (currentTarget == null) return homeworks;
-    const people = list.find((elt) => getId(elt) === currentTarget);
-    if (!people) return [];
-    return homeworks.filter((item) => getName(item) === getName(people));
-  };
-
-  const filteredSchedules = getFilteredSchedules();
-  const filteredHomework = getFilteredHomework();
+  const filteredSchedules = getFilteredData(schedules);
+  const filteredHomework = getFilteredData(homeworks);
 
   const changeMonth = (diff) => {
     const newDate = new Date(currentDate);
