@@ -29,14 +29,12 @@ import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
 import { getAuthData } from "@/contexts/AuthSecureStore";
+import { getStatus } from "@/util/roleBranch";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const acceptedList = (userRole, list) => {
-  return list.filter((elt) => {
-    const status = userRole == "학생" ? elt.connectionStatus : elt.friendStatus;
-    return status == "ACCEPTED";
-  });
+  return list.filter((elt) => getStatus(userRole, elt) == "ACCEPTED");
 };
 
 function monthRange(dateInput) {
