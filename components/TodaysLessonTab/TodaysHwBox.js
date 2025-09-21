@@ -1,14 +1,12 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { themeColors, todaysLessonImages } from "@/assets";
+import { getHexFromBackend, todaysLessonImages } from "@/assets";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import FeedbackContainer from "./FeedbackContainer";
 import NoContainer from "./NoContainer";
 import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import { api } from "@/api";
-
-const getName = (userRole, hw) =>
-  userRole == "학생" ? hw.teacherName : hw.studentName;
+import { getName, getThemeColor } from "@/util/roleBranch";
 
 const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
@@ -23,7 +21,8 @@ const TodaysHwBox = ({ currentDate }) => {
         }&startDate=${currentDate}&endDate=${currentDate}`;
         const response = await api.get(url);
         setHwList(response.data.data);
-        console.log("숙제 데이터", response.data.data);
+        // console.log("숙제 데이터", response.data.data);
+        // console.log(url);
       } catch (e) {
         console.error(e);
       }
@@ -52,7 +51,9 @@ const TodaysHwBox = ({ currentDate }) => {
             key={hw.homeworkDateId}
             style={[
               styles.container,
-              { backgroundColor: themeColors[hw.themeColor] },
+              {
+                backgroundColor: getHexFromBackend(getThemeColor(userRole, hw)),
+              },
             ]}
           >
             <TodaysStudentContainer

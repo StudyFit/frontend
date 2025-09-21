@@ -5,3 +5,6 @@ export const getName = (userRole, elt) =>
 
 export const getThemeColor = (userRole, elt) =>
   isStudent(userRole) ? elt.teacherThemeColor : elt.studentThemeColor;
+
+export const getStatus = (userRole, elt) =>
+  isStudent(userRole) ? elt.connectionStatus : elt.friendStatus;

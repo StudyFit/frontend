@@ -15,6 +15,7 @@ import { calendarImage } from "@/assets/images/calendar";
 import { useUser } from "@/contexts/UserContext";
 import { getHexFromBackend } from "@/assets";
 import { shortTime } from "@/util/time";
+import { getName, getThemeColor } from "@/util/roleBranch";
 
 function CalendarModal({
   visible,
@@ -43,11 +44,6 @@ function CalendarModal({
     setRegisterModalType(type);
   };
 
-  const getName = (item) =>
-    userRole === "학생" ? item.teacherName.slice(1) : item.studentName.slice(1);
-  const getThemeColor = (item) =>
-    userRole === "학생" ? item.teacherThemeColor : item.studentThemeColor;
-
   return (
     <Modal
       visible={visible}
@@ -67,8 +63,8 @@ function CalendarModal({
                     <ScheduleItem
                       key={item.calendarId}
                       item={item}
-                      name={getName(item)}
-                      color={getHexFromBackend(getThemeColor(item))}
+                      name={getName(userRole, item).slice(1)}
+                      color={getHexFromBackend(getThemeColor(userRole, item))}
                     />
                   ))}
 
@@ -77,7 +73,7 @@ function CalendarModal({
                     <HomeworkItem
                       key={item.homeworkDateId}
                       item={item}
-                      name={getName(item)}
+                      name={getName(userRole, item)}
                     />
                   ))}
               </View>
