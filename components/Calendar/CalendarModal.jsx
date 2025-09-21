@@ -73,7 +73,7 @@ function CalendarModal({
                     <HomeworkItem
                       key={item.homeworkDateId}
                       item={item}
-                      name={getName(userRole, item)}
+                      name={getName(userRole, item).slice(1)}
                     />
                   ))}
               </View>
