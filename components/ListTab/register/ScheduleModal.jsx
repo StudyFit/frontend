@@ -28,8 +28,8 @@ const ScheduleModal = ({ onRequestClose, setSchedule }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedDay, setSelectedDay] = useState(daysOfWeek[0][0]);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const [classTimeDtoList, setClassTimeDtoList] = useState([]);
   const [error, setError] = useState("");
 
@@ -42,17 +42,14 @@ const ScheduleModal = ({ onRequestClose, setSchedule }) => {
   };
 
   const addSchedule = () => {
-    if (!startTime || !endTime) return;
+    if (!start || !end) return;
 
     const day = daysOfWeek.find(([korean]) => korean === selectedDay)[1];
-    const newSchedule = { day, startTime, endTime };
+    const newSchedule = { day, start, end };
 
     if (
       classTimeDtoList.some(
-        (item) =>
-          item.day === day &&
-          item.startTime === startTime &&
-          item.endTime === endTime
+        (item) => item.day === day && item.start === start && item.end === end
       )
     ) {
       setError("이미 같은 요일과 시간이 추가되어 있습니다.");
@@ -65,8 +62,8 @@ const ScheduleModal = ({ onRequestClose, setSchedule }) => {
 
   const resetTimeInputs = () => {
     setSelectedDay(daysOfWeek[0][0]);
-    setStartTime("");
-    setEndTime("");
+    setStart("");
+    setEnd("");
     setError("");
   };
 
@@ -96,10 +93,10 @@ const ScheduleModal = ({ onRequestClose, setSchedule }) => {
             <DayTimeSelector
               selectedDay={selectedDay}
               selectDay={selectDay}
-              startTime={startTime}
-              setStartTime={setStartTime}
-              endTime={endTime}
-              setEndTime={setEndTime}
+              start={start}
+              setStart={setStart}
+              end={end}
+              setEnd={setEnd}
               addSchedule={addSchedule}
             />
             <ScheduleList
@@ -172,10 +169,10 @@ const PeriodSelector = ({ startDate, endDate, setIsModalVisible }) => (
 const DayTimeSelector = ({
   selectedDay,
   selectDay,
-  startTime,
-  setStartTime,
-  endTime,
-  setEndTime,
+  start,
+  setStart,
+  end,
+  setEnd,
   addSchedule,
 }) => (
   <View style={styles.dayTimeContainer}>
@@ -186,10 +183,10 @@ const DayTimeSelector = ({
       </Pressable>
       <View style={{ flex: 1 }}>
         <ScheduleTimeInput
-          startTime={startTime}
-          setStartTime={setStartTime}
-          endTime={endTime}
-          setEndTime={setEndTime}
+          startTime={start}
+          setStartTime={setStart}
+          endTime={end}
+          setEndTime={setEnd}
           visible={true}
         />
       </View>
@@ -210,7 +207,7 @@ const ScheduleList = ({ classTimeDtoList, deleteSchedule }) => (
           <View key={index} style={styles.scheduleItem}>
             <Text style={styles.scheduleDay}>{day}</Text>
             <Text style={styles.scheduleTime}>
-              {classDto.startTime} ~ {classDto.endTime}
+              {classDto.start} ~ {classDto.end}
             </Text>
             <Pressable
               style={styles.deleteBtn}
