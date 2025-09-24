@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     height: 18,
   },
   feedbackBox: {
-    height: 25,
+    height: 35,
     flexDirection: "row",
     backgroundColor: "#E8E8E8",
     borderRadius: 17,
