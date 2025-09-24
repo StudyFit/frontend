@@ -24,7 +24,7 @@ export { DayScheduleElement, DayHomeworkElement };
 
 const styles = StyleSheet.create({
   scheduleContainer: {
-    width: 48,
+    width: 42,
     height: 18,
     alignItems: "center",
     justifyContent: "center",
