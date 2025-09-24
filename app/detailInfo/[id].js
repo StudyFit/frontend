@@ -150,14 +150,23 @@ export default function WeekCalendarTab() {
         console.log(url);
         const response = await api.get(url);
         setSchedules(response.data.data);
-        console.log("달력 데이터 불러오기");
-        console.log(JSON.stringify(response.data.data, null, 2));
+        // console.log("달력 데이터 불러오기");
+        // console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
         console.error(e);
       }
     };
     const loadHomework = async () => {
       try {
+        if (!start || !end) return;
+        const url = `/calendar/homeworks?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        console.log(url);
+        const response = await api.get(url);
+        setHomework(response.data.data);
+        console.log("숙제 데이터 불러오기");
+        console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
         console.error(e);
       }
@@ -221,7 +230,7 @@ export default function WeekCalendarTab() {
             <HwContainer
               key={hw.homeworkDateId}
               date={hw.date}
-              color={hw.themeColor}
+              color={info.themeColor}
               homeworkList={hw.homeworkList}
             />
           ))}
