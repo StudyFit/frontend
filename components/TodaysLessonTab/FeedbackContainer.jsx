@@ -35,7 +35,7 @@ const FeedbackContainer = ({
         style={styles.feedbackInput}
       />
       {role === "선생님" && (
-        <Pressable onPress={handleFeedback}>
+        <Pressable onPress={handleFeedback} style={{ padding: 5 }}>
           <Image
             source={todaysLessonImages.feedbackBtn}
             style={styles.feedbackBtn}

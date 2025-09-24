@@ -33,9 +33,15 @@ const TodaysHwBox = ({ currentDate }) => {
 
   const toggleHwComplete = async (homeworkId, isCompleted) => {
     try {
-      const response = await api.patch(`/homeworks/${homeworkId}/check`, {
-        checked: !isCompleted,
-      });
+      const formData = new FormData();
+      formData.append("isChecked", !isCompleted);
+
+      const response = await api.patch(
+        `/homeworks/${homeworkId}/check`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
       console.log(response.data);
       setRefresh(true);
     } catch (e) {
@@ -68,9 +74,10 @@ const TodaysHwBox = ({ currentDate }) => {
                 hw.homeworkList.map((elt) => (
                   <View style={styles.hwTask} key={elt.homeworkId}>
                     <Pressable
-                      onPress={() =>
-                        toggleHwComplete(elt.homeworkId, elt.isCompleted)
-                      }
+                      onPress={() => {
+                        console.log(elt);
+                        toggleHwComplete(elt.homeworkId, elt.isCompleted);
+                      }}
                     >
                       <Image
                         source={
