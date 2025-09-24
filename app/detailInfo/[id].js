@@ -11,6 +11,7 @@ import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
 import UserInfoContainer from "@/components/DetailInfo/UserInfoContainer";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
+import { sortHomeworks } from "@/util/sortHomeworks";
 
 // 더미 데이터
 const aschedules = [
@@ -164,7 +165,7 @@ export default function WeekCalendarTab() {
         }&startDate=${start}&endDate=${end}`;
         console.log(url);
         const response = await api.get(url);
-        setHomework(response.data.data);
+        setHomework(sortHomeworks(response.data.data));
         console.log("숙제 데이터 불러오기");
         console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
