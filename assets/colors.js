@@ -52,9 +52,10 @@ function getFrontendKey(backendName) {
 }
 
 // 백엔드 → hex (기본 색상)
-function getHexFromBackend(backendName) {
+function getHexFromBackend(backendName, soft) {
   const frontendKey = getFrontendKey(backendName);
   if (!frontendKey) return null;
+  if (soft) return themeSoftColors[frontendKey];
   return themeColors[frontendKey];
 }
 

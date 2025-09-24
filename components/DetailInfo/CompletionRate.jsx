@@ -1,24 +1,42 @@
-import React from "react";
+import { api } from "@/api";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 
-const CompletionRate = ({ month, color }) => {
+const CompletionRate = ({ month, color, connectionId }) => {
   // 이 파일 내부에서 데이터 관리
-  const completionRate = 70; // TODO: API 연동 시 변경
+  const [completionRate, setCompletionRate] = useState(0);
+  const [status, setStatus] = useState(""); // HAS_HOMEWORK or NO_HOMEWORK
   const progressWidth = `${completionRate}%`;
+
+  useEffect(() => {
+    const loadRate = async () => {
+      if (!connectionId) return;
+      try {
+        const response = await api.get(`/homeworks/rate/${connectionId}`);
+        console.log(response.data.data);
+        setCompletionRate(month == 9 ? response.data.data.rate : 0);
+        setStatus(response.data.data.status);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadRate();
+  }, [connectionId]);
 
   return (
     <View style={styles.container}>
-      <View style={[styles.progressBar, { borderColor: color }]}>
+      <View style={[styles.progressBar, month == 9 && { borderColor: color }]}>
         <View
           style={[
             styles.progressFill,
             { width: progressWidth, backgroundColor: color },
           ]}
-        >
-          <Text style={styles.progressText}>
-            {month}월 숙제 달성률 : {completionRate}%
-          </Text>
-        </View>
+        ></View>
+        <Text style={styles.progressText}>
+          {status == "HAS_HOMEWORK" && month === 9
+            ? `${month}월 숙제 달성률 : ${completionRate}%`
+            : "아직 숙제가 없습니다."}
+        </Text>
       </View>
     </View>
   );
@@ -34,7 +52,7 @@ const styles = StyleSheet.create({
     height: 27,
     borderRadius: 7,
     borderWidth: 1,
-    overflow: "hidden", // 넘치는 부분 잘림 처리
+    position: "relative",
   },
   progressFill: {
     height: "100%",
@@ -44,8 +62,12 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: "#000", // 필요 시 color로 조정 가능
+    color: "#000",
     fontWeight: "500",
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
   },
 });
 

@@ -1,4 +1,9 @@
-import { themeColors, themeSoftColors, todaysLessonImages } from "@/assets";
+import {
+  getHexFromBackend,
+  themeColors,
+  themeSoftColors,
+  todaysLessonImages,
+} from "@/assets";
 import { format, isBefore, isToday, isAfter } from "date-fns";
 import { enUS } from "date-fns/locale";
 import React from "react";
@@ -99,9 +104,9 @@ function CompletionRate({ homeworkList }) {
 }
 
 function getBackgroundColor(dateObj, today, color) {
-  if (isToday(dateObj)) return themeColors[color];
+  if (isToday(dateObj)) return getHexFromBackend(color);
   if (isBefore(dateObj, today)) return "#DDDDDD";
-  if (isAfter(dateObj, today)) return themeSoftColors[color];
+  if (isAfter(dateObj, today)) return getHexFromBackend(color, true);
   return "#FFFFFF";
 }
 
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
     height: 18,
   },
   feedbackBox: {
-    height: 25,
+    height: 35,
     flexDirection: "row",
     backgroundColor: "#E8E8E8",
     borderRadius: 17,

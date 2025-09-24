@@ -4,3 +4,4 @@ export * from "./HwContainer";
 export * from "./CompletionRate";
 export * from "./AddHwBtn";
 export * from "./SortBtn";
+export * from "./UserInfoContainer";
