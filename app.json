@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
-    "scheme": "frontend",
-    "version": "1.0.0",
+    "name": "StudyFit",
+    "slug": "StudyFit",
+    "scheme": "StudyFit",
+    "version": "1.0.0ㄴ",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo_image.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo_image.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,21 +17,31 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "사진을 업로드하기 위해 접근 권한이 필요합니다."
-      }
+      },
+      "bundleIdentifier": "com.farmers.studyfit"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/logo_image.png",
+        "backgroundColor": "#ffffff",
+        "package": "com.farmers.studyfit",
+        "versionCode": 1
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "resize",
+      "package": "com.farmers.studyfit"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo_image.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-secure-store"
-    ]
+    "plugins": ["expo-font", "expo-secure-store", "expo-asset"],
+
+    "assetBundlePatterns": ["assets/fonts/*", "assets/images/*", "**/*"],
+
+    "extra": {
+      "eas": {
+        "projectId": "0f747474-7d71-4587-a3f6-37117bce518d"
+      }
+    }
   }
 }

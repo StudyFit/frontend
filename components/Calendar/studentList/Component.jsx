@@ -1,3 +1,4 @@
+import { yourDefaultProfileImage } from "@/assets";
 import { calendarImage } from "@/assets/images/calendar";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -22,7 +23,7 @@ const StudentComponent = ({ profileImage, name, subject, onPress, on }) => {
       {on ? (
         <>
           <Image
-            source={calendarImage.basicProfileOn}
+            source={profileImage || yourDefaultProfileImage()}
             style={{ width: 46, height: 46, marginBottom: 5 }}
           />
           <View style={{ alignItems: "center" }}>
@@ -45,7 +46,7 @@ const StudentComponent = ({ profileImage, name, subject, onPress, on }) => {
       ) : (
         <>
           <Image
-            source={calendarImage.basicProfileOff}
+            source={profileImage || yourDefaultProfileImage()}
             style={{ width: 36, height: 36, marginBottom: 5 }}
           />
           <View style={{ alignItems: "center" }}>

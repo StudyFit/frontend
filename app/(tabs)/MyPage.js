@@ -1,6 +1,6 @@
 import api from "@/api";
 import * as ImagePicker from "expo-image-picker";
-import { defaultProfileImage, myPageImage } from "@/assets";
+import { myPageImage } from "@/assets/images/my-page";
 import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
+import { myDefaultProfileImage } from "@/assets";
 
 export default function MyPage() {
   const [name, setName] = useState("");
@@ -20,7 +21,7 @@ export default function MyPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const profileSource = profileImage
     ? { uri: profileImage }
-    : defaultProfileImage;
+    : myDefaultProfileImage();
 
   const editProfileImage = async () => {
     try {
@@ -76,11 +77,6 @@ export default function MyPage() {
           <View style={styles.cardList}>
             {/* 개인정보 */}
             <UserInfo setName={setName} setModalVisible={setModalVisible} />
-
-            {/* 이번 달 통계 */}
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>이번 달 통계</Text>
-            </View>
           </View>
 
           {/* 로그아웃 버튼 */}
@@ -95,16 +91,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F1F1F1",
+    paddingVertical: 30,
   },
   mainTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 13,
-    marginLeft: 21,
-    marginBottom: 28,
+    paddingTop: 13,
+    paddingHorizontal: 27,
+    marginLeft: 7,
   },
   centered: {
+    marginTop: 30,
     alignItems: "center",
   },
   profileBox: {
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 106,
     height: 106,
-    borderRadius: "100%",
+    borderRadius: 53,
   },
   editBtn: {
     width: 27,

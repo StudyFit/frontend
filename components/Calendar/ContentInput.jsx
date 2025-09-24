@@ -1,11 +1,42 @@
 import { calendarImage } from "@/assets/images/calendar";
 import { commonStyles } from "./ModalInputStyle";
-import { Image, Text, TextInput, View } from "react-native";
+import { Image, Pressable, Text, TextInput, View } from "react-native";
 
-const ContentInput = ({ content, setContent }) => {
+const ContentInput = ({
+  content,
+  setContent,
+  photoRequired,
+  togglePhotoRequired,
+  registerModalType,
+}) => {
   return (
     <View>
-      <Text style={commonStyles.titleText}>내용</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={commonStyles.titleText}>내용</Text>
+
+        {registerModalType == "숙제" && (
+          <Pressable
+            onPress={togglePhotoRequired}
+            style={{ flexDirection: "row", gap: 4 }}
+          >
+            <Text>숙제 사진 업로드</Text>
+            <Image
+              source={
+                photoRequired
+                  ? calendarImage.photoRequiredOnBtn
+                  : calendarImage.photoRequiredOffBtn
+              }
+              style={{ width: 30, height: 16, marginRight: 10 }}
+            />
+          </Pressable>
+        )}
+      </View>
       <View
         style={[
           commonStyles.inputBox,

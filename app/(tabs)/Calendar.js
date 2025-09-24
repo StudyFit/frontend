@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,14 +7,13 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
-  FlatList,
   ScrollView,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import {
-  CalendarBtn,
+  CalendarHeader,
   CalendarModal,
   DayHomeworkElement,
   DayOfWeekComponent,
@@ -24,213 +23,122 @@ import {
   StudentComponent,
   TotalComponent,
 } from "@/components";
-import { themeColors } from "@/assets";
+import { getHexFromBackend } from "@/assets";
 import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
+import { getAuthData } from "@/contexts/AuthSecureStore";
+import { getId, getName, getStatus, getThemeColor } from "@/util/roleBranch";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const list = [
-  {
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    subject: "수학",
-    connectionStatus: "REQUESTED",
-  },
-  {
-    connecitonId: 3,
-    studentId: 2,
-    studentName: "학생2",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 4,
-    studentId: 3,
-    studentName: "학생3",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 5,
-    studentId: 4,
-    studentName: "학생4",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 5,
-    studentName: "학생5",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 6,
-    studentName: "학생6",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    connecitonId: 6,
-    studentId: 7,
-    studentName: "학생7",
-    subject: "물리1",
-    connectionStatus: "ACCEPTED",
-  },
-];
+const acceptedList = (userRole, list) => {
+  return list.filter((elt) => getStatus(userRole, elt) == "ACCEPTED");
+};
 
-const acceptedList = list.filter((elt) => elt.connectionStatus == "ACCEPTED");
+function monthRange(dateInput) {
+  const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
 
-const schedules = [
-  {
-    connectionId: 1,
-    calendarId: 1,
-    date: "2025-07-02", // 6월 → 7월
-    name: "학생2",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-  {
-    connectionId: 3,
-    calendarId: 3,
-    date: "2025-07-06", // 6월 → 7월
-    name: "학생3",
-    subject: "과학",
-    startTime: "19:00",
-    endTime: "22:00",
-    content: null,
-    themeColor: "yellow",
-  },
-];
+  // UTC 기준 연도, 월(0-11)
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
 
-const homework = [
-  {
-    connectionId: 1,
-    homeworkDateId: 1,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-01",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.45-48 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-4 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 2,
-    homeworkDateId: 2,
-    name: "학생2",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-07-03",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.49-52 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-5 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 4,
-    homeworkDateId: 4,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-07",
-    isAllCompleted: true,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.57-60 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 연습문제 3-7 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-  {
-    connectionId: 5,
-    homeworkDateId: 5,
-    name: "눈송이",
-    info: "숙명고1",
-    subject: "과학",
-    date: "2025-06-08",
-    isAllCompleted: false,
-    homeworkList: [
-      {
-        homeworkId: 1,
-        content: "쎈 수학 p.61-64 풀어오기",
-        isCompleted: true,
-        isPhotoRequired: false,
-      },
-      {
-        homeworkId: 2,
-        content: "개념원리 예제 3-8 풀어오기",
-        isCompleted: false,
-        isPhotoRequired: false,
-      },
-    ],
-  },
-];
+  // 첫날: year-month-01 (UTC)
+  const first = new Date(Date.UTC(year, month, 1));
+  // 마지막날: 다음달의 0번째 날 -> 해당달의 마지막 날
+  const last = new Date(Date.UTC(year, month + 1, 0));
+
+  const fmt = (dt) =>
+    `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+
+  return { start: fmt(first), end: fmt(last) };
+}
 
 export default function CalendarTab() {
+  const { userRole } = useUser();
+  const [list, setList] = useState([]);
   const today = new Date().toISOString().split("T")[0];
   const [currentDate, setCurrentDate] = useState(new Date(today));
   const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
+  const [schedules, setSchedules] = useState([]);
+  const [homeworks, setHomeworks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
 
-  // 필터 함수는 여기서 선언!
-  const getFilteredSchedules = () => {
-    if (currentTarget == null) return schedules;
-    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
-    if (!student) return [];
-    return schedules.filter((item) => item.name === student.studentName);
+  useEffect(() => {
+    const { start, end } = monthRange(currentDate);
+
+    // 연결된 학생/선생님 데이터 불러오기
+    const loadList = async () => {
+      try {
+        const url = `/connection/${
+          userRole == "학생" ? "teachers" : "students"
+        }`;
+        const response = await api.get(url);
+        setList(acceptedList(userRole, response.data.data));
+        // console.log(acceptedList(userRole, response.data.data));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    // 달력 데이터 불러오기
+    const loadCalendar = async () => {
+      try {
+        const { accessToken } = await getAuthData();
+        console.log(accessToken);
+        const url = `/calendar/schedule?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        console.log(url);
+        const response = await api.get(url);
+        setSchedules(response.data.data);
+        console.log("달력 데이터 불러오기");
+        console.log(JSON.stringify(response.data.data, null, 2));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    // 숙제 데이터 불러오기
+    const loadHw = async () => {
+      try {
+        const url = `/calendar/homeworks?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        const response = await api.get(url);
+        setHomeworks(response.data.data);
+        // console.log(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    loadList();
+    loadCalendar();
+    loadHw();
+  }, []);
+
+  const getFilteredData = (data) => {
+    if (currentTarget == null) return data;
+
+    const people = list.find((elt) => getId(userRole, elt) === currentTarget);
+    if (!people) return [];
+
+    return data.filter(
+      (item) => getName(userRole, item) === getName(userRole, people)
+    );
   };
 
-  const getFilteredHomework = () => {
-    if (currentTarget == null) return homework;
-    const student = acceptedList.find((elt) => elt.studentId === currentTarget);
-    if (!student) return [];
-    return homework.filter((item) => item.name === student.studentName);
-  };
-
-  const filteredSchedules = getFilteredSchedules();
-  const filteredHomework = getFilteredHomework();
+  const filteredSchedules = getFilteredData(schedules);
+  const filteredHomework = getFilteredData(homeworks);
 
   const changeMonth = (diff) => {
     const newDate = new Date(currentDate);
@@ -292,13 +200,13 @@ export default function CalendarTab() {
           onPress={() => setCurrentTarget(null)}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {acceptedList.map((elt) => (
+          {list.map((elt) => (
             <StudentComponent
-              name={elt.studentName}
+              name={getName(userRole, elt)}
               subject={elt.subject}
-              key={elt.studentId}
-              on={currentTarget == elt.studentId}
-              onPress={() => setCurrentTarget(elt.studentId)}
+              key={getId(userRole, elt)}
+              on={currentTarget == getId(userRole, elt)}
+              onPress={() => setCurrentTarget(getId(userRole, elt))}
             />
           ))}
         </ScrollView>
@@ -307,16 +215,12 @@ export default function CalendarTab() {
       {/* 헤더 */}
       <View style={styles.headerContainer}>
         {/* 달 선택 */}
-        <View style={styles.headerRow}>
-          <CalendarBtn direction="left" onPress={() => changeMonth(-1)} />
-          <View style={{ alignItems: "center" }}>
-            <Text style={{ fontSize: 10 }}>{currentDate.getFullYear()}</Text>
-            <Text style={{ fontSize: 20 }}>
-              {format(currentDate, "MMM", { locale: enUS })}
-            </Text>
-          </View>
-          <CalendarBtn direction="right" onPress={() => changeMonth(1)} />
-        </View>
+
+        <CalendarHeader
+          year={currentDate.getFullYear()}
+          month={format(currentDate, "MMM", { locale: enUS })}
+          changeCalendar={changeMonth}
+        />
 
         <ShowScheduleToggle
           classShow={classShow}
@@ -358,8 +262,10 @@ export default function CalendarTab() {
                   daySchedules.map((item) => (
                     <DayScheduleElement
                       key={item.calendarId}
-                      themeColor={themeColors[item.themeColor]}
-                      studentName={item.name}
+                      themeColor={getHexFromBackend(
+                        getThemeColor(userRole, item)
+                      )}
+                      name={getName(userRole, item)}
                       subject={item.subject}
                     />
                   ))}
@@ -370,7 +276,7 @@ export default function CalendarTab() {
                     <DayHomeworkElement
                       key={item.homeworkDateId}
                       isAssigned={item.isAllCompleted}
-                      studentName={item.name}
+                      name={getName(userRole, item)}
                     />
                   ))}
               </View>
@@ -405,9 +311,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
+    paddingVertical: 30,
   },
-
   mainTitleContainer: {
     width: "100%",
     flexDirection: "row",
@@ -415,7 +320,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 13,
     marginBottom: 10,
-    marginLeft: 41,
+    marginLeft: 34,
   },
 
   studentList: {
@@ -475,12 +380,5 @@ const styles = StyleSheet.create({
   todayDayText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-
-  headerRow: {
-    width: 102,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
   },
 });

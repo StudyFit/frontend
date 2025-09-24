@@ -14,4 +14,5 @@ export const registerIcon = {
   "수업 일정": require("./register/schedule_icon.png"),
   과목: require("./register/subject_icon.png"),
   checkIcon: require("./register/check_icon.png"),
+  dashIcon: require("./register/dash_icon.png"),
 };

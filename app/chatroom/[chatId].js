@@ -1,4 +1,9 @@
-import { chatImage, defaultProfileImage, themeColors } from "@/assets";
+import {
+  chatImage,
+  defaultProfileImage,
+  themeColors,
+  yourDefaultProfileImage,
+} from "@/assets";
 import { RouterName } from "@/components";
 import { useUser } from "@/contexts/UserContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -113,7 +118,7 @@ export default function ChatRoom() {
   const scrollViewRef = useRef(null);
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
-  const [profileImage, setProfileImage] = useState(defaultProfileImage);
+  const [profileImage, setProfileImage] = useState(yourDefaultProfileImage());
   const [color, setColor] = useState("");
   const [text, setText] = useState("");
 
@@ -288,6 +293,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    paddingVertical: 30,
   },
   header: {
     flexDirection: "row",

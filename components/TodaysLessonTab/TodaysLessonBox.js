@@ -1,53 +1,73 @@
 import { StyleSheet, Text, View } from "react-native";
 import TodaysStudentContainer from "./TodaysStudentContainer";
 import NoContainer from "./NoContainer";
-import { themeColors } from "@/assets";
+import { getHexFromBackend } from "@/assets";
+import { useEffect, useState } from "react";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
+import { shortTime } from "@/util/time";
+import { getName, getThemeColor } from "@/util/roleBranch";
 
-const TodaysLessonBox = () => {
-  const classList = [
-    {
-      memberId: 101,
-      scheduleId: 32,
-      name: "정채영",
-      grade: "중3",
-      subject: "수학",
-      themeColor: "blue",
-      note: null,
-      address: null,
-      startTime: "13:00",
-      endTime: "16:00",
-    },
-  ];
+const TodaysLessonBox = ({ currentDate }) => {
+  const [todaysLesson, setTodaysLesson] = useState([]);
+  const { userRole } = useUser();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const role = userRole === "학생" ? "STUDENT" : "TEACHER";
+        const { data } = await api.get(
+          `/calendar/todayclass?date=${currentDate}&role=${role}`
+        );
+        setTodaysLesson(data.data);
+      } catch (e) {
+        console.error("오늘의 수업 데이터 불러오기 실패:", e);
+      }
+    };
+
+    loadData();
+  }, [currentDate, userRole]);
+
+  if (!todaysLesson.length) {
+    return (
+      <View style={styles.container}>
+        <NoContainer text="수업" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {classList ? (
-        classList.map((student) => (
-          <View key={student.memberId}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <TodaysStudentContainer
-                name={student.name}
-                grade={student.grade}
-                subject={student.subject}
-                color={themeColors[student.themeColor]}
-              />
-              <Text>{student.startTime + " ~ " + student.endTime}</Text>
-            </View>
-            {student.note && (
-              <View>
-                <Text style={styles.studentMemo}>{student.note}</Text>
-              </View>
-            )}
-          </View>
-        ))
-      ) : (
-        <NoContainer text="수업" />
+      {todaysLesson.map((classInfo) => (
+        <TodaysLessonItem
+          key={classInfo.calendarId}
+          classInfo={classInfo}
+          userRole={userRole}
+        />
+      ))}
+    </View>
+  );
+};
+
+const TodaysLessonItem = ({ classInfo, userRole }) => {
+  const color = getHexFromBackend(getThemeColor(userRole, classInfo));
+
+  return (
+    <View style={styles.lessonItem}>
+      <View style={styles.lessonHeader}>
+        <TodaysStudentContainer
+          name={getName(userRole, classInfo)}
+          grade={classInfo.grade}
+          subject={classInfo.subject}
+          color={color}
+        />
+        <Text style={styles.timeText}>
+          {shortTime(classInfo.classStartedAt)} ~{" "}
+          {shortTime(classInfo.classEndedAt)}
+        </Text>
+      </View>
+      {classInfo.content && (
+        <Text style={styles.studentMemo}>{classInfo.content}</Text>
       )}
     </View>
   );
@@ -63,7 +83,18 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     gap: 12,
   },
-
+  lessonItem: {
+    gap: 4,
+  },
+  lessonHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  timeText: {
+    fontSize: 12,
+    color: "#333",
+  },
   studentMemo: {
     fontSize: 11,
     color: "#676767",
