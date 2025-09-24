@@ -19,7 +19,7 @@ export const CustomTextInput = ({
         borderRadius: 4,
         flexDirection: "row",
         alignItems: "center",
-        padding: 5,
+        paddingHorizontal: 5,
       }}
     >
       {!!icon && (
