@@ -148,7 +148,7 @@ export default function Chat() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 18,
   },
   mainTitleContainer: {
     flexDirection: "row",
