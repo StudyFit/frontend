@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Modal,
   Pressable,
@@ -158,14 +159,40 @@ const ScheduleItem = ({ item, name, color, scheduleId }) => {
 };
 
 const HomeworkItem = ({ item, name }) => {
+  console.log(item);
+  const handleDeleteHw = async () => {
+    Alert.alert(
+      "숙제 삭제",
+      "숙제를 삭제하시겠습니까?",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "삭제",
+          onPress: async () => {
+            try {
+              const response = await api.delete(
+                `/homeworks/${item.homeworkDateId}`
+              );
+              console.log("삭제 완료:", response.data);
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
-    <View style={styles.homeworkContainer}>
+    <Pressable style={styles.homeworkContainer} onLongPress={handleDeleteHw}>
       <HwIcon
         isAssigned={item.isAllCompleted}
         style={{ width: 11, height: 11 }}
       />
       <Text style={styles.mainText}>{name} 숙제</Text>
-    </View>
+    </Pressable>
   );
 };
 
