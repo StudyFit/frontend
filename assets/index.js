@@ -6,6 +6,3 @@ export * from "./images/detailInfo/index";
 export * from "./images/profile-image/index";
 export * from "./colors";
 export * from "./images/my-page/index";
-
-const defaultProfileImage = require("./images/default_profile_image.png");
-export { defaultProfileImage };
