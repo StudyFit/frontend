@@ -16,6 +16,7 @@ import { useUser } from "@/contexts/UserContext";
 import { getHexFromBackend } from "@/assets";
 import { shortTime } from "@/util/time";
 import { getName, getThemeColor } from "@/util/roleBranch";
+import { api } from "@/api";
 
 function CalendarModal({
   visible,
@@ -65,6 +66,7 @@ function CalendarModal({
                       item={item}
                       name={getName(userRole, item).slice(1)}
                       color={getHexFromBackend(getThemeColor(userRole, item))}
+                      scheduleId={item.calendarId}
                     />
                   ))}
 
@@ -124,9 +126,23 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item, name, color }) => {
+const ScheduleItem = ({ item, name, color, scheduleId }) => {
+  const [editMode, setEditMode] = useState(false);
+
+  const deleteSchedule = async () => {
+    try {
+      await api.delete(`/calendar/schedule?calendarId=${scheduleId}`);
+      setEditMode(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
-    <View style={[styles.scheduleContainer, { backgroundColor: color }]}>
+    <Pressable
+      style={[styles.scheduleContainer, { backgroundColor: color }]}
+      onLongPress={() => setEditMode(true)}
+    >
       <Text style={styles.mainText}>
         {name} {item.subject}
       </Text>
@@ -136,7 +152,8 @@ const ScheduleItem = ({ item, name, color }) => {
       {item.content && (
         <Text style={{ fontSize: 10, color: "#616161" }}>{item.content}</Text>
       )}
-    </View>
+      {editMode && <DeleteButton onPress={deleteSchedule} />}
+    </Pressable>
   );
 };
 
@@ -149,6 +166,14 @@ const HomeworkItem = ({ item, name }) => {
       />
       <Text style={styles.mainText}>{name} 숙제</Text>
     </View>
+  );
+};
+
+const DeleteButton = ({ onPress }) => {
+  return (
+    <Pressable style={styles.editButton} onPress={onPress}>
+      <Text style={{ fontSize: 10 }}>삭제</Text>
+    </Pressable>
   );
 };
 
@@ -204,6 +229,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Pretendard-Bold",
   },
+  editButton: {
+    width: 40,
+    height: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "auto",
+    backgroundColor: "white",
+  },
+  editButtonText: {},
   buttonContainer: {
     flexDirection: "row",
     gap: 6,
