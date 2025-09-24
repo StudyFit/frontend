@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 106,
     height: 106,
-    borderRadius: "100%",
+    borderRadius: 53,
   },
   editBtn: {
     width: 27,
