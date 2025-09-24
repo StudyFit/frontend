@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 import { format, startOfWeek, addDays } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useLocalSearchParams, router } from "expo-router";
-
 import { CalendarHeader, WeekRow } from "@/components";
-import { themeColors, yourDefaultProfileImage } from "@/assets";
+import {
+  getHexFromBackend,
+  themeColors,
+  yourDefaultProfileImage,
+} from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
 import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
-import SortBtn from "@/components/DetailInfo/SortBtn";
 import UserInfoContainer from "@/components/DetailInfo/UserInfoContainer";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
+import { getThemeColor } from "@/util/roleBranch";
 
 // 더미 데이터
-const info = {
+const ainfo = {
   profileImage: "",
   name: "정채영",
   grade: "고1",
@@ -23,7 +28,7 @@ const info = {
   themeColor: "blue",
 };
 
-const schedules = [
+const aschedules = [
   {
     calendarId: 1,
     date: "2025-09-08",
@@ -38,7 +43,7 @@ const schedules = [
   },
 ];
 
-const homework = [
+const ahomework = [
   {
     homeworkDateId: 1,
     date: "2025-09-09",
@@ -111,37 +116,57 @@ const homework = [
 ];
 
 export default function WeekCalendarTab() {
+  const { userRole } = useUser();
   const { id } = useLocalSearchParams();
-  const [sort, setSort] = useState("날짜"); // 날짜 or 달성
   const today = new Date();
-
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(today, { weekStartsOn: 0 })
   );
+  const [info, setInfo] = useState(ainfo);
+  const [schedules, setSchedules] = useState(aschedules);
+  const [homework, setHomework] = useState(ahomework);
 
-  const profileImage = info.profileImage || yourDefaultProfileImage();
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        if (userRole == "선생님") {
+          const response = await api.get(`/connection/students`);
+          const userInfo = response.data.data.filter(
+            (student) => student.studentId == id
+          )[0];
+          setInfo(userInfo);
+        } else {
+          const response = await api.get(`/connection/teachers`);
+          const userInfo = response.data.data.filter(
+            (teacher) => teacher.teacherId == id
+          )[0];
+          setInfo(userInfo);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    const loadSchedules = async () => {};
+    const loadHomework = async () => {};
+    loadUserInfo();
+    loadSchedules();
+    loadHomework();
+  }, []);
 
-  const changeWeek = (diff) => {
+  const changeWeek = (diff) =>
     setCurrentWeekStart(addDays(currentWeekStart, diff * 7));
-  };
 
   const goToChatRoom = () => router.push(`/chatroom/${id}`);
 
   const addHw = async () => {
     console.log("숙제 추가하기");
   };
-
-  const handleSort = async () => {
-    if (sort === "날짜") setSort("달성");
-    else setSort("날짜");
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 사용자 정보 */}
       <UserInfoContainer
         info={info}
-        profileImage={profileImage}
+        profileImage={info.profileImage || yourDefaultProfileImage()}
         goToChatRoom={goToChatRoom}
       />
 
@@ -163,12 +188,12 @@ export default function WeekCalendarTab() {
 
       <CompletionRate
         month={currentWeekStart.getMonth() + 1}
-        color={themeColors[info.themeColor]}
+        color={getHexFromBackend(info.themeColor)}
+        connectionId={info.connectionId}
       />
 
       <View style={styles.addHWAndSortContainer}>
         <AddHwBtn onPress={addHw} />
-        <SortBtn sort={sort} onPress={handleSort} />
       </View>
 
       <ScrollView
@@ -176,7 +201,7 @@ export default function WeekCalendarTab() {
         showsHorizontalScrollIndicator={false} // 가로 스크롤바 숨김
       >
         <View style={{ gap: 25, marginHorizontal: 28 }}>
-          {homework.map((hw) => (
+          {homework?.map((hw) => (
             <HwContainer
               key={hw.homeworkDateId}
               date={hw.date}
@@ -191,7 +216,7 @@ export default function WeekCalendarTab() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#fff", paddingVertical: 50 },
   calendarContainer: {
     minHeight: 145,
     marginTop: 32,

@@ -1,12 +1,17 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { detailInfoIcon } from "@/assets";
 import { RouterName } from "@/components/RouterName";
+import { router } from "expo-router";
+import { getName } from "@/util/roleBranch";
+import { useUser } from "@/contexts/UserContext";
 
 export default function UserInfoContainer({
   info,
   profileImage,
   goToChatRoom,
 }) {
+  const { userRole } = useUser();
+
   return (
     <View style={styles.userContainer}>
       <Pressable
@@ -22,14 +27,13 @@ export default function UserInfoContainer({
 
       <View style={{ gap: 5 }}>
         <View style={styles.userHeader}>
-          <Text style={styles.userName}>{info.name}</Text>
-          <Text style={styles.userGrade}>{info.grade}</Text>
+          <Text style={styles.userName}>{getName(userRole, info)}</Text>
           <View style={styles.subjectBadge}>
             <Text style={styles.subjectText}>{info.subject}</Text>
           </View>
         </View>
-        <Text>{info.classTime}</Text>
-        <Text>{info.memo}</Text>
+        <Text>{info.studentInfo}</Text>
+        <Text>메모 : {info.memo}</Text>
       </View>
 
       <Pressable
@@ -38,7 +42,7 @@ export default function UserInfoContainer({
       >
         <Image source={detailInfoIcon.chatIcon} style={styles.icon} />
       </Pressable>
-      <Pressable
+      {/* <Pressable
         onPress={() =>
           router.push({
             pathname: "./ModifyInfo",
@@ -47,7 +51,7 @@ export default function UserInfoContainer({
         }
       >
         <Image source={detailInfoIcon.settingIcon} style={styles.icon} />
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }
