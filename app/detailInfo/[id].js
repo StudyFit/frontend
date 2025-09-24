@@ -15,19 +15,8 @@ import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
 import UserInfoContainer from "@/components/DetailInfo/UserInfoContainer";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
-import { getThemeColor } from "@/util/roleBranch";
 
 // 더미 데이터
-const ainfo = {
-  profileImage: "",
-  name: "정채영",
-  grade: "고1",
-  subject: "과학",
-  classTime: "월/수 12:00~14:00",
-  memo: "기타 메모들",
-  themeColor: "blue",
-};
-
 const aschedules = [
   {
     calendarId: 1,
@@ -122,7 +111,7 @@ export default function WeekCalendarTab() {
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(today, { weekStartsOn: 0 })
   );
-  const [info, setInfo] = useState(ainfo);
+  const [info, setInfo] = useState({});
   const [schedules, setSchedules] = useState(aschedules);
   const [homework, setHomework] = useState(ahomework);
 
@@ -148,6 +137,7 @@ export default function WeekCalendarTab() {
     };
     const loadSchedules = async () => {};
     const loadHomework = async () => {};
+
     loadUserInfo();
     loadSchedules();
     loadHomework();
@@ -161,6 +151,7 @@ export default function WeekCalendarTab() {
   const addHw = async () => {
     console.log("숙제 추가하기");
   };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 사용자 정보 */}

@@ -10,6 +10,7 @@ const CompletionRate = ({ month, color, connectionId }) => {
 
   useEffect(() => {
     const loadRate = async () => {
+      if (!connectionId) return;
       try {
         const response = await api.get(`/homeworks/rate/${connectionId}`);
         console.log(response.data.data);
@@ -20,7 +21,7 @@ const CompletionRate = ({ month, color, connectionId }) => {
       }
     };
     loadRate();
-  }, [month]);
+  }, []);
 
   return (
     <View style={styles.container}>
