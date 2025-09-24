@@ -113,6 +113,9 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
     >
       <View
         style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
           marginRight: 12,
           shadowColor: "#000",
           shadowOffset: { width: 0.3, height: 0.3 },
