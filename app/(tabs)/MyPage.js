@@ -1,9 +1,8 @@
-import api from "@/api";
 import * as ImagePicker from "expo-image-picker";
 import { myPageImage } from "@/assets/images/my-page";
 import { ChangePwModal, LogoutBtn, UserInfo } from "@/components";
 import MainTitle from "@/components/MainTitle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,14 +13,32 @@ import {
   ScrollView,
 } from "react-native";
 import { myDefaultProfileImage } from "@/assets";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
 
 export default function MyPage() {
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const { userRole } = useUser();
+  const [userInfo, setUserInfo] = useState({});
   const profileSource = profileImage
     ? { uri: profileImage }
     : myDefaultProfileImage();
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        const response = await api.get(`/mypage/profile`);
+        console.log(response.data.data);
+        setUserInfo(response.data.data);
+        setName(response.data.data.name);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadUserInfo();
+  }, []);
 
   const editProfileImage = async () => {
     try {
@@ -42,8 +59,26 @@ export default function MyPage() {
       });
 
       if (!result.canceled) {
-        setProfileImage(result.assets[0].uri); // 선택한 이미지 URI 저장
-        // api로 변경된 프사 저장하는 로직 추가
+        const imageUri = result.assets[0].uri;
+        console.log(result.assets[0]);
+        setProfileImage(imageUri);
+
+        // FormData 생성
+        const formData = new FormData();
+        formData.append("file", {
+          uri: imageUri,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
+
+        try {
+          const response = await api.patch(`/mypage/profile-image`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          console.log("프로필 이미지 업데이트 성공:", response.data);
+        } catch (error) {
+          console.error("프로필 이미지 업데이트 실패:", error);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -76,7 +111,11 @@ export default function MyPage() {
           {/* 카드 리스트 */}
           <View style={styles.cardList}>
             {/* 개인정보 */}
-            <UserInfo setName={setName} setModalVisible={setModalVisible} />
+            <UserInfo
+              setModalVisible={setModalVisible}
+              userInfo={userInfo}
+              setUserInfo={setUserInfo}
+            />
           </View>
 
           {/* 로그아웃 버튼 */}

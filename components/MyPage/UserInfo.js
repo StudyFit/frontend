@@ -1,6 +1,6 @@
-import { myPageImage } from "@/assets/images/my-page";
+import { myPageImage } from "@/assets";
 import { useUser } from "@/contexts/UserContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   Pressable,
@@ -10,47 +10,9 @@ import {
   View,
 } from "react-native";
 
-const UserInfo = ({ setName, setModalVisible }) => {
+const UserInfo = ({ userInfo, setUserInfo, setModalVisible }) => {
   const { userRole } = useUser();
-  const [userInfo, setUserInfo] = useState({
-    name: "",
-    id: "",
-    school: "",
-    grade: "",
-    subject: [],
-  });
   const [editMode, setEditMode] = useState(false);
-
-  useEffect(() => {
-    const loadUserInfo = async () => {
-      try {
-        // api 호출
-        let response = {};
-        if (userRole == "학생") {
-          response = {
-            name: "김학생",
-            id: "asdf1234",
-            school: "숙명여자고등학교",
-            grade: "1학년",
-            subject: [],
-          };
-        } else {
-          response = {
-            name: "김선생",
-            id: "asdf1234",
-            school: "",
-            grade: "",
-            subject: ["수학", "과학"],
-          };
-        }
-        setUserInfo(response);
-        await setName(response.name);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    loadUserInfo();
-  }, []);
 
   const completeEditUserInfo = () => {
     // api 호출해서 유저 정보 변경사항 저장
@@ -88,9 +50,9 @@ const UserInfo = ({ setName, setModalVisible }) => {
             styles.input,
             editMode && { borderColor: "#797979", color: "black" },
           ]}
-          value={userInfo.id}
+          value={userInfo.loginId}
           onChangeText={(text) =>
-            setUserInfo((prev) => ({ ...prev, id: text }))
+            setUserInfo((prev) => ({ ...prev, loginId: text }))
           }
           editable={editMode}
           maxLength={20}
@@ -99,6 +61,21 @@ const UserInfo = ({ setName, setModalVisible }) => {
 
       <UserInfoRow text="비밀번호">
         <ChangePwBtn onPress={editPw} />
+      </UserInfoRow>
+
+      <UserInfoRow text="전화번호">
+        <TextInput
+          style={[
+            styles.input,
+            editMode && { borderColor: "#797979", color: "black" },
+          ]}
+          value={userInfo.phoneNumber}
+          onChangeText={(text) =>
+            setUserInfo((prev) => ({ ...prev, phoneNumber: text }))
+          }
+          editable={editMode}
+          maxLength={20}
+        />
       </UserInfoRow>
 
       {userRole === "학생" && (
@@ -124,12 +101,16 @@ const UserInfo = ({ setName, setModalVisible }) => {
                 styles.input,
                 editMode && { borderColor: "#797979", color: "black" },
               ]}
-              value={userInfo.grade}
+              value={String(userInfo.grade ?? "")} // 숫자 → 문자열 변환
               onChangeText={(text) =>
-                setUserInfo((prev) => ({ ...prev, grade: text }))
+                setUserInfo((prev) => ({
+                  ...prev,
+                  grade: text === "" ? null : Number(text), // 문자열 → 숫자 변환
+                }))
               }
               editable={editMode}
               maxLength={20}
+              keyboardType="numeric" // 숫자 키패드 띄우기
             />
           </UserInfoRow>
         </>
