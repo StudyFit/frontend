@@ -19,10 +19,10 @@ const TodaysHwBox = ({ currentDate }) => {
         const url = `/calendar/homeworks?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${currentDate}&endDate=${currentDate}`;
+        console.log(url);
         const response = await api.get(url);
         setHwList(response.data.data);
-        // console.log("숙제 데이터", response.data.data);
-        // console.log(url);
+        console.log("숙제 데이터", response.data.data);
       } catch (e) {
         console.error(e);
       }
@@ -33,9 +33,15 @@ const TodaysHwBox = ({ currentDate }) => {
 
   const toggleHwComplete = async (homeworkId, isCompleted) => {
     try {
-      const response = await api.patch(`/homeworks/${homeworkId}/check`, {
-        checked: !isCompleted,
-      });
+      const formData = new FormData();
+      formData.append("isChecked", !isCompleted);
+
+      const response = await api.patch(
+        `/homeworks/${homeworkId}/check`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
       console.log(response.data);
       setRefresh(true);
     } catch (e) {
@@ -68,9 +74,10 @@ const TodaysHwBox = ({ currentDate }) => {
                 hw.homeworkList.map((elt) => (
                   <View style={styles.hwTask} key={elt.homeworkId}>
                     <Pressable
-                      onPress={() =>
-                        toggleHwComplete(elt.homeworkId, elt.isCompleted)
-                      }
+                      onPress={() => {
+                        console.log(elt);
+                        toggleHwComplete(elt.homeworkId, elt.isCompleted);
+                      }}
                     >
                       <Image
                         source={
