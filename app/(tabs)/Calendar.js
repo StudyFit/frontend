@@ -312,8 +312,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingVertical: 30,
   },
-
   mainTitleContainer: {
     width: "100%",
     flexDirection: "row",
