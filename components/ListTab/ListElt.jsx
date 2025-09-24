@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { api } from "@/api";
 import { ColorModal } from "./register";
 import { useState } from "react";
+import { getId } from "@/util/roleBranch";
 
 const MemberList = ({ list, title, userRole, waiting, loadData }) => {
   const [showColorModal, setShowColorModal] = useState(false);
@@ -73,7 +74,11 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
                         />
                       )
                     ) : (
-                      <InfoButton />
+                      <InfoButton
+                        onPress={() => {
+                          router.push(`/detailInfo/${getId(userRole, elt)}`);
+                        }}
+                      />
                     )
                   }
                   rightBtnElt={
@@ -134,17 +139,12 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
         />
       </View>
 
-      <Pressable
-        style={{ gap: 5, width: "55%" }}
-        onPress={() => {
-          router.push(`/detailInfo/${elt.studentId || elt.teacherId}`);
-        }}
-      >
+      <View style={{ gap: 5, width: "55%" }}>
         <Text style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}>
           {elt.studentName || elt.teacherName}
         </Text>
         <Text style={{ fontSize: 12 }}>{elt.subject}</Text>
-      </Pressable>
+      </View>
 
       <View
         style={{
