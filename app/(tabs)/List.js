@@ -17,7 +17,9 @@ export default function List() {
     : "학생 목록";
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", paddingVertical: 30 }}
+    >
       <View style={styles.mainTitleContainer}>
         <MainTitle text={titleText} />
         <Image source={listImage.listIcon} style={{ width: 24, height: 24 }} />

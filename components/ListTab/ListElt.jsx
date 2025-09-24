@@ -1,11 +1,56 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { listImage, yourDefaultProfileImage } from "@/assets";
+import { getColorName, listImage, yourDefaultProfileImage } from "@/assets";
 import { HorizontalLine } from "./HorizontalLine";
 import { router } from "expo-router";
+import { api } from "@/api";
+import { ColorModal } from "./register";
+import { useState } from "react";
 
-const MemberList = ({ list, title, waiting }) => {
+const MemberList = ({ list, title, userRole, waiting, loadData }) => {
+  const [showColorModal, setShowColorModal] = useState(false);
+  const [color, setColor] = useState("");
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
+
+  const handleConnectionRequest = async (connectionId, action) => {
+    try {
+      const response = await api.post(`/connection/response`, {
+        connectionId,
+        action,
+      });
+      console.log(response.data);
+      setSelectedConnectionId(connectionId);
+      if (action == "ACCEPTED") setShowColorModal(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const closeColorModal = async () => {
+    if (!color) return;
+    try {
+      const response = await api.patch(`/connection/color`, {
+        connectionId: selectedConnectionId,
+        themeColor: getColorName(color),
+      });
+      console.log(getColorName(color));
+      console.log(response.data);
+      setShowColorModal(false);
+      setSelectedConnectionId(null);
+      // await loadData();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
+      {showColorModal && (
+        <ColorModal
+          onRequestClose={closeColorModal}
+          selectedColor={color}
+          setColor={setColor}
+        />
+      )}
       {list.length > 0 ? (
         <>
           <HorizontalLine text={title} />
@@ -15,9 +60,37 @@ const MemberList = ({ list, title, waiting }) => {
                 <ListElt
                   elt={elt}
                   key={i}
-                  leftBtnElt={waiting ? <AcceptButton /> : <InfoButton />}
+                  leftBtnElt={
+                    waiting ? (
+                      userRole == "학생" && (
+                        <AcceptButton
+                          onPress={() =>
+                            handleConnectionRequest(
+                              elt.connectionId,
+                              "ACCEPTED"
+                            )
+                          }
+                        />
+                      )
+                    ) : (
+                      <InfoButton />
+                    )
+                  }
                   rightBtnElt={
-                    waiting ? <RejectButton /> : <SendMessageButton />
+                    waiting ? (
+                      userRole == "학생" && (
+                        <RejectButton
+                          onPress={() =>
+                            handleConnectionRequest(
+                              elt.connectionId,
+                              "REJECTED"
+                            )
+                          }
+                        />
+                      )
+                    ) : (
+                      <SendMessageButton />
+                    )
                   }
                 />
               ))}
@@ -40,6 +113,9 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
     >
       <View
         style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
           marginRight: 12,
           shadowColor: "#000",
           shadowOffset: { width: 0.3, height: 0.3 },

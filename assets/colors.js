@@ -38,4 +38,24 @@ const themeColorName = {
   purple: "PURPLE",
 };
 
-export { themeColors, themeSoftColors, themeColorName };
+function getColorName(hex) {
+  return themeColorName[
+    Object.entries(themeColors).find(([_, value]) => value === hex)?.[0]
+  ];
+}
+
+// 백엔드 → 프론트 키
+function getFrontendKey(backendName) {
+  return Object.keys(themeColorName).find(
+    (key) => themeColorName[key] === backendName
+  );
+}
+
+// 백엔드 → hex (기본 색상)
+function getHexFromBackend(backendName) {
+  const frontendKey = getFrontendKey(backendName);
+  if (!frontendKey) return null;
+  return themeColors[frontendKey];
+}
+
+export { themeColors, themeSoftColors, getColorName, getHexFromBackend };

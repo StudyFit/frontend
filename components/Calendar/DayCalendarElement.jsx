@@ -1,21 +1,21 @@
 import { StyleSheet, Text, View } from "react-native";
 import { HwIcon } from "./HwIcon";
 
-const DayScheduleElement = ({ themeColor, studentName, subject }) => {
+const DayScheduleElement = ({ themeColor, name, subject }) => {
   return (
     <View style={[styles.scheduleContainer, { backgroundColor: themeColor }]}>
       <Text style={styles.scheduleText} numberOfLines={1} ellipsizeMode="tail">
-        {studentName.slice(1)} {subject}
+        {name.slice(1)} {subject}
       </Text>
     </View>
   );
 };
 
-const DayHomeworkElement = ({ isAssigned, studentName }) => {
+const DayHomeworkElement = ({ isAssigned, name }) => {
   return (
     <View style={[styles.scheduleContainer, { flexDirection: "row", gap: 2 }]}>
       <HwIcon isAssigned={isAssigned} style={{ width: 9, height: 9 }} />
-      <Text style={styles.scheduleText}>{studentName.slice(1)} 숙제</Text>
+      <Text style={styles.scheduleText}>{name.slice(1)} 숙제</Text>
     </View>
   );
 };
@@ -24,7 +24,7 @@ export { DayScheduleElement, DayHomeworkElement };
 
 const styles = StyleSheet.create({
   scheduleContainer: {
-    width: 48,
+    width: 42,
     height: 18,
     alignItems: "center",
     justifyContent: "center",

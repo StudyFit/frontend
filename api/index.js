@@ -1,6 +1,10 @@
 import axios from "axios";
 import { API_BASE_URL } from "@env";
-import { getAuthData, updateAccessToken } from "@/contexts/AuthSecureStore";
+import {
+  getAuthData,
+  removeAccessToken,
+  updateAccessToken,
+} from "@/contexts/AuthSecureStore";
 
 // 기본 설정
 const baseConfig = {
@@ -48,7 +52,7 @@ api.interceptors.response.use(
         await updateAccessToken(newAccessToken);
         return api(originRequest);
       } catch (e) {
-        await removeTokens(); // 리프레시 실패 -> 로그아웃 처리
+        await removeAccessToken(); // 리프레시 실패 -> 로그아웃 처리
         return Promise.reject(e);
       }
     }

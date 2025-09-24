@@ -1,3 +1,4 @@
+import { api } from "@/api";
 import { listImage } from "@/assets";
 import { useState } from "react";
 import {
@@ -12,21 +13,40 @@ import {
 
 const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
   const [type, setType] = useState("search"); // "search" or "add"
-  const [studentId, setStudentId] = useState("");
+  const [searchId, setSearchId] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentGrade, setStudentGrade] = useState("");
   const [error, setError] = useState(null);
 
   // 학생 검색하는 함수
-  const searchStudent = () => {
-    if (!studentId) {
+  const searchStudent = async () => {
+    if (!searchId) {
       setError("학생 ID를 입력해주세요!");
       return;
+    }
+
+    try {
+      const response = await api.get(`/connection/search?loginId=${searchId}`);
+      console.log(response.data.data);
+      const student = response.data.data;
+      if (student) {
+        const { studentId, studentName, studentInfo } = student;
+        setStudentName(studentName);
+        setStudentGrade(studentInfo || "중3");
+        setStudentInfo({
+          id: studentId,
+          name: studentName,
+          grade: studentInfo,
+        }); // 추가 정보들 추가해야 함
+        setType("add");
+        setError(null);
+      }
+    } catch (error) {
+      console.error(error);
     }
     // 오류1 : 이미 추가한 사용자인 경우
     // 오류2 : 없는 사용자인 경우
     //   setError("없는 아이디입니다!");
-    // 성공 : 추가할 학생 정보 띄우기
-    setStudentInfo({ studentId: studentId, name: "김정은", grade: "중3" });
-    setType("add");
   };
 
   // 학생 추가하는 함수
@@ -55,9 +75,9 @@ const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
               />
               <TextInput
                 placeholder="학생 ID"
-                value={studentId}
-                onChangeText={setStudentId}
-                style={{ height: 20, fontSize: 16 }}
+                value={searchId}
+                onChangeText={setSearchId}
+                style={{ height: 36, fontSize: 13 }}
                 autoCapitalize="none"
                 autoCorrect={false}
                 maxLength={20}
@@ -68,9 +88,9 @@ const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
               style={[styles.idInputBox, { justifyContent: "space-between" }]}
             >
               <Text style={{ fontFamily: "Pretendard-Bold", fontSize: 16 }}>
-                김정은
+                {studentName}
               </Text>
-              <Text style={{ fontSize: 16 }}>중3</Text>
+              <Text style={{ fontSize: 16 }}>{studentGrade}</Text>
             </View>
           )}
           <NextStepButton
@@ -111,12 +131,13 @@ const styles = StyleSheet.create({
   },
   idInputBox: {
     width: "100%",
+    height: 34,
     flexDirection: "row",
+    alignItems: "center",
     gap: 8.6,
     alignItems: "center",
     backgroundColor: "#F2F2F2",
     paddingHorizontal: 11,
-    paddingVertical: 8,
     marginVertical: 10,
     borderRadius: 4,
   },

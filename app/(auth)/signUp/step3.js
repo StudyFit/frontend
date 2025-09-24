@@ -33,12 +33,14 @@ export default function Step3() {
   const router = useRouter();
   const { signUpData, setSignUpData, getFilteredSignUpData } = useSignUp();
 
-  const goToStep4 = async () => {
-    if (await saveData()) router.push(RouterName.signUpStep4);
+  const goToStep4 = () => {
+    if (saveData()) {
+      router.push(RouterName.signUpStep4);
+    }
   };
 
   const goToComplete = async () => {
-    if (await saveData()) {
+    if (saveData()) {
       try {
         const payload = getFilteredSignUpData();
         await apiPublic.post(`/api/auth/signup/teacher`, payload);
@@ -49,16 +51,18 @@ export default function Step3() {
     }
   };
 
-  const saveData = async () => {
+  const saveData = () => {
     if (!id || !pw || !pwConfirm || !name || !birth) return false;
     if (pw !== pwConfirm) return false;
-    await setSignUpData((prev) => ({
+
+    setSignUpData((prev) => ({
       ...prev,
       loginId: id,
       password: pw,
       name: name,
       birth: birth,
     }));
+
     return true;
   };
 

@@ -72,7 +72,7 @@ export default function LoginPage() {
           <Text>회원가입</Text>
         </Pressable>
 
-        {/* 졸프 버전 */}
+        {/* 졸프 버전
         <Image
           source={loginImage.verticalLine}
           style={{ width: 1, height: 18 }}
@@ -86,7 +86,7 @@ export default function LoginPage() {
         />
         <Pressable>
           <Text>비밀번호 찾기</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </SafeAreaView>
   );

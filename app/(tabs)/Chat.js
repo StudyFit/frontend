@@ -105,12 +105,14 @@ export default function Chat() {
   const goToChatRoom = (chatId) => router.push(`/chatroom/${chatId}`);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", paddingVertical: 30 }}
+    >
+      <View style={styles.mainTitleContainer}>
+        <MainTitle text="채팅" />
+        <Image source={chatImage.chatIcon} style={styles.headerIcon} />
+      </View>
       <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <MainTitle text="채팅" />
-          <Image source={chatImage.chatIcon} style={styles.headerIcon} />
-        </View>
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -146,19 +148,21 @@ export default function Chat() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 18,
   },
-  headerRow: {
+  mainTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
+    paddingTop: 13,
+    paddingHorizontal: 27,
+    marginLeft: 7,
   },
   headerIcon: {
     width: 24,
     height: 24,
   },
   scrollView: {
-    paddingTop: 18,
     marginVertical: 18,
   },
   chatItemWrapper: {

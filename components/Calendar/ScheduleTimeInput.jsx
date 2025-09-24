@@ -121,11 +121,10 @@ const ScheduleTimeInput = ({
 
   return (
     <View>
-      <Text style={commonStyles.titleText}>일정 시간</Text>
       <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
         {/* 시작 시간 */}
         <Pressable
-          style={[commonStyles.inputBox, { width: 136, height: 40 }]}
+          style={[commonStyles.inputBox, { flex: 1, height: 40 }]}
           onPress={openStartModal}
         >
           <Text style={commonStyles.selectedText}>
@@ -141,7 +140,7 @@ const ScheduleTimeInput = ({
         <Image source={calendarImage.dash} style={{ width: 24, height: 24 }} />
         {/* 종료 시간 */}
         <Pressable
-          style={[commonStyles.inputBox, { width: 136, height: 40 }]}
+          style={[commonStyles.inputBox, { flex: 1, height: 40 }]}
           onPress={openEndModal}
         >
           <Text style={commonStyles.selectedText}>

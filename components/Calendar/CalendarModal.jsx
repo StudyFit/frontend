@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Modal,
   Pressable,
@@ -13,7 +14,10 @@ import { ko } from "date-fns/locale";
 import { useState } from "react";
 import { calendarImage } from "@/assets/images/calendar";
 import { useUser } from "@/contexts/UserContext";
-import { themeColors } from "@/assets";
+import { getHexFromBackend } from "@/assets";
+import { shortTime } from "@/util/time";
+import { getName, getThemeColor } from "@/util/roleBranch";
+import { api } from "@/api";
 
 function CalendarModal({
   visible,
@@ -58,20 +62,31 @@ function CalendarModal({
               <View style={{ gap: 11 }}>
                 {schedules.length > 0 &&
                   schedules.map((item) => (
-                    <ScheduleItem key={item.scheduleId} item={item} />
+                    <ScheduleItem
+                      key={item.calendarId}
+                      item={item}
+                      name={getName(userRole, item).slice(1)}
+                      color={getHexFromBackend(getThemeColor(userRole, item))}
+                      scheduleId={item.calendarId}
+                    />
                   ))}
 
                 {homework.length > 0 &&
                   homework.map((item) => (
-                    <HomeworkItem key={item.homeworkId} item={item} />
+                    <HomeworkItem
+                      key={item.homeworkDateId}
+                      item={item}
+                      name={getName(userRole, item).slice(1)}
+                    />
                   ))}
               </View>
 
+              {/* 일정 등록하기 버튼 (선생님용) */}
               {userRole == "선생님" && (
                 <View style={styles.buttonContainer}>
                   {!isScheduleButtonClicked ? (
                     <ButtonComponent
-                      text="일정"
+                      text="일정 등록"
                       style={styles.button}
                       onPress={() => setIsScheduleButtonClicked(true)}
                     />
@@ -79,11 +94,11 @@ function CalendarModal({
                     <View style={{ gap: 13, alignItems: "center" }}>
                       <View style={[styles.button, { height: 67, gap: 13 }]}>
                         <ButtonComponent
-                          text="수업"
+                          text="수업 일정"
                           onPress={() => handleScheduleButtonClick("수업")}
                         />
                         <ButtonComponent
-                          text="기타"
+                          text="기타 일정"
                           onPress={() => handleScheduleButtonClick("기타")}
                         />
                       </View>
@@ -98,7 +113,7 @@ function CalendarModal({
                     </View>
                   )}
                   <ButtonComponent
-                    text="숙제"
+                    text="숙제 등록"
                     style={styles.button}
                     onPress={() => handleScheduleButtonClick("숙제")}
                   />
@@ -112,43 +127,87 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item }) => {
+const ScheduleItem = ({ item, name, color, scheduleId }) => {
+  const [editMode, setEditMode] = useState(false);
+
+  const deleteSchedule = async () => {
+    try {
+      await api.delete(`/calendar/schedule?calendarId=${scheduleId}`);
+      setEditMode(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
-    <View
-      style={[
-        styles.scheduleContainer,
-        { backgroundColor: themeColors[item.themeColor] },
-      ]}
+    <Pressable
+      style={[styles.scheduleContainer, { backgroundColor: color }]}
+      onLongPress={() => setEditMode(true)}
     >
       <Text style={styles.mainText}>
-        {item.name.slice(1)} {item.subject}
+        {name} {item.subject}
       </Text>
       <Text style={{ fontSize: 10 }}>
-        {item.startTime} ~ {item.endTime}
+        {shortTime(item.classStartedAt)} ~ {shortTime(item.classEndedAt)}
       </Text>
       {item.content && (
         <Text style={{ fontSize: 10, color: "#616161" }}>{item.content}</Text>
       )}
-    </View>
+      {editMode && <DeleteButton onPress={deleteSchedule} />}
+    </Pressable>
   );
 };
 
-const HomeworkItem = ({ item }) => {
+const HomeworkItem = ({ item, name }) => {
+  console.log(item);
+  const handleDeleteHw = async () => {
+    Alert.alert(
+      "숙제 삭제",
+      "숙제를 삭제하시겠습니까?",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "삭제",
+          onPress: async () => {
+            try {
+              const response = await api.delete(
+                `/homeworks/${item.homeworkDateId}`
+              );
+              console.log("삭제 완료:", response.data);
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
-    <View style={styles.homeworkContainer}>
+    <Pressable style={styles.homeworkContainer} onLongPress={handleDeleteHw}>
       <HwIcon
         isAssigned={item.isAllCompleted}
         style={{ width: 11, height: 11 }}
       />
-      <Text style={styles.mainText}>{item.name.slice(1)} 숙제</Text>
-    </View>
+      <Text style={styles.mainText}>{name} 숙제</Text>
+    </Pressable>
+  );
+};
+
+const DeleteButton = ({ onPress }) => {
+  return (
+    <Pressable style={styles.editButton} onPress={onPress}>
+      <Text style={{ fontSize: 10 }}>삭제</Text>
+    </Pressable>
   );
 };
 
 const ButtonComponent = ({ text, style, onPress }) => {
   return (
     <Pressable style={style} onPress={onPress}>
-      <Text style={styles.buttonText}>+ {text} 일정</Text>
+      <Text style={styles.buttonText}>+ {text}</Text>
     </Pressable>
   );
 };
@@ -197,6 +256,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Pretendard-Bold",
   },
+  editButton: {
+    width: 40,
+    height: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "auto",
+    backgroundColor: "white",
+  },
+  editButtonText: {},
   buttonContainer: {
     flexDirection: "row",
     gap: 6,

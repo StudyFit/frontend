@@ -11,51 +11,95 @@ import { StudentInput } from "./StudentInput";
 import { ScheduleTimeInput } from "./ScheduleTimeInput";
 import { HwDeadlineInput } from "./HwDeadlineInput";
 import { ContentInput } from "./ContentInput";
+import { commonStyles } from "./ModalInputStyle";
+import { useUser } from "@/contexts/UserContext";
+import { api } from "@/api";
 
-const data = ["김정은 - 국어", "장유빈 - 영어", "정채영 - 과학"]; // api로 받아올 학생 목록을 가정
+const acceptedList = (userRole, list) => {
+  return list.filter((elt) => {
+    const status = userRole == "학생" ? elt.connectionStatus : elt.friendStatus;
+    return status == "ACCEPTED";
+  });
+};
 
-function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
-  const [studentList, setStudentList] = useState(data);
-  const [selectedStudent, setSelectedStudent] = useState("");
+function RegisterModal({
+  visible,
+  modalDate,
+  registerModalType,
+  closeRegisterModal,
+}) {
+  const { userRole } = useUser();
+  const [studentList, setStudentList] = useState([]);
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [hwDeadline, setHwDeadline] = useState("");
+  const [photoRequired, setPhotoRequired] = useState(false);
   const [content, setContent] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
 
-  // 모달이 처음 열릴 때 날짜 저장
   useEffect(() => {
-    if (visible) setSelectedDate(new Date().toISOString());
-  }, [visible]);
+    const loadList = async () => {
+      try {
+        const url = `/connection/${
+          userRole == "학생" ? "teachers" : "students"
+        }`;
+        const response = await api.get(url);
+        setStudentList(acceptedList(userRole, response.data.data));
+        console.log(acceptedList(userRole, response.data.data));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadList();
+  }, []);
 
   const handleModalClose = () => {
-    setSelectedStudent("");
+    setSelectedConnectionId(null);
     closeRegisterModal();
   };
 
-  const registerSchedule = () => {
-    if (!selectedStudent) return;
+  const registerSchedule = async () => {
+    if (!selectedConnectionId || !content || !startTime || !endTime) return;
 
     // 공통 데이터
     const payload = {
-      student: selectedStudent,
+      connectionId: selectedConnectionId,
       content,
-      type: registerModalType,
-      selectedDate,
+      scheduleType: registerModalType == "수업" ? "CLASS" : "ETC",
+      date: modalDate,
+      startTime: startTime,
+      endTime: endTime,
     };
 
-    // 타입별로 필요한 데이터만 추가
-    if (registerModalType === "숙제") {
-      payload.hwDeadline = hwDeadline;
-    } else {
-      payload.startTime = startTime;
-      payload.endTime = endTime;
+    try {
+      const response = await api.post(`/calendar/schedule`, payload);
+      console.log(response.data);
+      console.log("등록한 일정", payload);
+      handleModalClose();
+    } catch (e) {
+      console.error(e);
     }
+  };
 
-    // 나중에 axios.post("/api/schedule", payload) 등으로 사용
+  const registerHomework = async () => {
+    if (!selectedConnectionId || !hwDeadline || !content) return;
+
+    // 공통 데이터
+    const payload = {
+      content,
+      date: hwDeadline,
+      photoRequired,
+    };
+
     console.log("등록 데이터:", payload);
 
-    handleModalClose();
+    try {
+      const res = await api.post(`/homeworks/${selectedConnectionId}`, payload);
+      console.log(res.data);
+      handleModalClose();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -72,28 +116,48 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
               <View style={styles.inputGroup}>
                 <StudentInput
                   studentList={studentList}
-                  selectedStudent={selectedStudent}
-                  setSelectedStudent={setSelectedStudent}
+                  selectedConnectionId={selectedConnectionId}
+                  setSelectedConnectionId={setSelectedConnectionId}
                 />
                 {registerModalType !== "숙제" ? (
-                  <ScheduleTimeInput
-                    startTime={startTime}
-                    setStartTime={setStartTime}
-                    endTime={endTime}
-                    setEndTime={setEndTime}
-                  />
+                  <>
+                    <View>
+                      <Text style={commonStyles.titleText}>일정 시간</Text>
+                      <ScheduleTimeInput
+                        startTime={startTime}
+                        setStartTime={setStartTime}
+                        endTime={endTime}
+                        setEndTime={setEndTime}
+                      />
+                    </View>
+                    <ContentInput content={content} setContent={setContent} />
+                  </>
                 ) : (
-                  <HwDeadlineInput
-                    hwDeadline={hwDeadline}
-                    setHwDeadline={setHwDeadline}
-                  />
+                  <>
+                    <HwDeadlineInput
+                      hwDeadline={hwDeadline}
+                      setHwDeadline={setHwDeadline}
+                    />
+                    <ContentInput
+                      content={content}
+                      setContent={setContent}
+                      registerModalType={registerModalType}
+                      photoRequired={photoRequired}
+                      togglePhotoRequired={() =>
+                        setPhotoRequired(!photoRequired)
+                      }
+                    />
+                  </>
                 )}
-                <ContentInput content={content} setContent={setContent} />
               </View>
 
               <Pressable
                 style={styles.registerButton}
-                onPress={registerSchedule}
+                onPress={
+                  registerModalType !== "숙제"
+                    ? registerSchedule
+                    : registerHomework
+                }
               >
                 <Text style={styles.registerButtonText}>등록하기</Text>
               </Pressable>

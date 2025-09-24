@@ -12,6 +12,7 @@ const ProfileListItem = ({
       style={{
         flexDirection: "row",
         alignItems: "center",
+        paddingHorizontal: 7,
       }}
     >
       <View
