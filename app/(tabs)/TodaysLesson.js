@@ -14,6 +14,7 @@ import { todaysLessonImages } from "../../assets";
 import TodaysLessonBox from "@/components/TodaysLessonTab/TodaysLessonBox";
 import TodaysHwBox from "@/components/TodaysLessonTab/TodaysHwBox";
 import MainTitle from "@/components/MainTitle";
+import Notification from "../notification/Notification";
 
 // 날짜 포맷 함수
 function formatDate(date) {
@@ -25,6 +26,7 @@ function formatDate(date) {
 export default function TodaysLessonPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [openNoti, setOpenNoti] = useState(false);
 
   const moveDate = (diff) => {
     setCurrentDate((prev) => {
@@ -39,52 +41,79 @@ export default function TodaysLessonPage() {
     if (selectedDate) setCurrentDate(selectedDate);
   };
 
+  const handleNotification = () => {
+    setOpenNoti(true);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <DateContainer
-          date={currentDate}
-          onPrev={() => moveDate(-1)}
-          onNext={() => moveDate(1)}
-          onPressDate={() => setPickerVisible(true)}
-        />
-        <View>
-          <MainTitle text="오늘의 수업" style={{ marginBottom: 17 }} />
-          <TodaysLessonBox
-            currentDate={currentDate.toISOString().split("T")[0]}
-          />
-        </View>
-        <View style={{ marginTop: 32, gap: 15 }}>
-          <MainTitle text="오늘의 숙제" />
-          <TodaysHwBox currentDate={currentDate.toISOString().split("T")[0]} />
-        </View>
-      </ScrollView>
-
-      {/* 달력 모달 */}
-      <Modal
-        visible={pickerVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setPickerVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <DateTimePicker
-              value={currentDate}
-              mode="date"
-              display="inline"
-              onChange={handleDateChange}
-              style={styles.datePicker}
-            />
-            <Pressable
-              style={styles.closeBtn}
-              onPress={() => setPickerVisible(false)}
+      {openNoti ? (
+        <Notification closeNoti={() => setOpenNoti(false)} />
+      ) : (
+        <>
+          <ScrollView contentContainerStyle={styles.container}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 35,
+              }}
             >
-              <Text>닫기</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+              <DateContainer
+                date={currentDate}
+                onPrev={() => moveDate(-1)}
+                onNext={() => moveDate(1)}
+                onPressDate={() => setPickerVisible(true)}
+              />
+              <Pressable onPress={handleNotification}>
+                <Image
+                  source={todaysLessonImages.notificationBtn}
+                  style={{ width: 24, height: 24, marginRight: 10 }}
+                />
+              </Pressable>
+            </View>
+            <View>
+              <MainTitle text="오늘의 수업" style={{ marginBottom: 17 }} />
+              <TodaysLessonBox
+                currentDate={currentDate.toISOString().split("T")[0]}
+              />
+            </View>
+            <View style={{ marginTop: 32, gap: 15 }}>
+              <MainTitle text="오늘의 숙제" />
+              <TodaysHwBox
+                currentDate={currentDate.toISOString().split("T")[0]}
+              />
+            </View>
+          </ScrollView>
+
+          {/* 달력 모달 */}
+          <Modal
+            visible={pickerVisible}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setPickerVisible(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <DateTimePicker
+                  value={currentDate}
+                  mode="date"
+                  display="inline"
+                  onChange={handleDateChange}
+                  style={styles.datePicker}
+                />
+                <Pressable
+                  style={styles.closeBtn}
+                  onPress={() => setPickerVisible(false)}
+                >
+                  <Text>닫기</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -117,7 +146,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dateContainer: {
-    marginBottom: 35,
     flexDirection: "row",
     alignItems: "center",
   },
