@@ -22,7 +22,12 @@ const acceptedList = (userRole, list) => {
   });
 };
 
-function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
+function RegisterModal({
+  visible,
+  modalDate,
+  registerModalType,
+  closeRegisterModal,
+}) {
   const { userRole } = useUser();
   const [studentList, setStudentList] = useState([]);
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
@@ -31,7 +36,6 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
   const [hwDeadline, setHwDeadline] = useState("");
   const [photoRequired, setPhotoRequired] = useState(false);
   const [content, setContent] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
 
   useEffect(() => {
     const loadList = async () => {
@@ -49,11 +53,6 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
     loadList();
   }, []);
 
-  // 모달이 처음 열릴 때 날짜 저장
-  useEffect(() => {
-    if (visible) setSelectedDate(new Date().toISOString());
-  }, [visible]);
-
   const handleModalClose = () => {
     setSelectedConnectionId(null);
     closeRegisterModal();
@@ -67,7 +66,7 @@ function RegisterModal({ visible, registerModalType, closeRegisterModal }) {
       connectionId: selectedConnectionId,
       content,
       scheduleType: registerModalType == "수업" ? "CLASS" : "ETC",
-      date: selectedDate.split("T")[0],
+      date: modalDate,
       startTime: startTime,
       endTime: endTime,
     };

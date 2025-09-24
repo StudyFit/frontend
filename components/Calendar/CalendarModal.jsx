@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Modal,
   Pressable,
@@ -16,6 +17,7 @@ import { useUser } from "@/contexts/UserContext";
 import { getHexFromBackend } from "@/assets";
 import { shortTime } from "@/util/time";
 import { getName, getThemeColor } from "@/util/roleBranch";
+import { api } from "@/api";
 
 function CalendarModal({
   visible,
@@ -65,6 +67,7 @@ function CalendarModal({
                       item={item}
                       name={getName(userRole, item).slice(1)}
                       color={getHexFromBackend(getThemeColor(userRole, item))}
+                      scheduleId={item.calendarId}
                     />
                   ))}
 
@@ -124,9 +127,23 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item, name, color }) => {
+const ScheduleItem = ({ item, name, color, scheduleId }) => {
+  const [editMode, setEditMode] = useState(false);
+
+  const deleteSchedule = async () => {
+    try {
+      await api.delete(`/calendar/schedule?calendarId=${scheduleId}`);
+      setEditMode(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
-    <View style={[styles.scheduleContainer, { backgroundColor: color }]}>
+    <Pressable
+      style={[styles.scheduleContainer, { backgroundColor: color }]}
+      onLongPress={() => setEditMode(true)}
+    >
       <Text style={styles.mainText}>
         {name} {item.subject}
       </Text>
@@ -136,19 +153,54 @@ const ScheduleItem = ({ item, name, color }) => {
       {item.content && (
         <Text style={{ fontSize: 10, color: "#616161" }}>{item.content}</Text>
       )}
-    </View>
+      {editMode && <DeleteButton onPress={deleteSchedule} />}
+    </Pressable>
   );
 };
 
 const HomeworkItem = ({ item, name }) => {
+  console.log(item);
+  const handleDeleteHw = async () => {
+    Alert.alert(
+      "숙제 삭제",
+      "숙제를 삭제하시겠습니까?",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "삭제",
+          onPress: async () => {
+            try {
+              const response = await api.delete(
+                `/homeworks/${item.homeworkDateId}`
+              );
+              console.log("삭제 완료:", response.data);
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
-    <View style={styles.homeworkContainer}>
+    <Pressable style={styles.homeworkContainer} onLongPress={handleDeleteHw}>
       <HwIcon
         isAssigned={item.isAllCompleted}
         style={{ width: 11, height: 11 }}
       />
       <Text style={styles.mainText}>{name} 숙제</Text>
-    </View>
+    </Pressable>
+  );
+};
+
+const DeleteButton = ({ onPress }) => {
+  return (
+    <Pressable style={styles.editButton} onPress={onPress}>
+      <Text style={{ fontSize: 10 }}>삭제</Text>
+    </Pressable>
   );
 };
 
@@ -204,6 +256,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Pretendard-Bold",
   },
+  editButton: {
+    width: 40,
+    height: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "auto",
+    backgroundColor: "white",
+  },
+  editButtonText: {},
   buttonContainer: {
     flexDirection: "row",
     gap: 6,

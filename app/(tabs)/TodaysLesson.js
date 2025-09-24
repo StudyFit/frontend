@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { todaysLessonImages } from "../../assets";
 import TodaysLessonBox from "@/components/TodaysLessonTab/TodaysLessonBox";
 import TodaysHwBox from "@/components/TodaysLessonTab/TodaysHwBox";
 import MainTitle from "@/components/MainTitle";
+import { getAuthData } from "@/contexts/AuthSecureStore";
 import Notification from "../notification/Notification";
 
 // 날짜 포맷 함수
@@ -28,6 +29,15 @@ export default function TodaysLessonPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [pickerVisible, setPickerVisible] = useState(false);
   const [openNoti, setOpenNoti] = useState(false);
+
+  // 개발을 위해 액세스 토큰 콘솔에 찍음.
+  useEffect(() => {
+    const a = async () => {
+      const { accessToken } = await getAuthData();
+      console.log(accessToken);
+    };
+    a();
+  }, []);
 
   const moveDate = (diff) => {
     setCurrentDate((prev) => {

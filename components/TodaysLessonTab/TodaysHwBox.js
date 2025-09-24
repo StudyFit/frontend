@@ -19,10 +19,10 @@ const TodaysHwBox = ({ currentDate }) => {
         const url = `/calendar/homeworks?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${currentDate}&endDate=${currentDate}`;
+        console.log(url);
         const response = await api.get(url);
         setHwList(response.data.data);
-        // console.log("숙제 데이터", response.data.data);
-        // console.log(url);
+        console.log("숙제 데이터", response.data.data);
       } catch (e) {
         console.error(e);
       }
