@@ -77,11 +77,6 @@ export default function MyPage() {
           <View style={styles.cardList}>
             {/* 개인정보 */}
             <UserInfo setName={setName} setModalVisible={setModalVisible} />
-
-            {/* 이번 달 통계 */}
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>이번 달 통계</Text>
-            </View>
           </View>
 
           {/* 로그아웃 버튼 */}
@@ -96,16 +91,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F1F1F1",
+    paddingVertical: 30,
   },
   mainTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginTop: 13,
-    marginLeft: 21,
-    marginBottom: 28,
+    paddingTop: 13,
+    paddingHorizontal: 27,
+    marginLeft: 7,
   },
   centered: {
+    marginTop: 30,
     alignItems: "center",
   },
   profileBox: {

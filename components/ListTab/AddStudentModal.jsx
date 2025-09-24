@@ -77,7 +77,7 @@ const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
                 placeholder="학생 ID"
                 value={searchId}
                 onChangeText={setSearchId}
-                style={{ height: 20, fontSize: 16 }}
+                style={{ height: 36, fontSize: 13 }}
                 autoCapitalize="none"
                 autoCorrect={false}
                 maxLength={20}
@@ -131,12 +131,13 @@ const styles = StyleSheet.create({
   },
   idInputBox: {
     width: "100%",
+    height: 34,
     flexDirection: "row",
+    alignItems: "center",
     gap: 8.6,
     alignItems: "center",
     backgroundColor: "#F2F2F2",
     paddingHorizontal: 11,
-    paddingVertical: 8,
     marginVertical: 10,
     borderRadius: 4,
   },

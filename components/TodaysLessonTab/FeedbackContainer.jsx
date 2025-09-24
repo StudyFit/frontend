@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8E8E8",
     borderRadius: 17,
     paddingHorizontal: 12,
-    paddingVertical: 6,
   },
   feedbackInput: {
     fontSize: 11,

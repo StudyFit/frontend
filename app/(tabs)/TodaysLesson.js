@@ -8,6 +8,7 @@ import {
   Image,
   Pressable,
   Modal,
+  KeyboardAvoidingView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { todaysLessonImages } from "../../assets";
@@ -46,7 +47,9 @@ export default function TodaysLessonPage() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", paddingVertical: 30 }}
+    >
       {openNoti ? (
         <Notification closeNoti={() => setOpenNoti(false)} />
       ) : (
