@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
-import { format, startOfWeek, addDays } from "date-fns";
+import { format, startOfWeek, addDays, endOfWeek } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useLocalSearchParams, router } from "expo-router";
 import { CalendarHeader, WeekRow } from "@/components";
-import {
-  getHexFromBackend,
-  themeColors,
-  yourDefaultProfileImage,
-} from "@/assets";
+import { getHexFromBackend, yourDefaultProfileImage } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
 import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
@@ -111,9 +107,19 @@ export default function WeekCalendarTab() {
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(today, { weekStartsOn: 0 })
   );
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const [info, setInfo] = useState({});
   const [schedules, setSchedules] = useState(aschedules);
   const [homework, setHomework] = useState(ahomework);
+
+  useEffect(() => {
+    const weekStart = currentWeekStart;
+    const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 0 });
+
+    setStart(format(weekStart, "yyyy-MM-dd"));
+    setEnd(format(weekEnd, "yyyy-MM-dd"));
+  }, [currentWeekStart]);
 
   useEffect(() => {
     const loadUserInfo = async () => {
@@ -135,13 +141,32 @@ export default function WeekCalendarTab() {
         console.error(e);
       }
     };
-    const loadSchedules = async () => {};
-    const loadHomework = async () => {};
+    const loadCalendar = async () => {
+      try {
+        if (!start || !end) return;
+        const url = `/calendar/schedule?role=${
+          userRole == "학생" ? "STUDENT" : "TEACHER"
+        }&startDate=${start}&endDate=${end}`;
+        console.log(url);
+        const response = await api.get(url);
+        setSchedules(response.data.data);
+        console.log("달력 데이터 불러오기");
+        console.log(JSON.stringify(response.data.data, null, 2));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    const loadHomework = async () => {
+      try {
+      } catch (e) {
+        console.error(e);
+      }
+    };
 
     loadUserInfo();
-    loadSchedules();
+    loadCalendar();
     loadHomework();
-  }, []);
+  }, [start, end]);
 
   const changeWeek = (diff) =>
     setCurrentWeekStart(addDays(currentWeekStart, diff * 7));

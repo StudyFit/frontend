@@ -2,11 +2,15 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { format } from "date-fns";
 import { HwIcon } from "@/components";
-import { themeColors } from "@/assets";
+import { getHexFromBackend, themeColors } from "@/assets";
+import { getThemeColor } from "@/util/roleBranch";
+import { useUser } from "@/contexts/UserContext";
 
 const SCREEN_WIDTH = Dimensions.get("window").width - 60;
 
 export function DayCell({ day, isToday, schedules, homework }) {
+  const { userRole } = useUser();
+
   return (
     <View style={styles.dayContainer}>
       <Text style={styles.weekday}>{format(day, "EEE").toUpperCase()}</Text>
@@ -17,12 +21,14 @@ export function DayCell({ day, isToday, schedules, homework }) {
         </Text>
       </View>
 
-      {schedules.map((item) => (
+      {schedules.map((item, idx) => (
         <View
-          key={item.calendarId}
+          key={idx}
           style={[
             styles.schedule,
-            { backgroundColor: themeColors[item.themeColor] },
+            {
+              backgroundColor: getHexFromBackend(getThemeColor(userRole, item)),
+            },
           ]}
         >
           <Text style={styles.scheduleText}>수업</Text>
@@ -61,7 +67,12 @@ const styles = StyleSheet.create({
   todayCircle: { backgroundColor: "#FF3B30" },
   dayText: { fontSize: 16, color: "#333" },
   todayDayText: { color: "#fff", fontWeight: "bold" },
-  schedule: { borderRadius: 5, paddingHorizontal: 10, paddingVertical: 5 },
+  schedule: {
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
   scheduleText: { fontSize: 8 },
   homework: { flexDirection: "row", alignItems: "center", height: 18, gap: 4 },
   homeworkText: { fontSize: 8 },
