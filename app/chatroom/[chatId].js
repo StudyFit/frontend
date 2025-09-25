@@ -1,9 +1,4 @@
-import {
-  chatImage,
-  defaultProfileImage,
-  themeColors,
-  yourDefaultProfileImage,
-} from "@/assets";
+import { chatImage, themeColors, yourDefaultProfileImage } from "@/assets";
 import { RouterName } from "@/components";
 import { useUser } from "@/contexts/UserContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -19,6 +14,7 @@ import {
   TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { getAuthData } from "@/contexts/AuthSecureStore";
 
 const data = {
   name: "정채영",
@@ -123,6 +119,24 @@ export default function ChatRoom() {
   const [text, setText] = useState("");
 
   useEffect(() => {
+    try {
+      const { accessToken } = getAuthData();
+      const ws = new WebSocket(
+        `wss://port-0-studyfit-backend-mb6gji2d509e5b57.sel4.cloudtype.app/ws/chat?token=${accessToken}&chatRoomId=${chatId}`
+      );
+
+      ws.onopen = () => console.log("WebSocket 연결 성공");
+
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log(message);
+      };
+
+      ws.onerror = (error) => console.error("WebSocket 오류:", error);
+    } catch (e) {
+      console.error(e);
+    }
+
     // chatId로 채팅 정보와 내역 검색
     setName(data.name);
     setSubject(data.subject);
@@ -259,7 +273,6 @@ const ChatBubble = ({ me, time, content, showTime, color, type }) => {
             : {
                 alignSelf: "flex-start",
                 borderBottomLeftRadius: 0,
-
                 backgroundColor: themeColors[color],
               },
         ]}

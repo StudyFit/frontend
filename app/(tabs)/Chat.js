@@ -125,7 +125,10 @@ export default function Chat() {
   };
 
   // 채팅방 이동 함수
-  const goToChatRoom = (chatId) => router.push(`/chatroom/${chatId}`);
+  const goToChatRoom = (chatId) => {
+    if (!chatId) return;
+    router.push(`/chatroom/${chatId}`);
+  };
 
   return (
     <SafeAreaView
