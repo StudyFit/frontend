@@ -77,7 +77,7 @@ export default function Step3() {
   };
 
   return (
-    <SafeAreaView style={{ alignItems: "center", flex: 1 }}>
+    <SafeAreaView style={{ alignItems: "center", flex: 1, paddingBottom: 30 }}>
       <RoleImage
         role={signUpData.role}
         style={{ marginTop: 89, marginBottom: 39 }}
@@ -180,6 +180,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     flexDirection: "row",
     alignItems: "center",
-    padding: 5,
+    paddingHorizontal: 5,
   },
 });
