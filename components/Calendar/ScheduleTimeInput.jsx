@@ -12,7 +12,6 @@ import {
 import { calendarImage } from "@/assets/images/calendar";
 import { commonStyles, ModalButton, modalStyles } from "./ModalInputStyle";
 
-// ScheduleTimeInput (12시간제 + AM/PM)
 const ScheduleTimeInput = ({
   startTime,
   setStartTime,
@@ -23,81 +22,33 @@ const ScheduleTimeInput = ({
   const [startModalVisible, setStartModalVisible] = useState(false);
   const [endModalVisible, setEndModalVisible] = useState(false);
 
-  // 12시간제 상태
   const [timeState, setTimeState] = useState({
-    startHour: to12Hour(startTime).hour,
-    startMinute: to12Hour(startTime).minute,
-    startPeriod: to12Hour(startTime).period,
-    endHour: to12Hour(endTime).hour,
-    endMinute: to12Hour(endTime).minute,
-    endPeriod: to12Hour(endTime).period,
+    startHour: "12",
+    startMinute: "00",
+    startPeriod: "AM",
+    endHour: "12",
+    endMinute: "00",
+    endPeriod: "AM",
   });
 
   const [timeError, setTimeError] = useState("");
 
+  // 모달 visible이 false면 초기화
   useEffect(() => {
     if (!visible) {
       setTimeState({
         startHour: "12",
         startMinute: "00",
-        startPeriod: "PM",
+        startPeriod: "AM",
         endHour: "12",
         endMinute: "00",
-        endPeriod: "PM",
+        endPeriod: "AM",
       });
       setStartTime("");
       setEndTime("");
       setTimeError("");
     }
   }, [visible]);
-
-  // 시작 시간 모달 확인
-  const handleStartConfirm = () => {
-    const start = getMinutes(
-      timeState.startHour,
-      timeState.startMinute,
-      timeState.startPeriod
-    );
-    const end = getMinutes(
-      timeState.endHour,
-      timeState.endMinute,
-      timeState.endPeriod
-    );
-    if (endTime && end < start) {
-      setTimeError("시작 시간은 종료 시간보다 같거나 빨라야 합니다.");
-      return;
-    }
-    setStartTime(
-      to24Hour(
-        timeState.startHour,
-        timeState.startMinute,
-        timeState.startPeriod
-      )
-    );
-    closeStartModal(); // 중복 제거!
-  };
-
-  // 종료 시간 모달 확인
-  const handleEndConfirm = () => {
-    const start = getMinutes(
-      timeState.startHour,
-      timeState.startMinute,
-      timeState.startPeriod
-    );
-    const end = getMinutes(
-      timeState.endHour,
-      timeState.endMinute,
-      timeState.endPeriod
-    );
-    if (end < start) {
-      setTimeError("종료 시간은 시작 시간보다 같거나 늦어야 합니다.");
-      return;
-    }
-    setEndTime(
-      to24Hour(timeState.endHour, timeState.endMinute, timeState.endPeriod)
-    );
-    closeEndModal();
-  };
 
   const openStartModal = () => {
     setStartModalVisible(true);
@@ -109,14 +60,69 @@ const ScheduleTimeInput = ({
     setTimeError("");
   };
 
-  const closeStartModal = () => {
-    setStartModalVisible(false);
-    setTimeError("");
+  const closeStartModal = () => setStartModalVisible(false);
+  const closeEndModal = () => setEndModalVisible(false);
+
+  // 시작 시간 저장
+  const handleStartConfirm = () => {
+    if (
+      !timeState.startHour ||
+      !timeState.startMinute ||
+      !timeState.startPeriod
+    )
+      return;
+
+    const startMinutes = getMinutes(
+      timeState.startHour,
+      timeState.startMinute,
+      timeState.startPeriod
+    );
+    const endMinutes = endTime
+      ? getMinutes(timeState.endHour, timeState.endMinute, timeState.endPeriod)
+      : 0;
+
+    if (endTime && startMinutes > endMinutes) {
+      setTimeError("시작 시간은 종료 시간보다 이전이어야 합니다.");
+      return;
+    }
+
+    setStartTime(
+      to24Hour(
+        timeState.startHour,
+        timeState.startMinute,
+        timeState.startPeriod
+      )
+    );
+    closeStartModal();
   };
 
-  const closeEndModal = () => {
-    setEndModalVisible(false);
-    setTimeError("");
+  // 종료 시간 저장
+  const handleEndConfirm = () => {
+    if (!timeState.endHour || !timeState.endMinute || !timeState.endPeriod)
+      return;
+
+    const startMinutes = startTime
+      ? getMinutes(
+          timeState.startHour,
+          timeState.startMinute,
+          timeState.startPeriod
+        )
+      : 0;
+    const endMinutes = getMinutes(
+      timeState.endHour,
+      timeState.endMinute,
+      timeState.endPeriod
+    );
+
+    if (startTime && endMinutes < startMinutes) {
+      setTimeError("종료 시간은 시작 시간 이후이어야 합니다.");
+      return;
+    }
+
+    setEndTime(
+      to24Hour(timeState.endHour, timeState.endMinute, timeState.endPeriod)
+    );
+    closeEndModal();
   };
 
   return (
@@ -137,7 +143,9 @@ const ScheduleTimeInput = ({
             style={{ width: 15, height: 15, marginLeft: 8 }}
           />
         </Pressable>
+
         <Image source={calendarImage.dash} style={{ width: 24, height: 24 }} />
+
         {/* 종료 시간 */}
         <Pressable
           style={[commonStyles.inputBox, { flex: 1, height: 40 }]}
@@ -204,7 +212,7 @@ const ScheduleTimeInput = ({
   );
 };
 
-// 시간 선택 모달 (AM/PM 버튼 추가)
+// 시간 선택 모달
 const TimeSelectModal = ({
   visible,
   onClose,
@@ -231,10 +239,11 @@ const TimeSelectModal = ({
       >
         <Text style={styles.timeModalTitle}>{title}</Text>
         <View style={styles.timeModalRow}>
+          {/* AM/PM */}
           <View style={{ justifyContent: "center", marginLeft: 8 }}>
-            {["AM", "PM"].map((period, idx) => (
+            {["AM", "PM"].map((period) => (
               <TouchableOpacity
-                key={idx}
+                key={period}
                 onPress={() => setSelectedPeriod(period)}
                 style={[
                   styles.ampmButton,
@@ -245,6 +254,7 @@ const TimeSelectModal = ({
               </TouchableOpacity>
             ))}
           </View>
+          {/* 시간 */}
           <ScrollView
             style={styles.timeScroll}
             contentContainerStyle={styles.timeScrollContent}
@@ -274,11 +284,7 @@ const TimeSelectModal = ({
                 key={m}
                 onPress={() => setSelectedMinute(m)}
                 style={[
-                  {
-                    width: "100%",
-                    alignItems: "center",
-                    borderRadius: 5,
-                  },
+                  { width: "100%", alignItems: "center", borderRadius: 5 },
                   selectedMinute === m && styles.selectedOption,
                 ]}
               >
@@ -287,9 +293,7 @@ const TimeSelectModal = ({
             ))}
           </ScrollView>
         </View>
-        <View style={styles.errorContainer}>
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        </View>
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <View style={styles.modalButtonRow}>
           <ModalButton text="확인" onPress={onConfirm} />
           <ModalButton text="취소" onPress={onClose} />
@@ -299,7 +303,7 @@ const TimeSelectModal = ({
   </Modal>
 );
 
-// 12시간제 옵션
+// 옵션
 const hourOptions = Array.from({ length: 12 }, (_, i) =>
   (i + 1).toString().padStart(2, "0")
 );
@@ -307,29 +311,18 @@ const minuteOptions = Array.from({ length: 12 }, (_, i) =>
   (i * 5).toString().padStart(2, "0")
 );
 
-// 24시간 → 12시간 변환
-function to12Hour(time) {
-  if (!time) return { hour: "12", minute: "00", period: "AM" };
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  let hour = h % 12;
-  if (hour === 0) hour = 12;
-  return {
-    hour: hour.toString().padStart(2, "0"),
-    minute: m.toString().padStart(2, "0"),
-    period,
-  };
-}
-// 12시간 → 24시간 변환
+// 12시간 → 24시간
 function to24Hour(hour, minute, period) {
   let h = Number(hour);
   if (period === "PM" && h !== 12) h += 12;
   if (period === "AM" && h === 12) h = 0;
   return `${h.toString().padStart(2, "0")}:${minute}`;
 }
+
+// 시간을 분으로 변환
 function getMinutes(hour, minute, period) {
   let h = Number(hour);
-  if (period === "PM" && h !== 12) h += 12;
+  if (period === "PM" && h !== 12 && h !== 12) h += 12;
   if (period === "AM" && h === 12) h = 0;
   return h * 60 + Number(minute);
 }
