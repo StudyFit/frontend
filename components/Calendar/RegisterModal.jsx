@@ -27,6 +27,7 @@ function RegisterModal({
   modalDate,
   registerModalType,
   closeRegisterModal,
+  requestRefresh,
 }) {
   const { userRole } = useUser();
   const [studentList, setStudentList] = useState([]);
@@ -54,8 +55,18 @@ function RegisterModal({
   }, []);
 
   const handleModalClose = () => {
-    setSelectedConnectionId(null);
+    clearField();
     closeRegisterModal();
+    requestRefresh();
+  };
+
+  const clearField = () => {
+    setSelectedConnectionId(null);
+    setStartTime("");
+    setEndTime("");
+    setHwDeadline("");
+    setPhotoRequired(false);
+    setContent("");
   };
 
   const registerSchedule = async () => {
