@@ -7,7 +7,6 @@ import { CalendarHeader, RouterName, WeekRow } from "@/components";
 import { getHexFromBackend } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
-import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
 import UserInfoContainer from "@/components/DetailInfo/UserInfoContainer";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
@@ -26,6 +25,7 @@ export default function WeekCalendarTab() {
   const [info, setInfo] = useState({});
   const [schedules, setSchedules] = useState([]);
   const [homework, setHomework] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const weekStart = currentWeekStart;
@@ -91,7 +91,8 @@ export default function WeekCalendarTab() {
     loadUserInfo();
     loadCalendar();
     loadHomework();
-  }, [start, end]);
+    setRefresh(false);
+  }, [start, end, refresh]);
 
   const getFilteredData = (data) =>
     data.filter((item) => getName(userRole, item) === getName(userRole, info));
@@ -103,10 +104,6 @@ export default function WeekCalendarTab() {
     setCurrentWeekStart(addDays(currentWeekStart, diff * 7));
 
   const goToChatRoom = () => router.push(RouterName.ChatTab);
-
-  const addHw = async () => {
-    console.log("숙제 추가하기");
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -139,10 +136,6 @@ export default function WeekCalendarTab() {
         connectionId={info.connectionId}
       />
 
-      <View style={styles.addHWAndSortContainer}>
-        <AddHwBtn onPress={addHw} />
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false} // 세로 스크롤바 숨김
         showsHorizontalScrollIndicator={false} // 가로 스크롤바 숨김
@@ -152,9 +145,11 @@ export default function WeekCalendarTab() {
             filteredHomework.map((hw) => (
               <HwContainer
                 key={hw.homeworkDateId}
+                homeworkDateId={hw.homeworkDateId}
                 date={hw.date}
                 color={info.themeColor}
                 homeworkList={hw.homeworkList}
+                requireRefresh={() => setRefresh(true)}
               />
             ))
           ) : (

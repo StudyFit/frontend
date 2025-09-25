@@ -1,26 +1,76 @@
-import {
-  getHexFromBackend,
-  themeColors,
-  themeSoftColors,
-  todaysLessonImages,
-} from "@/assets";
+import { getHexFromBackend, todaysLessonImages } from "@/assets";
 import { format, isBefore, isToday, isAfter } from "date-fns";
 import { enUS } from "date-fns/locale";
 import React from "react";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { useUser } from "@/contexts/UserContext";
+import FeedbackContainer from "../TodaysLessonTab/FeedbackContainer";
+import { api } from "@/api";
 
-export default function HwContainer({ color, date, homeworkList }) {
+export default function HwContainer({
+  color,
+  date,
+  homeworkList,
+  requireRefresh,
+  homeworkDateId,
+}) {
   const dateObj = new Date(date);
   const today = new Date();
   const formattedDate = format(dateObj, "MMM d", { locale: enUS });
   const backgroundColor = getBackgroundColor(dateObj, today, color);
+  const { userRole } = useUser();
+
+  const toggleHwComplete = async (isCompleted) => {
+    if (!homeworkDateId) return;
+    try {
+      const formData = new FormData();
+      formData.append("isChecked", !isCompleted);
+
+      const response = await api.patch(
+        `/homeworks/${homeworkDateId}/check`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      console.log(response.data);
+      requireRefresh();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const uploadPhoto = async () => {
+    if (!homeworkDateId) return;
+    try {
+      // 이미지 선택
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.3,
+      });
+
+      if (!result.canceled) {
+        const formData = new FormData();
+        formData.append("photo", {
+          uri: result.assets[0].uri,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+
+        await api.patch(
+          `/homeworks/${homeworkDateId}/check?isChecked=${true}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        requireRefresh();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -41,26 +91,35 @@ export default function HwContainer({ color, date, homeworkList }) {
 
       {/* 숙제 리스트 */}
       {homeworkList?.map((hw) => (
-        <HomeworkItem key={hw.homeworkId} hw={hw} />
+        <View key={hw.homeworkId} style={{ gap: 10 }}>
+          <HomeworkItem
+            hw={hw}
+            toggleHwComplete={toggleHwComplete}
+            uploadPhoto={uploadPhoto}
+          />
+          {/* 피드백 입력 */}
+          {(userRole === "선생님" || (userRole === "학생" && hw.feedback)) && (
+            <FeedbackContainer
+              homeworkDateId={homeworkDateId}
+              feedback={hw.feedback}
+              role={userRole}
+              toggleRefresh={() => setRefresh(false)}
+            />
+          )}
+        </View>
       ))}
-
-      {/* 피드백 입력 */}
-      <View style={styles.feedbackBox}>
-        <TextInput placeholder="피드백 남기기" style={styles.feedbackInput} />
-        <Image
-          source={todaysLessonImages.feedbackBtn}
-          style={styles.feedbackIcon}
-        />
-      </View>
     </View>
   );
 }
 
 /* === 서브 컴포넌트 === */
-function HomeworkItem({ hw }) {
+function HomeworkItem({ hw, toggleHwComplete, uploadPhoto }) {
   return (
     <View style={styles.homeworkItem}>
-      <Pressable style={styles.hwCheckBtn}>
+      <Pressable
+        style={styles.hwCheckBtn}
+        onPress={() => toggleHwComplete(hw.isCompleted)}
+      >
         <Image
           source={
             hw.isCompleted
@@ -72,7 +131,7 @@ function HomeworkItem({ hw }) {
       </Pressable>
       <Text style={styles.hwText}>{hw.content}</Text>
       {hw.isPhotoRequired && (
-        <Pressable style={styles.photoBtn}>
+        <Pressable style={styles.photoBtn} onPress={uploadPhoto}>
           <Image
             source={
               hw.isPhotoUploaded

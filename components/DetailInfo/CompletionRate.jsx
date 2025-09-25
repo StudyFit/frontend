@@ -21,7 +21,7 @@ const CompletionRate = ({ month, color, connectionId }) => {
       }
     };
     loadRate();
-  }, [connectionId]);
+  }, [month, connectionId]);
 
   return (
     <View style={styles.container}>
