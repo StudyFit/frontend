@@ -60,7 +60,10 @@ function monthRange(dateInput) {
 export default function CalendarTab() {
   const { userRole } = useUser();
   const [list, setList] = useState([]);
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const [currentDate, setCurrentDate] = useState(new Date(today));
   const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
@@ -251,7 +254,7 @@ export default function CalendarTab() {
             date.dateString
           );
           const dayHomework = getItemsByDate(filteredHomework, date.dateString);
-          const isToday = today === date.dateString;
+          const isToday = todayStr === date.dateString;
           return (
             <TouchableOpacity
               style={styles.dayContainer}
