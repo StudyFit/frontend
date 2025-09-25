@@ -51,6 +51,7 @@ function RegisterModal({
       }
     };
     loadList();
+    setContent("");
   }, []);
 
   const handleModalClose = () => {
