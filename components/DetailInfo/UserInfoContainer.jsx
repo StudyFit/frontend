@@ -36,7 +36,7 @@ export default function UserInfoContainer({
           </View>
         </View>
         <Text>{info.studentInfo}</Text>
-        <Text>메모 : {info.memo}</Text>
+        {info.memo && <Text>메모 : {info.memo}</Text>}
       </View>
 
       <Pressable

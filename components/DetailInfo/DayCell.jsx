@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  todayCircle: { backgroundColor: "#FF3B30" },
+  todayCircle: { backgroundColor: "#FF3B30", borderRadius: 14 },
   dayText: { fontSize: 16, color: "#333" },
   todayDayText: { color: "#fff", fontWeight: "bold" },
   schedule: {

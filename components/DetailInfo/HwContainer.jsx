@@ -29,14 +29,14 @@ export default function HwContainer({ color, date, homeworkList }) {
         <Text style={styles.dateText}>{formattedDate}</Text>
         <CompletionRate homeworkList={homeworkList} />
 
-        {(isToday(dateObj, today) || isAfter(dateObj, today)) && (
+        {/* {(isToday(dateObj, today) || isAfter(dateObj, today)) && (
           <Pressable style={{ marginLeft: 18 }}>
             <Image
               source={todaysLessonImages.alarmBtn}
               style={styles.alarmIcon}
             />
           </Pressable>
-        )}
+        )} */}
       </View>
 
       {/* 숙제 리스트 */}
