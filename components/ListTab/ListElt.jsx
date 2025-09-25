@@ -6,8 +6,9 @@ import { api } from "@/api";
 import { ColorModal } from "./register";
 import { useState } from "react";
 import { getId, getName } from "@/util/roleBranch";
+import { RouterName } from "../RouterName";
 
-const MemberList = ({ list, title, userRole, waiting, loadData }) => {
+const MemberList = ({ list, title, userRole, waiting, setRefresh }) => {
   const [showColorModal, setShowColorModal] = useState(false);
   const [color, setColor] = useState("");
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
@@ -37,7 +38,7 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
       console.log(response.data);
       setShowColorModal(false);
       setSelectedConnectionId(null);
-      // await loadData();
+      setRefresh(true);
     } catch (e) {
       console.error(e);
     }
@@ -95,7 +96,9 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
                         />
                       )
                     ) : (
-                      <SendMessageButton />
+                      <SendMessageButton
+                        onPress={() => router.push(RouterName.ChatTab)}
+                      />
                     )
                   }
                 />

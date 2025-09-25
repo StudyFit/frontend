@@ -11,97 +11,13 @@ import {
 import { api } from "@/api";
 import { getName, getStatus } from "@/util/roleBranch";
 
-const teacherData = [
-  {
-    profileImage: "",
-    connectionId: 1,
-    teacherId: 1,
-    teacherName: "엔젤라",
-    subject: "영어",
-    themeColor: "blue",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    profileImage: "",
-    connectionId: 2,
-    teacherId: 2,
-    teacherName: "장유빈",
-    subject: "수학",
-    themeColor: null,
-    connectionStatus: "REQUESTED",
-  },
-];
-
-const studentData = [
-  {
-    profileImage: "",
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    studentInfo: "태원고등학교2",
-    subject: "수학",
-    themeColor: "blue",
-    memo: "메모",
-    address: "집 주소",
-    connectionStatus: "REQUESTED",
-  },
-  {
-    profileImage: "",
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    studentInfo: "태원고등학교2",
-    subject: "수학",
-    themeColor: "blue",
-    memo: "메모",
-    address: "집 주소",
-    connectionStatus: "REQUESTED",
-  },
-  {
-    profileImage: "",
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    studentInfo: "태원고등학교2",
-    subject: "수학",
-    themeColor: "blue",
-    memo: "메모",
-    address: "집 주소",
-    connectionStatus: "REQUESTED",
-  },
-  {
-    profileImage: "",
-    connecitonId: 1,
-    studentId: 1,
-    studentName: "학생1",
-    studentInfo: "태원고등학교2",
-    subject: "수학",
-    themeColor: "blue",
-    memo: "메모",
-    address: "집 주소",
-    connectionStatus: "ACCEPTED",
-  },
-  {
-    profileImage: "",
-    connecitonId: 3,
-    studentId: 2,
-    studentName: "학생2",
-    studentInfo: "야탑중2",
-    subject: "물리1",
-    themeColor: "pink",
-    memo: "메모.",
-    address: "서울",
-    connectionStatus: "ACCEPTED",
-  },
-];
-
 export default function ListScreen({ setAddMode, setStudentInfo }) {
   const [data, setData] = useState([]);
   const { userRole } = useUser();
   const showRole = userRole == "학생" ? "선생님" : "학생";
   const [searchText, setSearchText] = useState("");
-
   const [modalVisible, setModalVisible] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   // 검색어 필터
   const filteredData = data.filter((elt) =>
@@ -131,7 +47,8 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+    setRefresh(false);
+  }, [refresh]);
 
   // 모달 여닫기 함수
   const toggleModal = () => setModalVisible(!modalVisible);
@@ -156,7 +73,7 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
             title="수락 대기 중"
             userRole={userRole}
             waiting
-            loadData={loadData}
+            setRefresh={setRefresh}
           />
           <MemberList
             list={list}
