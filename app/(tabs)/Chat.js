@@ -11,6 +11,11 @@ import {
   Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
+import AddChatRoom from "@/components/Chat/AddChatRoom";
+import { getName } from "@/util/roleBranch";
 
 const data = [
   {
@@ -97,8 +102,26 @@ const data = [
 
 export default function Chat() {
   const router = useRouter();
+  const [chatList, setChatList] = useState([]);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const { userRole } = useUser();
+
+  useEffect(() => {
+    const loadChatList = async () => {
+      try {
+        const response = await api.get(`/chat/rooms`);
+        console.log(response.data.data);
+        setChatList(response.data.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadChatList();
+  }, [addModalVisible]);
+
   const addStudent = () => {
     // 채팅방에 학생 추가하는 로직
+    setAddModalVisible(true);
   };
 
   // 채팅방 이동 함수
@@ -108,6 +131,10 @@ export default function Chat() {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", paddingVertical: 30 }}
     >
+      <AddChatRoom
+        visible={addModalVisible}
+        closeModal={() => setAddModalVisible(false)}
+      />
       <View style={styles.mainTitleContainer}>
         <MainTitle text="채팅" />
         <Image source={chatImage.chatIcon} style={styles.headerIcon} />
@@ -117,34 +144,52 @@ export default function Chat() {
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          {data.map((elt) => (
-            <Pressable
-              key={elt.id}
-              style={styles.chatItemWrapper}
-              onPress={() => goToChatRoom(elt.id)}
-            >
-              <ProfileListItem
-                name={elt.name}
-                content={elt.content}
-                rightElement={
-                  <View style={styles.rightElement}>
-                    <Text style={styles.timeText}>{elt.time}</Text>
-                    {!!elt.unreadCount && (
-                      <View style={styles.unreadBadge}>
-                        <Text style={styles.unreadText}>{elt.unreadCount}</Text>
-                      </View>
-                    )}
-                  </View>
-                }
-              />
-            </Pressable>
-          ))}
+          {chatList.length > 0 ? (
+            chatList.map((elt) => (
+              <Pressable
+                key={elt.id}
+                style={styles.chatItemWrapper}
+                onPress={() => goToChatRoom(elt.id)}
+              >
+                <ProfileListItem
+                  name={getName(userRole, elt)}
+                  content={elt.lastMessageContent || "채팅을 시작해보세요."}
+                  imageUri={elt.opponentProfileImg}
+                  rightElement={
+                    <View style={styles.rightElement}>
+                      <Text style={styles.timeText}>{elt.lastMessageTime}</Text>
+                      {!!elt.unreadCount && (
+                        <View style={styles.unreadBadge}>
+                          <Text style={styles.unreadText}>
+                            {elt.unreadCount}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  }
+                />
+              </Pressable>
+            ))
+          ) : (
+            <NoList />
+          )}
         </ScrollView>
       </View>
       <AddStudentBtn onPress={addStudent} />
     </SafeAreaView>
   );
 }
+
+const NoList = () => {
+  return (
+    <View style={styles.noListContainer}>
+      <Text style={{ fontSize: 20 }}>채팅방이 아직 없습니다.</Text>
+      <Text style={{ fontSize: 12 }}>
+        아래의 추가 버튼을 눌러 채팅방을 만들어보세요.
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -190,5 +235,14 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 9,
     fontFamily: "Pretendard-Medium",
+  },
+
+  noListContainer: {
+    height: 124,
+    backgroundColor: "#F0F0F0",
+    gap: 8,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
