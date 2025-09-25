@@ -42,11 +42,9 @@ const AddStudentModal = ({ toggleModal, setAddMode, setStudentInfo }) => {
         setError(null);
       }
     } catch (error) {
+      setError("존재하지 않는 사용자입니다.");
       console.error(error);
     }
-    // 오류1 : 이미 추가한 사용자인 경우
-    // 오류2 : 없는 사용자인 경우
-    //   setError("없는 아이디입니다!");
   };
 
   // 학생 추가하는 함수
@@ -151,5 +149,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     borderRadius: 4,
   },
-  errorText: { color: "red", fontSize: 12, paddingLeft: 5 },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    paddingLeft: 5,
+    alignSelf: "center",
+  },
 });

@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { api } from "@/api";
 import { ColorModal } from "./register";
 import { useState } from "react";
-import { getId } from "@/util/roleBranch";
+import { getId, getName } from "@/util/roleBranch";
 
 const MemberList = ({ list, title, userRole, waiting, loadData }) => {
   const [showColorModal, setShowColorModal] = useState(false);
@@ -61,6 +61,7 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
                 <ListElt
                   elt={elt}
                   key={i}
+                  userRole={userRole}
                   leftBtnElt={
                     waiting ? (
                       userRole == "학생" && (
@@ -108,7 +109,7 @@ const MemberList = ({ list, title, userRole, waiting, loadData }) => {
   );
 };
 
-const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
+const ListElt = ({ userRole, elt, leftBtnElt, rightBtnElt }) => {
   return (
     <View
       style={{
@@ -130,7 +131,9 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
         }}
       >
         <Image
-          source={elt.profileImage || yourDefaultProfileImage()}
+          source={
+            elt.profileImg ? { uri: elt.profileImg } : yourDefaultProfileImage()
+          }
           style={{
             width: 50,
             height: 50,
@@ -141,7 +144,7 @@ const ListElt = ({ elt, leftBtnElt, rightBtnElt }) => {
 
       <View style={{ gap: 5, width: "55%" }}>
         <Text style={{ fontSize: 15, fontFamily: "Pretendard-Medium" }}>
-          {elt.studentName || elt.teacherName}
+          {getName(userRole, elt)}
         </Text>
         <Text style={{ fontSize: 12 }}>{elt.subject}</Text>
       </View>

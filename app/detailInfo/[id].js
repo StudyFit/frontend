@@ -4,7 +4,7 @@ import { format, startOfWeek, addDays, endOfWeek } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useLocalSearchParams, router } from "expo-router";
 import { CalendarHeader, WeekRow } from "@/components";
-import { getHexFromBackend, yourDefaultProfileImage } from "@/assets";
+import { getHexFromBackend } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
 import AddHwBtn from "@/components/DetailInfo/AddHwBtn";
@@ -192,7 +192,7 @@ export default function WeekCalendarTab() {
       {/* 상단 사용자 정보 */}
       <UserInfoContainer
         info={info}
-        profileImage={info.profileImage || yourDefaultProfileImage()}
+        profileImage={info.profileImg}
         goToChatRoom={goToChatRoom}
       />
 
