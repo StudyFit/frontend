@@ -70,6 +70,7 @@ export default function Step2() {
             value={phoneNum}
             onChangeText={setPhoneNum}
             maxLength={11}
+            keyboardType="number-pad"
           />
           <BottomBtn text="다음" onPress={goToStep3} />
           {/* 졸프 버전 <BottomBtn text="인증번호 발송" onPress={goToNextStep} /> */}
