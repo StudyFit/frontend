@@ -11,103 +11,87 @@ import {
   Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
-
-const data = [
-  {
-    id: 1,
-    imageSrc: "",
-    name: "정채영",
-    content: "선생님 저 오늘 숙제 다 했게요 안했게요~",
-    time: "12:00",
-    unreadCount: 0,
-  },
-  {
-    id: 2,
-    imageSrc: "",
-    name: "장유빈",
-    content: "저 일본 가서도 숙제 했습니다 짱이죠?",
-    time: "12:00",
-    unreadCount: 1,
-  },
-  {
-    id: 3,
-    imageSrc: "",
-    name: "김정은",
-    content: "쌤 수학 공식 적용하는 법을 모르겠어요",
-    time: "12:00",
-    unreadCount: 10,
-  },
-  {
-    id: 4,
-    imageSrc: "",
-    name: "박지민",
-    content: "오늘 수업 너무 재밌었어요!",
-    time: "13:15",
-    unreadCount: 0,
-  },
-  {
-    id: 5,
-    imageSrc: "",
-    name: "이서연",
-    content: "다음주에 결석해도 될까요?",
-    time: "14:22",
-    unreadCount: 2,
-  },
-  {
-    id: 6,
-    imageSrc: "",
-    name: "최민준",
-    content: "숙제 파일 첨부했어요 확인 부탁드려요.",
-    time: "15:40",
-    unreadCount: 0,
-  },
-  {
-    id: 7,
-    imageSrc: "",
-    name: "한지우",
-    content: "질문 있는데 전화해도 될까요?",
-    time: "16:05",
-    unreadCount: 1,
-  },
-  {
-    id: 8,
-    imageSrc: "",
-    name: "윤서진",
-    content: "오늘 숙제 너무 어려웠어요 ㅠㅠ",
-    time: "16:30",
-    unreadCount: 3,
-  },
-  {
-    id: 9,
-    imageSrc: "",
-    name: "정하늘",
-    content: "선생님 내일 수업 준비물 뭐예요?",
-    time: "17:00",
-    unreadCount: 0,
-  },
-  {
-    id: 10,
-    imageSrc: "",
-    name: "오세훈",
-    content: "출석체크 부탁드려요!",
-    time: "17:45",
-    unreadCount: 5,
-  },
-];
+import { useEffect, useState } from "react";
+import { api } from "@/api";
+import { useUser } from "@/contexts/UserContext";
+import AddChatRoom from "@/components/Chat/AddChatRoom";
+import { getName } from "@/util/roleBranch";
 
 export default function Chat() {
   const router = useRouter();
-  const addStudent = () => {
-    // 채팅방에 학생 추가하는 로직
-  };
+  const [chatList, setChatList] = useState([]);
+  const [peopleList, setPeopleList] = useState([]);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const { userRole } = useUser();
+
+  useEffect(() => {
+    const loadChatList = async () => {
+      try {
+        const response = await api.get(`/chat/rooms`);
+        console.log(response.data.data);
+        setChatList(response.data.data);
+      } catch (e) {
+        console.error("loadChatList", e);
+      }
+    };
+    const loadPeopleList = async () => {
+      try {
+        const url = `/connection/${
+          userRole == "학생" ? "teachers" : "students"
+        }`;
+        const response = await api.get(url);
+        setPeopleList(response.data.data);
+        console.log(response.data.data);
+      } catch (e) {
+        console.error("loadPeopleList", e);
+      }
+    };
+
+    loadChatList();
+    loadPeopleList();
+  }, [addModalVisible]);
+
+  const addStudent = () => setAddModalVisible(true);
 
   // 채팅방 이동 함수
-  const goToChatRoom = (chatId) => router.push(`/chatroom/${chatId}`);
+  const goToChatRoom = (elt) => {
+    if (!elt) return;
+    const senderName = getName(userRole, elt);
+    const connectionId = elt.connectionId;
+    const selectedPerson = peopleList.find(
+      (item) =>
+        item.connectionId === connectionId &&
+        getName(userRole, item) == senderName
+    );
+    router.push({
+      pathname: "/chatroom/[chatId]",
+      params: {
+        chatId: String(elt.id),
+        sender: JSON.stringify(selectedPerson),
+      },
+    });
+  };
+
+  const lastSenderIsMe = (elt) => {
+    const lastSenderRole = elt.lastMessageSender;
+    // 마지막으로 보낸 사람이 나면
+    if (
+      (lastSenderRole == "TEACHER" && userRole == "선생님") ||
+      (lastSenderRole == "STUDENT" && userRole == "학생")
+    )
+      return true;
+    // 마지막으로 보낸 사람이 상대면
+    else return false;
+  };
 
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", paddingVertical: 30 }}
     >
+      <AddChatRoom
+        visible={addModalVisible}
+        closeModal={() => setAddModalVisible(false)}
+      />
       <View style={styles.mainTitleContainer}>
         <MainTitle text="채팅" />
         <Image source={chatImage.chatIcon} style={styles.headerIcon} />
@@ -117,34 +101,54 @@ export default function Chat() {
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
         >
-          {data.map((elt) => (
-            <Pressable
-              key={elt.id}
-              style={styles.chatItemWrapper}
-              onPress={() => goToChatRoom(elt.id)}
-            >
-              <ProfileListItem
-                name={elt.name}
-                content={elt.content}
-                rightElement={
-                  <View style={styles.rightElement}>
-                    <Text style={styles.timeText}>{elt.time}</Text>
-                    {!!elt.unreadCount && (
-                      <View style={styles.unreadBadge}>
-                        <Text style={styles.unreadText}>{elt.unreadCount}</Text>
-                      </View>
-                    )}
-                  </View>
-                }
-              />
-            </Pressable>
-          ))}
+          {chatList.length > 0 ? (
+            chatList.map((elt) => (
+              <Pressable
+                key={elt.id}
+                style={styles.chatItemWrapper}
+                onPress={() => goToChatRoom(elt)}
+              >
+                <ProfileListItem
+                  name={getName(userRole, elt)}
+                  content={elt.lastMessageContent || "채팅을 시작해보세요."}
+                  imageUri={elt.opponentProfileImg}
+                  rightElement={
+                    <View style={styles.rightElement}>
+                      <Text style={styles.timeText}>
+                        {elt.lastMessageTime?.split("T")[0]}
+                      </Text>
+                      {!!elt.unreadCount && !lastSenderIsMe(elt) && (
+                        <View style={styles.unreadBadge}>
+                          <Text style={styles.unreadText}>
+                            {elt.unreadCount}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  }
+                />
+              </Pressable>
+            ))
+          ) : (
+            <NoList />
+          )}
         </ScrollView>
       </View>
       <AddStudentBtn onPress={addStudent} />
     </SafeAreaView>
   );
 }
+
+const NoList = () => {
+  return (
+    <View style={styles.noListContainer}>
+      <Text style={{ fontSize: 20 }}>채팅방이 아직 없습니다.</Text>
+      <Text style={{ fontSize: 12 }}>
+        아래의 추가 버튼을 눌러 채팅방을 만들어보세요.
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -190,5 +194,14 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 9,
     fontFamily: "Pretendard-Medium",
+  },
+
+  noListContainer: {
+    height: 124,
+    backgroundColor: "#F0F0F0",
+    gap: 8,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
