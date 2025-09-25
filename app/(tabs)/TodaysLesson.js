@@ -8,7 +8,6 @@ import {
   Image,
   Pressable,
   Modal,
-  KeyboardAvoidingView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { todaysLessonImages } from "../../assets";
@@ -79,23 +78,23 @@ export default function TodaysLessonPage() {
                 onNext={() => moveDate(1)}
                 onPressDate={() => setPickerVisible(true)}
               />
-              <Pressable onPress={handleNotification}>
+              {/* <Pressable onPress={handleNotification}>
                 <Image
                   source={todaysLessonImages.notificationBtn}
                   style={{ width: 24, height: 24, marginRight: 10 }}
                 />
-              </Pressable>
+              </Pressable> */}
             </View>
             <View>
               <MainTitle text="오늘의 수업" style={{ marginBottom: 17 }} />
               <TodaysLessonBox
-                currentDate={currentDate.toISOString().split("T")[0]}
+                currentDate={currentDate.toLocaleDateString("en-CA")}
               />
             </View>
             <View style={{ marginTop: 32, gap: 15 }}>
               <MainTitle text="오늘의 숙제" />
               <TodaysHwBox
-                currentDate={currentDate.toISOString().split("T")[0]}
+                currentDate={currentDate.toLocaleDateString("en-CA")}
               />
             </View>
           </ScrollView>

@@ -12,10 +12,11 @@ const FeedbackContainer = ({
   const [feedbackText, setFeedbackText] = useState(feedback);
 
   const handleFeedback = async () => {
-    if (!feedbackText) return;
+    console.log(homeworkDateId);
+    if (!feedbackText || !homeworkDateId) return;
     try {
       const response = await api.patch(
-        `/homeworks/${homeworkDateId}/feedback`,
+        `/homeworks/${String(homeworkDateId)}/feedback`,
         { feedback: feedbackText }
       );
       console.log(response.data);
@@ -63,5 +64,6 @@ const styles = StyleSheet.create({
   feedbackBtn: {
     width: 11,
     height: 8,
+    padding: 2,
   },
 });

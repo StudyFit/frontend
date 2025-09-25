@@ -64,7 +64,7 @@ export default function CalendarTab() {
   const todayStr = `${today.getFullYear()}-${String(
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const [currentDate, setCurrentDate] = useState(new Date(today));
+  const [currentDate, setCurrentDate] = useState(today);
   const [currentTarget, setCurrentTarget] = useState(null);
   const [classShow, setClassShow] = useState(true);
   const [hwShow, setHwShow] = useState(true);
