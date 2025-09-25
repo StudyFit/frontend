@@ -1,6 +1,6 @@
 import {
   chatImage,
-  defaultProfileImage,
+  getHexFromBackend,
   themeColors,
   yourDefaultProfileImage,
 } from "@/assets";
@@ -19,114 +19,67 @@ import {
   TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-
-const data = {
-  name: "정채영",
-  subject: "고3 수학",
-  profileImage: "",
-  color: "lightGreen",
-  messages: [
-    {
-      id: 1,
-      sender: "me",
-      content: "안녕하세요! 오늘 숙제 다 했나요?",
-      time: "12:00",
-    },
-    { id: 2, sender: "정채영", content: "네! 다 했어요~", time: "12:01" },
-    {
-      id: 3,
-      sender: "me",
-      content: "아주 잘했어요! 사진도 올려주세요.",
-      time: "12:02",
-    },
-    { id: 4, sender: "정채영", content: "네! 사진 올릴게요.", time: "12:04" },
-    {
-      id: 5,
-      sender: "정채영",
-      content:
-        "https://study-fit-bucket.s3.ap-northeast-2.amazonaws.com/13014d3a-0133-464b-acf3-b09729ea0b26_스크린샷 2025-07-07 222343.png",
-      time: "12:04",
-      type: "image",
-    },
-    {
-      id: 6,
-      sender: "me",
-      content: "확인했습니다~ 수고했어요!",
-      time: "12:05",
-    },
-    {
-      id: 7,
-      sender: "정채영",
-      content: "쌤, 내일 수업 준비물 뭐예요?",
-      time: "12:06",
-    },
-    {
-      id: 8,
-      sender: "me",
-      content: "교과서랑 노트만 챙겨오면 돼요!",
-      time: "12:07",
-    },
-    { id: 9, sender: "정채영", content: "네 알겠어요~", time: "12:08" },
-    { id: 10, sender: "me", content: "오늘도 고생 많았어요 :)", time: "12:09" },
-    {
-      id: 11,
-      sender: "정채영",
-      content: "감사합니다! 좋은 하루 보내세요!",
-      time: "12:10",
-    },
-    { id: 12, sender: "me", content: "네~", time: "12:11" },
-    {
-      id: 13,
-      sender: "정채영",
-      content: "쌤, 다음주에 일본 여행 가요!",
-      time: "12:12",
-    },
-    {
-      id: 14,
-      sender: "me",
-      content: "와! 재밌게 다녀오고 사진도 보여줘요~",
-      time: "12:13",
-    },
-    {
-      id: 15,
-      sender: "정채영",
-      content: "네! 숙제도 꼭 할게요!",
-      time: "12:14",
-    },
-    { id: 16, sender: "me", content: "기대할게요 :)", time: "12:15" },
-    {
-      id: 17,
-      sender: "정채영",
-      content: "쌤, 오늘 수업 너무 재밌었어요!",
-      time: "12:16",
-    },
-    {
-      id: 18,
-      sender: "me",
-      content: "정채영이 열심히 해서 그래요~",
-      time: "12:17",
-    },
-    { id: 19, sender: "정채영", content: "감사합니다!", time: "12:18" },
-    { id: 20, sender: "me", content: "다음 시간에 봐요!", time: "12:19" },
-  ],
-};
+import { getAuthData } from "@/contexts/AuthSecureStore";
+import { api } from "@/api";
+import { getName } from "@/util/roleBranch";
 
 export default function ChatRoom() {
-  const { chatId } = useLocalSearchParams();
+  const { chatId, sender } = useLocalSearchParams();
+  const parsedSender = JSON.parse(sender);
   const router = useRouter();
   const { userRole } = useUser();
   const scrollViewRef = useRef(null);
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
-  const [profileImage, setProfileImage] = useState(yourDefaultProfileImage());
+  const [profileImage, setProfileImage] = useState("");
   const [color, setColor] = useState("");
+  const [messageList, setMessageList] = useState([]);
   const [text, setText] = useState("");
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { accessToken } = await getAuthData();
+        if (!accessToken || !chatId) return;
+        const ws = new WebSocket(
+          `wss://port-0-studyfit-backend-mb6gji2d509e5b57.sel4.cloudtype.app/ws/chat?token=${accessToken}&chatRoomId=${chatId}`
+        );
+
+        const response = await api.get(`/chat/rooms/${chatId}/messages`);
+        console.log(response.data.data);
+        setMessageList(response.data.data);
+
+        ws.onopen = () => console.log("WebSocket 연결 성공");
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          console.log(message);
+        };
+        // 연결 끊김 시 자동 재연결
+        ws.onclose = function (event) {
+          console.log("연결이 끊어졌습니다. 재연결을 시도합니다...");
+          setTimeout(() => {
+            // 재연결 로직
+          }, 3000);
+        };
+        // PONG 응답 처리
+        ws.onmessage = function (event) {
+          if (event.data === "PING") {
+            ws.send("PONG");
+          }
+        };
+        ws.onerror = (error) => console.error("WebSocket 오류:", error);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadData();
+
     // chatId로 채팅 정보와 내역 검색
-    setName(data.name);
-    setSubject(data.subject);
-    setColor(data.color);
+    setName(getName(userRole, parsedSender));
+    setSubject(parsedSender.studentInfo);
+    setColor(parsedSender.themeColor);
+    parsedSender.profileImg && setProfileImage(parsedSender.profileImg);
 
     // 화면 진입 시 자동 스크롤
     if (scrollViewRef.current) {
@@ -135,7 +88,7 @@ export default function ChatRoom() {
         scrollViewRef.current.scrollTo({ y: 99999, animated: false });
       }, 10);
     }
-  }, []);
+  }, [refresh]);
 
   // 첨부파일 불러오기 함수
   const pickAttachment = async () => {
@@ -157,7 +110,21 @@ export default function ChatRoom() {
     }
   };
 
-  const sendMessage = async () => {};
+  const sendMessage = async () => {
+    try {
+      const requestBody = {
+        chatRoomId: chatId,
+        content: text,
+        messageType: "TEXT",
+      };
+      const response = await api.post(`/chat/messages`, requestBody);
+      console.log(response.data);
+      setText("");
+      setRefresh(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -167,17 +134,27 @@ export default function ChatRoom() {
           <Image source={chatImage.backBtn} style={{ width: 14, height: 22 }} />
         </Pressable>
         <Image
-          source={profileImage}
-          style={{ width: 50, height: 50, marginLeft: 18, marginRight: 13 }}
+          source={
+            profileImage ? { uri: profileImage } : yourDefaultProfileImage()
+          }
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            marginLeft: 18,
+            marginRight: 13,
+          }}
         />
         <View>
           <Text style={{ fontSize: 18, fontFamily: "Pretendard-Bold" }}>
             {name}
             {userRole === "선생님" ? " 학생" : " 선생님"}
           </Text>
-          <Text style={{ fontSize: 13, fontFamily: "Pretendard-Medium" }}>
-            {subject}
-          </Text>
+          {subject && (
+            <Text style={{ fontSize: 13, fontFamily: "Pretendard-Medium" }}>
+              {subject}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -188,17 +165,20 @@ export default function ChatRoom() {
           contentContainerStyle={styles.messagesContainer}
           showsVerticalScrollIndicator={false}
         >
-          {data.messages.map((msg, idx, arr) => {
+          {[...messageList].reverse().map((msg, idx, arr) => {
             // 다음 메시지의 시간과 다르거나, 마지막 메시지면 showTime = true
             const isLast = idx === arr.length - 1;
             const nextMsg = arr[idx + 1];
-            const showTime = isLast || msg.time !== nextMsg?.time;
+            const showTime =
+              isLast ||
+              (nextMsg &&
+                !isSameDateTimeWithoutSeconds(msg.sentAt, nextMsg.sentAt));
 
             return (
               <ChatBubble
                 key={msg.id}
-                me={msg.sender === "me"}
-                time={msg.time}
+                me={msg.senderName !== name}
+                time={msg.sentAt}
                 type={msg.type}
                 content={msg.content}
                 showTime={showTime}
@@ -229,26 +209,21 @@ export default function ChatRoom() {
 }
 
 const ChatBubble = ({ me, time, content, showTime, color, type }) => {
-  const formattedtime = formatTime(time);
-
   // 시간 포맷 함수
-  function formatTime(time) {
-    if (!time) return "";
-    const [h, m] = time.split(":").map(Number);
-    const isAM = h < 12;
-    const hour12 = h % 12 === 0 ? 12 : h % 12;
-    return `${isAM ? "오전" : "오후"} ${hour12}:${m
-      .toString()
-      .padStart(2, "0")}`;
+  function formatToKoreanTime() {
+    const date = new Date(time); // 문자열 -> Date 객체
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours < 12 ? "오전" : "오후";
+    hours = hours % 12 === 0 ? 12 : hours % 12; // 12시간제로 변환
+    return `${ampm} ${hours}:${minutes.toString().padStart(2, "0")}`;
   }
 
   return (
     <View
       style={[
         styles.messageRow,
-        {
-          alignItems: me ? "flex-end" : "flex-start",
-        },
+        { alignItems: me ? "flex-end" : "flex-start" },
       ]}
     >
       <View
@@ -258,9 +233,7 @@ const ChatBubble = ({ me, time, content, showTime, color, type }) => {
             ? styles.myMessage
             : {
                 alignSelf: "flex-start",
-                borderBottomLeftRadius: 0,
-
-                backgroundColor: themeColors[color],
+                backgroundColor: getHexFromBackend(color),
               },
         ]}
       >
@@ -281,13 +254,20 @@ const ChatBubble = ({ me, time, content, showTime, color, type }) => {
               me ? { marginLeft: 6 } : { marginRight: 6 },
             ]}
           >
-            {formattedtime}
+            {formatToKoreanTime()}
           </Text>
         </View>
       )}
     </View>
   );
 };
+
+function isSameDateTimeWithoutSeconds(dateTime1, dateTime2) {
+  // 문자열 앞부분만 잘라서 시:분까지만 비교
+  const dt1 = dateTime1.slice(0, 16); // "YYYY-MM-DD HH:MM"
+  const dt2 = dateTime2.slice(0, 16);
+  return dt1 === dt2;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -325,7 +305,6 @@ const styles = StyleSheet.create({
   myMessage: {
     backgroundColor: "#F1F1F1",
     alignSelf: "flex-end",
-    borderBottomRightRadius: 0,
   },
   messageText: {
     fontSize: 14,

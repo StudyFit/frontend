@@ -1,12 +1,13 @@
 import { yourDefaultProfileImage } from "@/assets";
 import { Image, Text, View } from "react-native";
 
-const ProfileListItem = ({
-  imageSrc = yourDefaultProfileImage(),
-  name,
-  content,
-  rightElement,
-}) => {
+const ProfileListItem = ({ imageUri, name, content, rightElement }) => {
+  const imageSrc = imageUri
+    ? {
+        uri: `https://study-fit-bucket.s3.ap-northeast-2.amazonaws.com/${imageUri}`,
+      }
+    : yourDefaultProfileImage();
+
   return (
     <View
       style={{
