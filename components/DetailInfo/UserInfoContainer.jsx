@@ -1,5 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { detailInfoIcon } from "@/assets";
+import { detailInfoIcon, myDefaultProfileImage } from "@/assets";
 import { RouterName } from "@/components/RouterName";
 import { router } from "expo-router";
 import { getName } from "@/util/roleBranch";
@@ -23,7 +23,10 @@ export default function UserInfoContainer({
           style={{ width: 14, height: 22 }}
         />
       </Pressable>
-      <Image source={profileImage} style={styles.profileImage} />
+      <Image
+        source={profileImage ? { uri: profileImage } : myDefaultProfileImage()}
+        style={styles.profileImage}
+      />
 
       <View style={{ gap: 5 }}>
         <View style={styles.userHeader}>
@@ -63,7 +66,13 @@ const styles = StyleSheet.create({
     marginRight: 22,
     flexDirection: "row",
   },
-  profileImage: { width: 60, height: 60, alignSelf: "center", marginRight: 10 },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignSelf: "center",
+    marginRight: 10,
+  },
   userHeader: { flexDirection: "row", gap: 10, alignItems: "center" },
   userName: { fontFamily: "Pretendard-Bold", fontSize: 25 },
   userGrade: { fontSize: 25, color: "#939393" },

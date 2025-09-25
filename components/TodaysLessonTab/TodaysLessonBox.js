@@ -15,6 +15,7 @@ const TodaysLessonBox = ({ currentDate }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        if (!userRole) return;
         const role = userRole === "학생" ? "STUDENT" : "TEACHER";
         const { data } = await api.get(
           `/calendar/todayclass?date=${currentDate}&role=${role}`

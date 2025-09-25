@@ -14,18 +14,13 @@ import {
 } from "react-native";
 import { myDefaultProfileImage } from "@/assets";
 import { api } from "@/api";
-import { useUser } from "@/contexts/UserContext";
 
 export default function MyPage() {
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const { userRole } = useUser();
   const [userInfo, setUserInfo] = useState({});
-  const profileSource = profileImage
-    ? { uri: profileImage }
-    : myDefaultProfileImage();
-
+  console.log(profileImage);
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
@@ -33,6 +28,7 @@ export default function MyPage() {
         console.log(response.data.data);
         setUserInfo(response.data.data);
         setName(response.data.data.name);
+        setProfileImage(response.data.data.profileImg);
       } catch (e) {
         console.error(e);
       }
@@ -100,7 +96,16 @@ export default function MyPage() {
         {/* 프로필 */}
         <View style={styles.centered}>
           <View style={styles.profileBox}>
-            <Image source={profileSource} style={styles.profileImage} />
+            <Image
+              source={
+                profileImage
+                  ? {
+                      uri: `https://study-fit-bucket.s3.ap-northeast-2.amazonaws.com/${profileImage}`,
+                    }
+                  : myDefaultProfileImage()
+              }
+              style={styles.profileImage}
+            />
             <Pressable onPress={editProfileImage}>
               <Image source={myPageImage.editImageBtn} style={styles.editBtn} />
             </Pressable>

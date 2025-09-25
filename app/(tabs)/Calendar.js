@@ -23,7 +23,7 @@ import {
   StudentComponent,
   TotalComponent,
 } from "@/components";
-import { getHexFromBackend } from "@/assets";
+import { getHexFromBackend, yourDefaultProfileImage } from "@/assets";
 import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
@@ -83,7 +83,7 @@ export default function CalendarTab() {
         }`;
         const response = await api.get(url);
         setList(acceptedList(userRole, response.data.data));
-        // console.log(acceptedList(userRole, response.data.data));
+        console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
         console.error(e);
       }
@@ -92,16 +92,14 @@ export default function CalendarTab() {
     // 달력 데이터 불러오기
     const loadCalendar = async () => {
       try {
-        const { accessToken } = await getAuthData();
-        console.log(accessToken);
         const url = `/calendar/schedule?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${start}&endDate=${end}`;
-        console.log(url);
+        // console.log(url);
         const response = await api.get(url);
         setSchedules(response.data.data);
-        console.log("달력 데이터 불러오기");
-        console.log(JSON.stringify(response.data.data, null, 2));
+        // console.log("달력 데이터 불러오기");
+        // console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
         console.error(e);
       }
@@ -203,6 +201,7 @@ export default function CalendarTab() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {list.map((elt) => (
             <StudentComponent
+              profileImage={elt.profileImg}
               name={getName(userRole, elt)}
               subject={elt.subject}
               key={getId(userRole, elt)}
@@ -326,7 +325,7 @@ const styles = StyleSheet.create({
 
   studentList: {
     width: "100%",
-    height: 85,
+    height: 90,
     flexDirection: "row",
     justifyContent: "flex-start",
     paddingHorizontal: 15,

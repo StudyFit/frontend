@@ -18,13 +18,21 @@ const TotalComponent = ({ onPress, on }) => {
 };
 
 const StudentComponent = ({ profileImage, name, subject, onPress, on }) => {
+  console.log(profileImage);
   return (
     <Pressable style={styles.container} onPress={onPress}>
       {on ? (
         <>
           <Image
-            source={profileImage || yourDefaultProfileImage()}
-            style={{ width: 46, height: 46, marginBottom: 5 }}
+            source={
+              profileImage ? { uri: profileImage } : yourDefaultProfileImage()
+            }
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: 23,
+              marginBottom: 5,
+            }}
           />
           <View style={{ alignItems: "center" }}>
             <Text
@@ -46,8 +54,10 @@ const StudentComponent = ({ profileImage, name, subject, onPress, on }) => {
       ) : (
         <>
           <Image
-            source={profileImage || yourDefaultProfileImage()}
-            style={{ width: 36, height: 36, marginBottom: 5 }}
+            source={
+              profileImage ? { uri: profileImage } : yourDefaultProfileImage()
+            }
+            style={{ width: 36, height: 36, borderRadius: 18, marginBottom: 5 }}
           />
           <View style={{ alignItems: "center" }}>
             <Text
