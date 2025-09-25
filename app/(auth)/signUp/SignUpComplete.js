@@ -9,7 +9,7 @@ const SignUpComplete = () => {
   const { signUpData } = useSignUp();
 
   return (
-    <SafeAreaView style={{ alignItems: "center", flex: 1 }}>
+    <SafeAreaView style={{ alignItems: "center", flex: 1, paddingBottom: 30 }}>
       <View style={{ alignItems: "center", gap: 39, marginVertical: "auto" }}>
         <RoleImage role={signUpData.role} />
         <Text style={{ fontSize: 20, fontFamily: "Pretendard-Bold" }}>

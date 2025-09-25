@@ -56,7 +56,7 @@ export default function Step2() {
   };
 
   return (
-    <SafeAreaView style={{ alignItems: "center", flex: 1 }}>
+    <SafeAreaView style={{ alignItems: "center", flex: 1, paddingBottom: 30 }}>
       <RoleImage
         role={signUpData.role}
         style={{ marginTop: 89, marginBottom: 39 }}
