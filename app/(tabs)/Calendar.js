@@ -28,7 +28,6 @@ import MainTitle from "@/components/MainTitle";
 import { calendarImage } from "@/assets/images/calendar";
 import { api } from "@/api";
 import { useUser } from "@/contexts/UserContext";
-import { getAuthData } from "@/contexts/AuthSecureStore";
 import { getId, getName, getStatus, getThemeColor } from "@/util/roleBranch";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -71,6 +70,7 @@ export default function CalendarTab() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalDate, setModalDate] = useState(today);
   const [registerModalType, setRegisterModalType] = useState("");
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const { start, end } = monthRange(currentDate);
@@ -83,7 +83,7 @@ export default function CalendarTab() {
         }`;
         const response = await api.get(url);
         setList(acceptedList(userRole, response.data.data));
-        console.log(acceptedList(userRole, response.data.data));
+        // console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
         console.error(e);
       }
@@ -122,7 +122,11 @@ export default function CalendarTab() {
     loadList();
     loadCalendar();
     loadHw();
-  }, []);
+    console.log("refresh");
+    setRefresh(false);
+  }, [refresh]);
+
+  const requestRefresh = () => setRefresh(true);
 
   const getFilteredData = (data) => {
     if (currentTarget == null) return data;
@@ -181,6 +185,7 @@ export default function CalendarTab() {
         modalDate={modalDate}
         registerModalType={registerModalType}
         closeRegisterModal={() => setRegisterModalType("")}
+        requestRefresh={requestRefresh}
       />
 
       {/* 메인 타이틀 */}
