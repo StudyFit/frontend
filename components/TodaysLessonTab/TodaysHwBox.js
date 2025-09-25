@@ -7,6 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import { api } from "@/api";
 import { getName, getThemeColor } from "@/util/roleBranch";
+import * as ImagePicker from "expo-image-picker";
 
 const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
@@ -49,6 +50,38 @@ const TodaysHwBox = ({ currentDate }) => {
     }
   };
 
+  const uploadPhoto = async (homeworkId) => {
+    try {
+      // 이미지 선택
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.3,
+      });
+
+      if (!result.canceled) {
+        const formData = new FormData();
+        formData.append("photo", {
+          uri: result.assets[0].uri,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+
+        await api.patch(
+          `/homeworks/${homeworkId}/check?isChecked=${true}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+
+        setRefresh(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
       {hwList.length ? (
@@ -71,40 +104,51 @@ const TodaysHwBox = ({ currentDate }) => {
 
             <View style={{ gap: 12 }}>
               {hw.homeworkList &&
-                hw.homeworkList.map((elt) => (
-                  <View style={styles.hwTask} key={elt.homeworkId}>
-                    <Pressable
-                      onPress={() => {
-                        console.log(elt);
-                        toggleHwComplete(elt.homeworkId, elt.isCompleted);
-                      }}
-                    >
-                      <Image
-                        source={
-                          elt.isCompleted
-                            ? todaysLessonImages.hwCheckTrue
-                            : todaysLessonImages.hwCheckFalse
-                        }
-                        style={{
-                          width: 23,
-                          height: 24,
-                          marginRight: 8.5,
+                hw.homeworkList.map((elt) => {
+                  console.log("hw 낱개", elt);
+                  return (
+                    <View style={styles.hwTask} key={elt.homeworkId}>
+                      <Pressable
+                        onPress={() => {
+                          console.log(elt);
+                          toggleHwComplete(elt.homeworkId, elt.isCompleted);
                         }}
-                      />
-                    </Pressable>
-                    <Text>{elt.content}</Text>
-                    {elt.isPhotoRequired && (
-                      <Image
-                        source={
-                          elt.isPhotoUploaded
-                            ? todaysLessonImages.hwAfterUpload
-                            : todaysLessonImages.hwBeforeUpload
-                        }
-                        style={{ width: 18, height: 18, marginLeft: "auto" }}
-                      />
-                    )}
-                  </View>
-                ))}
+                      >
+                        <Image
+                          source={
+                            elt.isCompleted
+                              ? todaysLessonImages.hwCheckTrue
+                              : todaysLessonImages.hwCheckFalse
+                          }
+                          style={{
+                            width: 23,
+                            height: 24,
+                            marginRight: 8.5,
+                          }}
+                        />
+                      </Pressable>
+                      <Text>{elt.content}</Text>
+                      {elt.isPhotoRequired && (
+                        <Pressable
+                          style={{ marginLeft: "auto" }}
+                          onPress={() => uploadPhoto(elt.homeworkId)}
+                        >
+                          <Image
+                            source={
+                              elt.isPhotoUploaded
+                                ? todaysLessonImages.hwAfterUpload
+                                : todaysLessonImages.hwBeforeUpload
+                            }
+                            style={{
+                              width: 18,
+                              height: 18,
+                            }}
+                          />
+                        </Pressable>
+                      )}
+                    </View>
+                  );
+                })}
             </View>
             {(userRole === "선생님" ||
               (userRole === "학생" && hw.feedback)) && (
