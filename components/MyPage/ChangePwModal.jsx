@@ -1,3 +1,4 @@
+import { api } from "@/api";
 import { loginImage } from "@/assets";
 import { useState } from "react";
 import {
@@ -12,30 +13,32 @@ import {
 
 const ChangePwModal = ({ toggleModal }) => {
   const [step, setStep] = useState("prev"); // "prev" | "new"
-  const [pw, setPw] = useState("");
+  const [currentPw, setCurrnetPw] = useState("");
+  const [newPw, setNewPw] = useState("");
   const [error, setError] = useState(null);
 
   // 기존 비밀번호 확인
   const verifyPrevPw = async () => {
-    if (!pw) return;
-    try {
-      // TODO: API 요청
-      setStep("new");
-      setPw("");
-      setError(null);
-    } catch (e) {
-      setError("비밀번호가 일치하지 않습니다.");
-    }
+    if (!currentPw) return;
+    setStep("new");
+    setError(null);
   };
 
   // 새 비밀번호로 변경
   const changeToNewPw = async () => {
-    if (!pw) return;
+    if (!newPw) return;
     try {
       // TODO: API 요청
+      const response = await api.patch(`/mypage/password`, {
+        currentPassword: currentPw,
+        newPassword: newPw,
+      });
+      console.log(response.data);
+      alert("비밀번호가 변경되었습니다.");
       toggleModal();
     } catch (e) {
-      setError("비밀번호 변경에 실패했습니다.");
+      if (e.status == 400) setError("비밀번호가 올바르지 않습니다.");
+      else setError("오류가 발생하였습니다.");
     }
   };
 
@@ -52,12 +55,16 @@ const ChangePwModal = ({ toggleModal }) => {
               : "새 비밀번호를 입력해주세요."}
           </Text>
 
-          <PasswordInput pw={pw} setPw={setPw} step={step} />
-
           {step === "prev" ? (
-            <ActionButton text="확인" onPress={verifyPrevPw} />
+            <>
+              <PasswordInput pw={currentPw} setPw={setCurrnetPw} step={step} />
+              <ActionButton text="확인" onPress={verifyPrevPw} />
+            </>
           ) : (
-            <ActionButton text="변경하기" onPress={changeToNewPw} />
+            <>
+              <PasswordInput pw={newPw} setPw={setNewPw} step={step} />
+              <ActionButton text="변경하기" onPress={changeToNewPw} />
+            </>
           )}
 
           {error && <Text style={styles.errorText}>{error}</Text>}
@@ -74,7 +81,7 @@ const PasswordInput = ({ pw, setPw, step }) => (
       placeholder={step === "prev" ? "기존 비밀번호" : "새 비밀번호"}
       value={pw}
       onChangeText={setPw}
-      style={{ flex: 1, fontSize: 16 }}
+      style={{ flex: 1, fontSize: 14 }}
       autoCapitalize="none"
       autoCorrect={false}
       secureTextEntry
@@ -106,7 +113,6 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 16,
-    paddingBottom: 10,
   },
   inputBox: {
     flexDirection: "row",
@@ -114,7 +120,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
     borderRadius: 4,
     paddingHorizontal: 11,
-    paddingVertical: 8,
     marginVertical: 10,
     gap: 9,
   },
@@ -125,9 +130,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "black",
     borderRadius: 4,
-    marginTop: 5,
   },
   errorText: {
+    alignSelf: "center",
     color: "red",
     fontSize: 12,
     marginTop: 5,

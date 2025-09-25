@@ -20,7 +20,6 @@ export default function MyPage() {
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const { userRole } = useUser();
   const [userInfo, setUserInfo] = useState({});
   const profileSource = profileImage
     ? { uri: profileImage }
