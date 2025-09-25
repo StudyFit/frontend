@@ -3,7 +3,7 @@ import { View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 import { format, startOfWeek, addDays, endOfWeek } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useLocalSearchParams, router } from "expo-router";
-import { CalendarHeader, WeekRow } from "@/components";
+import { CalendarHeader, RouterName, WeekRow } from "@/components";
 import { getHexFromBackend } from "@/assets";
 import HwContainer from "@/components/DetailInfo/HwContainer";
 import CompletionRate from "@/components/DetailInfo/CompletionRate";
@@ -181,7 +181,7 @@ export default function WeekCalendarTab() {
   const changeWeek = (diff) =>
     setCurrentWeekStart(addDays(currentWeekStart, diff * 7));
 
-  const goToChatRoom = () => router.push(`/chatroom/${id}`);
+  const goToChatRoom = () => router.push(RouterName.ChatTab);
 
   const addHw = async () => {
     console.log("숙제 추가하기");
