@@ -89,13 +89,13 @@ export default function TodaysLessonPage() {
             <View>
               <MainTitle text="오늘의 수업" style={{ marginBottom: 17 }} />
               <TodaysLessonBox
-                currentDate={currentDate.toISOString().split("T")[0]}
+                currentDate={currentDate.toLocaleDateString("en-CA")}
               />
             </View>
             <View style={{ marginTop: 32, gap: 15 }}>
               <MainTitle text="오늘의 숙제" />
               <TodaysHwBox
-                currentDate={currentDate.toISOString().split("T")[0]}
+                currentDate={currentDate.toLocaleDateString("en-CA")}
               />
             </View>
           </ScrollView>
