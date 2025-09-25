@@ -9,6 +9,7 @@ export const CustomTextInput = ({
   rightElement,
   secureTextEntry,
   maxLength = 1000,
+  keyboardType,
 }) => {
   return (
     <Pressable
@@ -38,6 +39,7 @@ export const CustomTextInput = ({
         autoCapitalize="none"
         autoCorrect={false}
         maxLength={maxLength}
+        keyboardType={keyboardType}
       />
       {rightElement && <>{rightElement}</>}
     </Pressable>
