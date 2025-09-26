@@ -26,6 +26,7 @@ function CalendarModal({
   schedules,
   homework,
   setRegisterModalType,
+  requestRefresh,
 }) {
   const { userRole } = useUser();
   const [isScheduleButtonClicked, setIsScheduleButtonClicked] = useState(false);
@@ -68,6 +69,7 @@ function CalendarModal({
                       name={getName(userRole, item).slice(1)}
                       color={getHexFromBackend(getThemeColor(userRole, item))}
                       scheduleId={item.calendarId}
+                      requestRefresh={requestRefresh}
                     />
                   ))}
 
@@ -76,7 +78,8 @@ function CalendarModal({
                     <HomeworkItem
                       key={item.homeworkDateId}
                       item={item}
-                      name={getName(userRole, item).slice(1)}
+                      userRole={userRole}
+                      requestRefresh={requestRefresh}
                     />
                   ))}
               </View>
@@ -127,15 +130,17 @@ function CalendarModal({
   );
 }
 
-const ScheduleItem = ({ item, name, color, scheduleId }) => {
+const ScheduleItem = ({ item, name, color, scheduleId, requestRefresh }) => {
   const [editMode, setEditMode] = useState(false);
 
   const deleteSchedule = async () => {
     try {
       await api.delete(`/calendar/schedule?calendarId=${scheduleId}`);
       setEditMode(false);
+      requestRefresh();
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 
@@ -158,8 +163,11 @@ const ScheduleItem = ({ item, name, color, scheduleId }) => {
   );
 };
 
-const HomeworkItem = ({ item, name }) => {
-  console.log(item);
+const HomeworkItem = ({ userRole, item, requestRefresh }) => {
+  console.log("item", item);
+  const homeworkId = item.homeworkList[0].homeworkId;
+  const isCompleted = item.homeworkList[0].isCompleted;
+
   const handleDeleteHw = async () => {
     Alert.alert(
       "숙제 삭제",
@@ -174,8 +182,10 @@ const HomeworkItem = ({ item, name }) => {
                 `/homeworks/${item.homeworkDateId}`
               );
               console.log("삭제 완료:", response.data);
+              requestRefresh();
             } catch (e) {
-              console.error(e);
+              // console.error(e);
+              console.log(e);
             }
           },
           style: "destructive",
@@ -185,13 +195,36 @@ const HomeworkItem = ({ item, name }) => {
     );
   };
 
+  const toggleHwComplete = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("isChecked", !isCompleted);
+
+      const response = await api.patch(
+        `/homeworks/${homeworkId}/check`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      console.log(response.data);
+      requestRefresh();
+    } catch (e) {
+      console.log(e);
+      // console.error(e);
+    }
+  };
+
   return (
     <Pressable style={styles.homeworkContainer} onLongPress={handleDeleteHw}>
-      <HwIcon
-        isAssigned={item.isAllCompleted}
-        style={{ width: 11, height: 11 }}
-      />
-      <Text style={styles.mainText}>{name} 숙제</Text>
+      <Pressable onPress={toggleHwComplete} style={{ padding: 7 }}>
+        <HwIcon
+          isAssigned={item.isAllCompleted}
+          style={{ width: 11, height: 11 }}
+        />
+      </Pressable>
+      <Text style={styles.mainText}>
+        {getName(userRole, item).slice(1)} 숙제
+      </Text>
     </Pressable>
   );
 };
@@ -245,12 +278,10 @@ const styles = StyleSheet.create({
   homeworkContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingLeft: 17,
+    paddingLeft: 10,
     borderWidth: 0.5,
     borderColor: "#676767",
     borderRadius: 10,
-    paddingVertical: 7,
   },
   mainText: {
     fontSize: 12,
