@@ -68,7 +68,7 @@ export default function ChatRoom() {
             ws.send("PONG");
           }
         };
-        ws.onerror = (error) => console.error("WebSocket 오류:", error);
+        // ws.onerror = (error) => console.error("WebSocket 오류:", error);
       } catch (e) {
         if (__DEV__) {
           console.log("WebSocket Error:", e);
