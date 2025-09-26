@@ -54,7 +54,8 @@ const RegisterScreen = ({ setAddMode, studentInfo }) => {
       setError("");
       setAddMode(false);
     } catch (e) {
-      console.error(e);
+      // console.errosr(e);
+      console.log(e);
     }
   };
 

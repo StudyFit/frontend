@@ -29,8 +29,9 @@ const AddChatRoom = ({ visible, closeModal }) => {
       const endpoint = userRole === "학생" ? "teachers" : "students";
       const response = await api.get(`/connection/${endpoint}`);
       setList(acceptedList(response.data.data));
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.log(e);
+      // console.error(e);
       setError("목록을 불러오는 중 오류가 발생했습니다.");
     }
   };
@@ -43,9 +44,10 @@ const AddChatRoom = ({ visible, closeModal }) => {
     try {
       await api.post("/chat/rooms", { connectionId: item.connectionId });
       closeModal();
-    } catch (err) {
-      console.error(err);
-      if (err.response?.status === 400) setError("이미 존재하는 채팅방입니다.");
+    } catch (e) {
+      // console.error(e);
+      console.log(e);
+      if (e.response?.status === 400) setError("이미 존재하는 채팅방입니다.");
       else setError("채팅방 생성 중 오류가 발생했습니다.");
     }
   };

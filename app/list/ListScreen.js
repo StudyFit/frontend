@@ -41,7 +41,8 @@ export default function ListScreen({ setAddMode, setStudentInfo }) {
       setData(response.data.data);
       console.log(response.data.data);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.errsor(e);
     }
   };
 

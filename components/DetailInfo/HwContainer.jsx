@@ -36,7 +36,8 @@ export default function HwContainer({
       console.log(response.data);
       requireRefresh();
     } catch (e) {
-      console.error(e);
+      // console.error(e);
+      console.log(e);
     }
   };
 
@@ -68,7 +69,8 @@ export default function HwContainer({
         requireRefresh();
       }
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 

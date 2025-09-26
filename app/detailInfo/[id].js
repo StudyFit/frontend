@@ -54,7 +54,8 @@ export default function WeekCalendarTab() {
           console.log(userInfo);
         }
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
     const loadCalendar = async () => {
@@ -69,7 +70,8 @@ export default function WeekCalendarTab() {
         // console.log("달력 데이터 불러오기");
         // console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
     const loadHomework = async () => {
@@ -84,7 +86,8 @@ export default function WeekCalendarTab() {
         console.log("숙제 데이터 불러오기");
         console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
 

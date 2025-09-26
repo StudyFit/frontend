@@ -25,7 +25,8 @@ const TodaysHwBox = ({ currentDate }) => {
         setHwList(response.data.data);
         console.log("숙제 데이터", response.data.data);
       } catch (e) {
-        console.error(e);
+        console.log(e);
+        // console.error(e);
       }
     };
     loadHw();
@@ -46,7 +47,8 @@ const TodaysHwBox = ({ currentDate }) => {
       console.log(response.data);
       setRefresh(true);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 
@@ -78,7 +80,8 @@ const TodaysHwBox = ({ currentDate }) => {
         setRefresh(true);
       }
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 

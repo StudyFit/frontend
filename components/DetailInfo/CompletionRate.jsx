@@ -17,7 +17,8 @@ const CompletionRate = ({ month, color, connectionId }) => {
         setCompletionRate(month == 9 ? response.data.data.rate : 0);
         setStatus(response.data.data.status);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
     loadRate();

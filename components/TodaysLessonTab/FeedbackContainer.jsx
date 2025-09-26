@@ -22,7 +22,8 @@ const FeedbackContainer = ({
       console.log(response.data);
       toggleRefresh();
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 

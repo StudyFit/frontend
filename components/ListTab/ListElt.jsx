@@ -23,7 +23,8 @@ const MemberList = ({ list, title, userRole, waiting, setRefresh }) => {
       setSelectedConnectionId(connectionId);
       if (action == "ACCEPTED") setShowColorModal(true);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 
@@ -40,7 +41,8 @@ const MemberList = ({ list, title, userRole, waiting, setRefresh }) => {
       setSelectedConnectionId(null);
       setRefresh(true);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 

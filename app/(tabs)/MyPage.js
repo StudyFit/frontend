@@ -30,7 +30,8 @@ export default function MyPage() {
         setName(response.data.data.name);
         setProfileImage(response.data.data.profileImg);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
     loadUserInfo();
@@ -73,11 +74,13 @@ export default function MyPage() {
           });
           console.log("프로필 이미지 업데이트 성공:", response.data);
         } catch (error) {
-          console.error("프로필 이미지 업데이트 실패:", error);
+          // console.error("프로필 이미지 업데이트 실패:", error);
+          console.log("프로필 이미지 업데이트 실패:", error);
         }
       }
     } catch (e) {
-      console.error(e);
+      // console.error(e);
+      console.log(e);
     }
   };
 

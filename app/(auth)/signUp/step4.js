@@ -26,7 +26,9 @@ export default function Step4() {
           await apiPublic.post(`/api/auth/signup/student`, payload);
           router.push(RouterName.SignUpComplete);
         } catch (e) {
-          console.error(e);
+          console.log(e);
+          // console.error(e);
+          console.log(e);
         } finally {
           setReadyToSubmit(false);
         }

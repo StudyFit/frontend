@@ -48,7 +48,8 @@ function RegisterModal({
         setStudentList(acceptedList(userRole, response.data.data));
         console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
     loadList();
@@ -88,7 +89,8 @@ function RegisterModal({
       console.log("등록한 일정", payload);
       handleModalClose();
     } catch (e) {
-      console.error(e);
+      // console.error(e);
+      console.log(e);
     }
   };
 
@@ -109,7 +111,8 @@ function RegisterModal({
       console.log(res.data);
       handleModalClose();
     } catch (e) {
-      console.error(e);
+      // console.error(e);
+      console.log(e);
     }
   };
 

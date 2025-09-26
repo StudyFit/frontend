@@ -46,7 +46,8 @@ export default function Step3() {
         await apiPublic.post(`/api/auth/signup/teacher`, payload);
         router.push(RouterName.SignUpComplete);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     }
   };

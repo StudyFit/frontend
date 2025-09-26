@@ -58,7 +58,8 @@ export const UserProvider = ({ children }) => {
       setIsLoggedIn(false);
       router.navigate(RouterName.loginPage);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      // console.error(e);
     }
   };
 

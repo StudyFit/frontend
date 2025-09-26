@@ -31,7 +31,8 @@ export default function Chat() {
         console.log(response.data.data);
         setChatList(response.data.data);
       } catch (e) {
-        console.error("loadChatList", e);
+        // console.error("loadChatList", e);
+        console.log("loadChatList", e);
       }
     };
     const loadPeopleList = async () => {
@@ -43,7 +44,8 @@ export default function Chat() {
         setPeopleList(response.data.data);
         console.log(response.data.data);
       } catch (e) {
-        console.error("loadPeopleList", e);
+        // console.error("loadPeopleList", e);
+        console.log("loadPeopleList", e);
       }
     };
 

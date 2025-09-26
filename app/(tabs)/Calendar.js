@@ -86,9 +86,10 @@ export default function CalendarTab() {
         }`;
         const response = await api.get(url);
         setList(acceptedList(userRole, response.data.data));
-        // console.log(acceptedList(userRole, response.data.data));
+        console.log(acceptedList(userRole, response.data.data));
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
 
@@ -104,7 +105,8 @@ export default function CalendarTab() {
         // console.log("달력 데이터 불러오기");
         // console.log(JSON.stringify(response.data.data, null, 2));
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
 
@@ -118,7 +120,8 @@ export default function CalendarTab() {
         setHomeworks(response.data.data);
         // console.log(response.data.data);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
+        console.log(e);
       }
     };
 
@@ -180,6 +183,7 @@ export default function CalendarTab() {
         schedules={modalSchedules}
         homework={modalHomework}
         setRegisterModalType={setRegisterModalType}
+        requestRefresh={requestRefresh}
       />
 
       {/* 수업 일정 등록 모달 */}
@@ -207,12 +211,12 @@ export default function CalendarTab() {
           onPress={() => setCurrentTarget(null)}
         />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {list.map((elt) => (
+          {list.map((elt, idx) => (
             <StudentComponent
               profileImage={elt.profileImg}
               name={getName(userRole, elt)}
               subject={elt.subject}
-              key={getId(userRole, elt)}
+              key={idx}
               on={currentTarget == getId(userRole, elt)}
               onPress={() => setCurrentTarget(getId(userRole, elt))}
             />
