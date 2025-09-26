@@ -7,7 +7,8 @@ export const saveAuthData = async (accessToken, refreshToken, role) => {
     await SecureStore.setItemAsync("refreshToken", refreshToken);
     await SecureStore.setItemAsync("role", role);
   } catch (err) {
-    console.error("토큰 저장 실패:", err);
+    // console.error("토큰 저장 실패:", err);
+    console.log("토큰 저장 실패:", err);
   }
 };
 
@@ -16,7 +17,8 @@ export const updateAccessToken = async (accessToken) => {
   try {
     await SecureStore.setItemAsync("accessToken", accessToken);
   } catch (err) {
-    console.error("엑세스 토큰 업데이트 실패:", err);
+    // console.error("엑세스 토큰 업데이트 실패:", err);
+    console.log("엑세스 토큰 업데이트 실패:", err);
   }
 };
 
@@ -24,7 +26,8 @@ export const removeAccessToken = async () => {
   try {
     await SecureStore.deleteItemAsync("accessToken");
   } catch (err) {
-    console.error(err);
+    // console.error(err);
+    console.log("removeAccessToken", err);
   }
 };
 

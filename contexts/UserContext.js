@@ -44,7 +44,8 @@ export const UserProvider = ({ children }) => {
       setIsLoggedIn(true);
       return true;
     } catch (e) {
-      console.error(e.code);
+      // console.error(e.code);
+      console.log(e.code);
       return false;
     }
   };

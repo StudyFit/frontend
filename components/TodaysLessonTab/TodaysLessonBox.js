@@ -22,7 +22,8 @@ const TodaysLessonBox = ({ currentDate }) => {
         );
         setTodaysLesson(data.data);
       } catch (e) {
-        console.error("오늘의 수업 데이터 불러오기 실패:", e);
+        console.log("오늘의 수업 데이터 불러오기 실패:", e);
+        // console.error("오늘의 수업 데이터 불러오기 실패:", e);
       }
     };
 
