@@ -70,8 +70,9 @@ export default function ChatRoom() {
         };
         ws.onerror = (error) => console.error("WebSocket 오류:", error);
       } catch (e) {
-        // console.error(e);
-        console.log(e);
+        if (__DEV__) {
+          console.log("WebSocket Error:", e);
+        }
       }
     };
     loadData();
