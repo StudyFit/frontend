@@ -20,7 +20,8 @@ export default function MyPage() {
   const [profileImage, setProfileImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [userInfo, setUserInfo] = useState({});
-  console.log(profileImage);
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
@@ -29,13 +30,14 @@ export default function MyPage() {
         setUserInfo(response.data.data);
         setName(response.data.data.name);
         setProfileImage(response.data.data.profileImg);
+        setRefresh(false);
       } catch (e) {
         // console.error(e);
         console.log(e);
       }
     };
     loadUserInfo();
-  }, []);
+  }, [refresh]);
 
   const editProfileImage = async () => {
     try {
@@ -78,6 +80,7 @@ export default function MyPage() {
           console.log("프로필 이미지 업데이트 실패:", error);
         }
       }
+      setRefresh(true);
     } catch (e) {
       // console.error(e);
       console.log(e);
