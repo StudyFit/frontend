@@ -2,8 +2,8 @@
   "expo": {
     "name": "StudyFit",
     "slug": "StudyFit",
-    "scheme": "StudyFit",
-    "version": "1.0.0ㄴ",
+    "scheme": "studyfit",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo_image.png",
     "userInterfaceStyle": "light",
@@ -23,21 +23,18 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo_image.png",
-        "backgroundColor": "#ffffff",
-        "package": "com.farmers.studyfit",
-        "versionCode": 1
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "resize",
-      "package": "com.farmers.studyfit"
+      "package": "com.farmers.studyfit",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/logo_image.png"
     },
-    "plugins": ["expo-font", "expo-secure-store", "expo-asset"],
-
+    "plugins": ["expo-font", "expo-secure-store", "expo-asset", "expo-router"],
     "assetBundlePatterns": ["assets/fonts/*", "assets/images/*", "**/*"],
-
     "extra": {
       "eas": {
         "projectId": "0f747474-7d71-4587-a3f6-37117bce518d"
