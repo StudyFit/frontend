@@ -49,7 +49,7 @@ export default function ClassPeriodModal({
         display={Platform.OS === "ios" ? "inline" : "default"}
         onChange={handleChange}
       />
-      <Text>{currentDate}</Text>
+      <Text>{currentDate.toISOString().split("T")[0]}</Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <Pressable style={styles.confirmButton} onPress={closeModal}>
         <Text style={styles.confirmText}>확인</Text>
