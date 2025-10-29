@@ -13,6 +13,7 @@ const TodaysHwBox = ({ currentDate }) => {
   const { userRole } = useUser();
   const [hwList, setHwList] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [showImage, setShowImage] = useState("");
 
   useEffect(() => {
     const loadHw = async () => {
@@ -20,7 +21,7 @@ const TodaysHwBox = ({ currentDate }) => {
         const url = `/calendar/homeworks?role=${
           userRole == "학생" ? "STUDENT" : "TEACHER"
         }&startDate=${currentDate}&endDate=${currentDate}`;
-        console.log(url);
+        // console.log(url);
         const response = await api.get(url);
         setHwList(response.data.data);
         console.log("숙제 데이터", response.data.data);
@@ -31,6 +32,7 @@ const TodaysHwBox = ({ currentDate }) => {
     };
     loadHw();
     setRefresh(false);
+    setShowImage("");
   }, [currentDate, refresh]);
 
   const toggleHwComplete = async (homeworkId, isCompleted) => {
@@ -108,12 +110,14 @@ const TodaysHwBox = ({ currentDate }) => {
             <View style={{ gap: 12 }}>
               {hw.homeworkList &&
                 hw.homeworkList.map((elt) => {
-                  console.log("hw 낱개", elt);
+                  // console.log("hw", elt);
+                  // console.log("hw 이미지", elt.photoUrls);
                   return (
                     <View style={styles.hwTask} key={elt.homeworkId}>
                       <Pressable
                         onPress={() => {
                           console.log(elt);
+                          if (!elt.isPhotoUploaded) return;
                           toggleHwComplete(elt.homeworkId, elt.isCompleted);
                         }}
                       >
@@ -134,7 +138,11 @@ const TodaysHwBox = ({ currentDate }) => {
                       {elt.isPhotoRequired && (
                         <Pressable
                           style={{ marginLeft: "auto" }}
-                          onPress={() => uploadPhoto(elt.homeworkId)}
+                          onPress={
+                            elt.isPhotoUploaded
+                              ? () => setShowImage(elt.photoUrls[0])
+                              : () => uploadPhoto(elt.homeworkId)
+                          }
                         >
                           <Image
                             source={
@@ -153,6 +161,19 @@ const TodaysHwBox = ({ currentDate }) => {
                   );
                 })}
             </View>
+            {showImage && (
+              <Pressable
+                onPress={() => setShowImage("")}
+                style={{ alignSelf: "center" }}
+              >
+                <Image
+                  source={{
+                    uri: `https://study-fit-bucket.s3.ap-northeast-2.amazonaws.com/${showImage}`,
+                  }}
+                  style={{ width: 100, height: 100, borderRadius: 10 }}
+                />
+              </Pressable>
+            )}
             {(userRole === "선생님" ||
               (userRole === "학생" && hw.feedback)) && (
               <FeedbackContainer
