@@ -55,6 +55,7 @@ const TodaysHwBox = ({ currentDate }) => {
   };
 
   const uploadPhoto = async (homeworkId) => {
+    if (userRole == "선생님") return;
     try {
       // 이미지 선택
       const result = await ImagePicker.launchImageLibraryAsync({
