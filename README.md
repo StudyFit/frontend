@@ -67,7 +67,7 @@ StudyFit은 **학생의 원활한 학습과 선생님의 편리한 관리**를 
 ---
 
 ## 🎬 데모
-시연 영상(추후 첨부 예정)
+시연 영상 : https://drive.google.com/file/d/1Vj6O3qjH3DbizrJJY-DhvfT8R7oGHnFa/view?usp=drive_link
 
 ---
 
